@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+<title>Dictamen de Proyecto | TecNM Campus Chilpancingo</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+	rel="stylesheet" />
+
+<style>
+.material-symbols-outlined {
+	font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+body {
+	font-family: 'Inter', sans-serif;
+	background: #f7f9fb;
+}
+
+h1, h2, h3 {
+	font-family: 'Manrope', sans-serif;
+}
+</style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+	<div th:replace="~{fragments/sidebar :: sidebar('residencias')}"></div>
+
+	<main class="ml-64 min-h-screen">
+
+		<header th:replace="~{fragments/ui :: topbar(@{/residencias/index}, 'Volver')}"></header>
+
+		<div class="max-w-6xl mx-auto p-8">
+
+			<div class="mb-8">
+				<p class="text-sm text-slate-500 font-semibold mb-1">
+					Panel de Control <span class="mx-2 text-slate-300">›</span>
+					<span class="text-[#003B8F]">Dictamen académico</span>
+				</p>
+
+				<h1 class="text-4xl font-black text-[#002046] tracking-tight mb-2">
+					Dictamen de Proyecto
+				</h1>
+
+				<p class="text-slate-500">
+					Revisión y autorización académica del proyecto de residencia profesional.
+				</p>
+			</div>
+
+			<div th:if="${residencia == null}"
+				class="bg-red-100 border border-red-300 text-red-800 px-5 py-4 rounded-xl font-semibold">
+				No se encontró la residencia seleccionada.
+			</div>
+
+			<div th:if="${residencia != null}" class="space-y-6">
+
+				<div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+					<div class="px-6 py-5 border-b border-slate-200 flex justify-between items-start gap-4">
+						<div>
+							<h2 class="text-xl font-black text-[#002046]"
+								th:text="${residencia.nombreProyecto}">
+								Nombre del proyecto
+							</h2>
+							<p class="text-sm text-slate-500 mt-1"
+								th:text="${residencia.periodo}">
+								Periodo
+							</p>
+						</div>
+
+						<div>
+							<span th:if="${residencia.estadoAutorizacion == 'AUTORIZADO'}"
+								class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-black">
+								<span class="material-symbols-outlined text-sm">check_circle</span>
+								AUTORIZADO
+							</span>
+
+							<span th:if="${residencia.estadoAutorizacion == 'AUTORIZADO_CON_OBSERVACIONES'}"
+								class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-100 text-amber-700 text-xs font-black">
+								<span class="material-symbols-outlined text-sm">warning</span>
+								AUTORIZADO CON OBSERVACIONES
+							</span>
+
+							<span th:if="${residencia.estadoAutorizacion == 'RECHAZADO'}"
+								class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-red-100 text-red-700 text-xs font-black">
+								<span class="material-symbols-outlined text-sm">cancel</span>
+								RECHAZADO
+							</span>
+
+							<span th:if="${residencia.estadoAutorizacion == null or residencia.estadoAutorizacion == 'PENDIENTE'}"
+								class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-black">
+								<span class="material-symbols-outlined text-sm">schedule</span>
+								PENDIENTE
+							</span>
+						</div>
+					</div>
+
+					<div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-5">
+						<div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
+							<p class="text-xs uppercase tracking-wide text-slate-400 font-black mb-1">
+								Estudiante
+							</p>
+							<p class="font-black text-[#002046]"
+								th:text="${residencia.residente != null ? residencia.residente.nombreCompleto : 'Sin residente'}">
+							</p>
+							<p class="text-sm text-slate-500 mt-1"
+								th:text="${residencia.residente != null ? residencia.residente.matricula : ''}">
+							</p>
+						</div>
+
+						<div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
+							<p class="text-xs uppercase tracking-wide text-slate-400 font-black mb-1">
+								Carrera
+							</p>
+							<p class="font-black text-[#002046]"
+								th:text="${residencia.residente != null 
+									&& residencia.residente.estudiante != null 
+									&& residencia.residente.estudiante.carrera != null 
+									? residencia.residente.estudiante.carrera.nombre 
+									: 'Sin carrera'}">
+							</p>
+						</div>
+
+						<div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
+							<p class="text-xs uppercase tracking-wide text-slate-400 font-black mb-1">
+								Empresa
+							</p>
+							<p class="font-black text-[#002046]"
+								th:text="${residencia.empresa != null ? residencia.empresa.nombre : 'Sin empresa'}">
+							</p>
+						</div>
+
+						<div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
+							<p class="text-xs uppercase tracking-wide text-slate-400 font-black mb-1">
+								ID Proyecto
+							</p>
+							<p class="font-black text-[#002046]"
+								th:text="${residencia.idProyectoCarrera != null ? residencia.idProyectoCarrera : residencia.id}">
+							</p>
+						</div>
+
+						<div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
+							<p class="text-xs uppercase tracking-wide text-slate-400 font-black mb-1">
+								Asesor Interno
+							</p>
+							<p class="font-black text-[#002046]"
+								th:text="${residencia.asesorInterno != null ? residencia.asesorInterno.nombreCompleto : 'Sin asesor interno'}">
+							</p>
+						</div>
+
+						<div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
+							<p class="text-xs uppercase tracking-wide text-slate-400 font-black mb-1">
+								Asesor Externo
+							</p>
+							<p class="font-black text-[#002046]"
+								th:text="${residencia.asesorExterno != null ? residencia.asesorExterno.nombreCompleto : 'Sin asesor externo'}">
+							</p>
+						</div>
+					</div>
+				</div>
+
+				<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+					<div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+						<h3 class="text-lg font-black text-[#002046] mb-3 flex items-center gap-2">
+							<span class="material-symbols-outlined text-[#003B8F]">description</span>
+							Descripción
+						</h3>
+						<p class="text-sm text-slate-600 leading-7 whitespace-pre-line"
+							th:text="${residencia.descripcion != null ? residencia.descripcion : 'Sin descripción registrada.'}">
+						</p>
+					</div>
+
+					<div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+						<h3 class="text-lg font-black text-[#002046] mb-3 flex items-center gap-2">
+							<span class="material-symbols-outlined text-[#003B8F]">flag</span>
+							Objetivo
+						</h3>
+						<p class="text-sm text-slate-600 leading-7 whitespace-pre-line"
+							th:text="${residencia.objetivo != null ? residencia.objetivo : 'Sin objetivo registrado.'}">
+						</p>
+					</div>
+				</div>
+
+				<div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+					<div class="px-6 py-5 border-b border-slate-200 flex flex-wrap items-start justify-between gap-4">
+						<div>
+							<h3 class="text-lg font-black text-[#002046] flex items-center gap-2">
+								<span class="material-symbols-outlined text-[#003B8F]">picture_as_pdf</span>
+								Reporte preliminar del alumno
+							</h3>
+							<p class="text-sm text-slate-500 mt-1">
+								Revisa el documento final antes de emitir el dictamen.
+							</p>
+						</div>
+
+						<div th:if="${reportePreliminarDisponible}" class="flex flex-wrap gap-3">
+							<a th:href="@{/documentos-residencia/archivo/{id}/inline(id=${reportePreliminar.id})}"
+								target="_blank"
+								class="inline-flex items-center gap-2 rounded-xl bg-blue-100 hover:bg-blue-200 text-blue-700 px-4 py-2.5 font-bold text-sm transition">
+								<span class="material-symbols-outlined text-base">visibility</span>
+								Ver documento
+							</a>
+
+							<a th:href="@{/documentos-residencia/archivo/{id}(id=${reportePreliminar.id})}"
+								class="inline-flex items-center gap-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2.5 font-bold text-sm transition">
+								<span class="material-symbols-outlined text-base">download</span>
+								Descargar PDF
+							</a>
+						</div>
+					</div>
+
+					<div th:if="${reportePreliminarDisponible}" class="p-6 space-y-4">
+						<div class="rounded-xl bg-slate-50 border border-slate-200 px-4 py-3 text-sm text-slate-600">
+							Archivo cargado:
+							<span class="font-bold text-[#002046]" th:text="${reportePreliminar.nombreArchivo}"></span>
+						</div>
+
+						<div class="rounded-2xl border border-slate-200 bg-slate-50 overflow-hidden">
+							<object
+								th:data="@{/documentos-residencia/archivo/{id}/inline(id=${reportePreliminar.id})}"
+								type="application/pdf"
+								class="w-full h-[720px]">
+								<div class="h-[720px] flex flex-col items-center justify-center gap-4 px-6 text-center bg-slate-50">
+									<span class="material-symbols-outlined text-6xl text-slate-300">picture_as_pdf</span>
+									<p class="text-sm text-slate-500 max-w-md">
+										La vista previa no pudo cargarse en este navegador. Puedes abrir el documento en otra pestaña o descargarlo.
+									</p>
+									<div class="flex flex-wrap justify-center gap-3">
+										<a th:href="@{/documentos-residencia/archivo/{id}/inline(id=${reportePreliminar.id})}"
+											target="_blank"
+											class="inline-flex items-center gap-2 rounded-xl bg-blue-100 hover:bg-blue-200 text-blue-700 px-4 py-2.5 font-bold text-sm transition">
+											<span class="material-symbols-outlined text-base">open_in_new</span>
+											Abrir vista previa
+										</a>
+										<a th:href="@{/documentos-residencia/archivo/{id}(id=${reportePreliminar.id})}"
+											class="inline-flex items-center gap-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2.5 font-bold text-sm transition">
+											<span class="material-symbols-outlined text-base">download</span>
+											Descargar PDF
+										</a>
+									</div>
+								</div>
+							</object>
+						</div>
+					</div>
+
+					<div th:if="${!reportePreliminarDisponible}" class="p-6">
+						<div class="rounded-xl bg-amber-50 border border-amber-200 text-amber-800 px-4 py-4 text-sm font-semibold">
+							El alumno aún no tiene un reporte preliminar PDF disponible para revisión.
+						</div>
+					</div>
+				</div>
+
+				<form th:action="@{/residencias/dictamen}" method="post"
+					class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+
+					<input type="hidden" name="idResidencia" th:value="${residencia.id}" />
+
+					<div class="px-6 py-5 border-b border-slate-200">
+						<h3 class="text-lg font-black text-[#002046]">
+							Resultado del dictamen
+						</h3>
+						<p class="text-sm text-slate-500 mt-1">
+							Selecciona el resultado académico correspondiente.
+						</p>
+					</div>
+
+					<div class="p-6 space-y-5">
+
+						<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+							<label class="cursor-pointer rounded-xl border border-slate-200 p-4 hover:border-green-400 hover:bg-green-50 transition">
+								<div class="flex items-center gap-3">
+									<input type="radio" name="estadoAutorizacion" value="AUTORIZADO"
+										th:checked="${residencia.estadoAutorizacion == 'AUTORIZADO'}"
+										class="text-green-600 focus:ring-green-600">
+									<div>
+										<p class="font-black text-green-700">Autorizar</p>
+										<p class="text-xs text-slate-500 mt-1">
+											El proyecto cumple y puede continuar.
+										</p>
+									</div>
+								</div>
+							</label>
+
+							<label class="cursor-pointer rounded-xl border border-slate-200 p-4 hover:border-amber-400 hover:bg-amber-50 transition">
+								<div class="flex items-center gap-3">
+									<input type="radio" name="estadoAutorizacion"
+										value="AUTORIZADO_CON_OBSERVACIONES"
+										th:checked="${residencia.estadoAutorizacion == 'AUTORIZADO_CON_OBSERVACIONES'}"
+										class="text-amber-600 focus:ring-amber-600">
+									<div>
+										<p class="font-black text-amber-700">Autorizar con observaciones</p>
+										<p class="text-xs text-slate-500 mt-1">
+											El proyecto continúa, pero requiere ajustes.
+										</p>
+									</div>
+								</div>
+							</label>
+
+							<label class="cursor-pointer rounded-xl border border-slate-200 p-4 hover:border-red-400 hover:bg-red-50 transition">
+								<div class="flex items-center gap-3">
+									<input type="radio" name="estadoAutorizacion" value="RECHAZADO"
+										th:checked="${residencia.estadoAutorizacion == 'RECHAZADO'}"
+										class="text-red-600 focus:ring-red-600">
+									<div>
+										<p class="font-black text-red-700">Rechazar</p>
+										<p class="text-xs text-slate-500 mt-1">
+											El proyecto no cumple con los criterios.
+										</p>
+									</div>
+								</div>
+							</label>
+
+						</div>
+
+						<div>
+							<label class="block text-sm font-black text-[#002046] mb-2">
+								Observaciones del dictamen
+							</label>
+							<textarea name="observacionesAutorizacion" rows="6"
+								placeholder="Escribe observaciones académicas, recomendaciones o motivos del dictamen..."
+								class="w-full rounded-xl border-slate-200 focus:ring-[#003B8F] focus:border-[#003B8F]"
+								th:text="${residencia.observacionesAutorizacion}">
+							</textarea>
+							<p class="text-xs text-slate-400 mt-2">
+								Si autorizas con observaciones o rechazas, se recomienda explicar el motivo.
+							</p>
+						</div>
+
+					</div>
+
+					<div class="px-6 py-5 bg-slate-50 border-t border-slate-200 flex flex-wrap justify-end gap-3">
+						<a th:href="@{/residencias/index}"
+							class="px-6 py-3 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold hover:bg-slate-100 transition">
+							Cancelar
+						</a>
+
+						<button type="submit"
+							class="px-6 py-3 rounded-xl bg-[#003B8F] hover:bg-[#002f73] text-white font-bold shadow-lg shadow-blue-900/20 transition flex items-center gap-2">
+							<span class="material-symbols-outlined text-base">save</span>
+							Guardar Dictamen
+						</button>
+					</div>
+
+				</form>
+
+			</div>
+
+		</div>
+	</main>
+
+</body>
+</html>

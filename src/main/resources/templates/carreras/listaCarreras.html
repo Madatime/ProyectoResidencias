@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Carreras | TecNM Campus Chilpancingo</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<link
+	href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&family=Material+Symbols+Outlined"
+	rel="stylesheet">
+
+<style>
+body {
+	font-family: 'Inter', sans-serif;
+	background:
+		radial-gradient(circle at top left, rgba(0, 59, 143, 0.10), transparent 28%),
+		linear-gradient(135deg, #f7f9fb 0%, #eef4fb 45%, #f8fafc 100%);
+	min-height: 100vh;
+	overflow-x: hidden;
+}
+
+h1, h2, h3 {
+	font-family: 'Manrope', sans-serif;
+}
+
+.material-symbols-outlined {
+	font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.grid-pattern {
+	position: fixed;
+	inset: 0;
+	z-index: 0;
+	opacity: 0.035;
+	background-image:
+		linear-gradient(#002046 1px, transparent 1px),
+		linear-gradient(90deg, #002046 1px, transparent 1px);
+	background-size: 42px 42px;
+	pointer-events: none;
+}
+
+.float-shape {
+	position: fixed;
+	border-radius: 9999px;
+	background: rgba(0, 59, 143, 0.08);
+	filter: blur(1px);
+	z-index: 0;
+	animation: float 8s ease-in-out infinite;
+}
+
+.float-shape:nth-child(2) {
+	animation-delay: 2s;
+}
+
+.float-shape:nth-child(3) {
+	animation-delay: 4s;
+}
+
+.page-enter {
+	animation: fadeUp 0.75s ease-out both;
+}
+
+.card-animate {
+	animation: fadeUp 0.8s ease-out both;
+	transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.card-animate:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 24px 45px -18px rgba(0, 32, 70, 0.20);
+	border-color: rgba(0, 59, 143, 0.18);
+}
+
+@keyframes fadeUp {
+	from {
+		opacity: 0;
+		transform: translateY(24px) scale(0.98);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
+}
+
+@keyframes float {
+	0%, 100% {
+		transform: translateY(0) translateX(0);
+	}
+
+	50% {
+		transform: translateY(-18px) translateX(10px);
+	}
+}
+</style>
+
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+	<div class="grid-pattern"></div>
+
+	<div class="float-shape w-72 h-72 top-[-80px] left-[250px]"></div>
+	<div class="float-shape w-52 h-52 bottom-[-70px] right-[6%]"></div>
+	<div class="float-shape w-40 h-40 top-[22%] right-[12%]"></div>
+
+	<div th:replace="~{fragments/sidebar :: sidebar('carreras')}"></div>
+
+	<main class="ml-64 min-h-screen relative z-10">
+
+			<header th:replace="~{fragments/ui :: topbar(@{/dashboard}, 'Dashboard')}"></header>
+
+		<div class="max-w-6xl mx-auto p-8 page-enter">
+
+			<div
+				class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#00152f] via-[#002046] to-[#003B8F] text-white p-8 shadow-2xl border border-white/10 mb-8 card-animate">
+
+				<div
+					class="pointer-events-none absolute inset-0 opacity-20"
+					style="background:
+						radial-gradient(circle at top left, #ffffff 0, transparent 28%),
+						radial-gradient(circle at bottom right, #60a5fa 0, transparent 30%);">
+				</div>
+
+				<div
+					class="relative flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+
+					<div>
+
+						<p class="text-sm text-blue-100 font-semibold mb-2 flex items-center gap-2">
+							<span>Panel de Control</span>
+							<span class="text-blue-300">›</span>
+							<span class="text-white">Carreras</span>
+						</p>
+
+						<h2 class="text-5xl font-black tracking-tight mb-3 drop-shadow-lg">
+							Carreras
+						</h2>
+
+						<p class="text-slate-100 text-base max-w-3xl leading-relaxed">
+							Administra los programas educativos disponibles para el proceso
+							institucional de residencias profesionales.
+						</p>
+
+					</div>
+
+					<a sec:authorize="hasRole('ADMINISTRADOR')"
+						th:href="@{/carreras/create}"
+						class="relative z-20 inline-flex items-center justify-center gap-2
+							bg-emerald-600 hover:bg-emerald-700
+							text-white px-6 py-3 rounded-2xl
+							font-bold text-sm shadow-xl transition-all duration-200 hover:scale-[1.02]">
+
+						<span class="material-symbols-outlined text-base">
+							add
+						</span>
+
+						Agregar Carrera
+
+					</a>
+
+				</div>
+
+				<div
+					class="pointer-events-none absolute -bottom-16 -right-16 w-72 h-72 bg-white/10 rounded-full blur-3xl">
+				</div>
+
+			</div>
+
+			<div
+				class="bg-white/95 backdrop-blur rounded-3xl shadow-xl border border-slate-200 overflow-hidden card-animate">
+
+				<div
+					class="px-6 py-5 border-b border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-3">
+
+					<div>
+						<h3 class="text-xl font-black text-[#002046]">
+							Listado de carreras
+						</h3>
+
+						<p class="text-sm text-slate-500">
+							Programas educativos registrados en el sistema.
+						</p>
+					</div>
+
+					<div class="flex items-center gap-2 text-sm text-slate-500">
+						<span class="material-symbols-outlined text-base">
+							database
+						</span>
+
+						<span>
+							Total:
+							<b class="text-[#002046]"
+								th:text="${carreras != null ? #lists.size(carreras) : 0}">
+							</b>
+						</span>
+					</div>
+
+				</div>
+
+				<div class="overflow-x-auto">
+
+					<table class="w-full text-sm text-center border-collapse bg-white">
+
+						<thead class="bg-gradient-to-r from-slate-100 to-slate-50 text-[#002046]">
+							<tr>
+								<th class="p-4 border border-slate-300 text-xs font-black uppercase tracking-wide">
+									ID
+								</th>
+
+								<th class="p-4 border border-slate-300 text-xs font-black uppercase tracking-wide text-left">
+									Nombre
+								</th>
+
+								<th class="p-4 border border-slate-300 text-xs font-black uppercase tracking-wide">
+									Acciones
+								</th>
+							</tr>
+						</thead>
+
+						<tbody class="divide-y divide-slate-200">
+
+							<tr th:each="carrera : ${carreras}"
+								class="hover:bg-blue-50/40 transition duration-200">
+
+								<td class="p-4 border border-slate-200">
+									<span class="font-mono font-black text-[#003B8F] bg-blue-50 px-3 py-1 rounded-lg"
+										th:text="${carrera.id}">
+									</span>
+								</td>
+
+								<td class="p-4 border border-slate-200 text-left">
+									<div class="flex items-center gap-3">
+										<div class="w-10 h-10 rounded-xl bg-blue-50 text-[#003B8F] flex items-center justify-center">
+											<span class="material-symbols-outlined">
+												school
+											</span>
+										</div>
+
+										<div>
+											<p class="font-black text-[#002046]" th:text="${carrera.nombre}">
+												Nombre
+											</p>
+											<p class="text-xs text-slate-400">
+												Programa educativo
+											</p>
+										</div>
+									</div>
+								</td>
+
+								<td class="p-4 border border-slate-200">
+									<div class="flex justify-center gap-2">
+
+										<a sec:authorize="hasRole('ADMINISTRADOR')"
+											th:href="@{/carreras/edit/{id}(id=${carrera.id})}"
+											class="inline-flex items-center gap-1 bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-2 rounded-xl font-bold text-xs transition">
+											<span class="material-symbols-outlined text-sm">
+												edit
+											</span>
+											Editar
+										</a>
+
+										<a sec:authorize="hasRole('ADMINISTRADOR')"
+											th:href="@{/carreras/delete/{id}(id=${carrera.id})}"
+											th:attr="onclick=|confirmarAccion(event, this, '${carrera.nombre}', 'eliminar')|"
+											class="inline-flex items-center gap-1 bg-red-100 hover:bg-red-200 text-red-700 px-3 py-2 rounded-xl font-bold text-xs transition">
+											<span class="material-symbols-outlined text-sm">
+												delete
+											</span>
+											Eliminar
+										</a>
+
+									</div>
+								</td>
+
+							</tr>
+
+							<tr th:if="${carreras == null or #lists.isEmpty(carreras)}">
+								<td colspan="3" class="p-12 text-center text-slate-500">
+									<div class="flex flex-col items-center gap-2">
+										<span class="material-symbols-outlined text-5xl text-slate-300">
+											school
+										</span>
+
+										<span>
+											No hay carreras registradas.
+										</span>
+									</div>
+								</td>
+							</tr>
+
+						</tbody>
+
+					</table>
+
+				</div>
+
+				<div
+					class="bg-slate-50 px-8 py-4 border-t border-slate-200 flex justify-between items-center">
+
+					<span class="text-xs text-slate-500">
+						Mostrando
+						<span class="font-black text-[#002046]"
+							th:text="${carreras != null ? #lists.size(carreras) : 0}">
+						</span>
+						registros
+					</span>
+
+					<span class="text-xs text-slate-400">
+						La administración de carreras está disponible para administradores.
+					</span>
+
+				</div>
+
+			</div>
+
+		</div>
+
+	</main>
+
+<script>
+function confirmarAccion(event, elemento, nombre, tipo) {
+	event.preventDefault();
+
+	let titulo = '';
+	let texto = '';
+	let icono = '';
+	let color = '';
+
+	if (tipo === 'eliminar') {
+		titulo = '¿Eliminar carrera?';
+		texto = 'Se eliminará la carrera: ' + nombre;
+		icono = 'warning';
+		color = '#d33';
+	}
+
+	Swal.fire({
+		title: titulo,
+		text: texto,
+		icon: icono,
+		showCancelButton: true,
+		confirmButtonColor: color,
+		cancelButtonColor: '#6b7280',
+		confirmButtonText: 'Confirmar',
+		cancelButtonText: 'Cancelar',
+		reverseButtons: true
+	}).then((result) => {
+		if (result.isConfirmed) {
+			Swal.fire({
+				title: 'Eliminado',
+				text: 'La carrera ha sido eliminada correctamente.',
+				icon: 'success',
+				timer: 1400,
+				showConfirmButton: false
+			}).then(() => {
+				window.location.href = elemento.href;
+			});
+		}
+	});
+}
+</script>
+
+</body>
+</html>

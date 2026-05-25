@@ -1,0 +1,14 @@
+package itch.tsp.model;
+
+public enum TipoEvaluacionResidencia {
+
+	SEGUIMIENTO_1_EXTERNO,
+	SEGUIMIENTO_1_INTERNO,
+
+	SEGUIMIENTO_2_EXTERNO,
+	SEGUIMIENTO_2_INTERNO,
+
+	REPORTE_FINAL_EXTERNO,
+	REPORTE_FINAL_INTERNO
+	
+}

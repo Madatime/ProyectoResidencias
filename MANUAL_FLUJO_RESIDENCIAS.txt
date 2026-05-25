@@ -1,0 +1,666 @@
+MANUAL OPERATIVO DEL FLUJO DE RESIDENCIAS
+Sistema Integral de Residencias Profesionales
+TecNM Campus Chilpancingo
+
+Fecha: 24 de mayo de 2026
+
+====================================================================
+1. OBJETIVO
+====================================================================
+
+Este documento describe el flujo real del sistema, paso por paso,
+desde la creación del estudiante hasta el cierre del expediente de
+residencia.
+
+El formato de cada paso es:
+
+- Usuario que interviene
+- Menú o módulo
+- Acción que realiza
+- Resultado esperado
+
+====================================================================
+2. USUARIOS O ROLES QUE INTERVIENEN
+====================================================================
+
+1. ADMINISTRADOR
+2. DIVISION_ESTUDIOS
+3. JEFE_DEPARTAMENTO
+4. VINCULACION
+5. ESTUDIANTE
+6. ASESOR_INTERNO
+7. ASESOR_EXTERNO
+8. SERVICIOS_ESCOLARES
+
+Nota:
+El ADMINISTRADOR puede ejecutar casi todo el flujo.
+
+====================================================================
+3. FLUJO COMPLETO
+====================================================================
+
+PASO 1. Crear carrera
+Usuario:
+ADMINISTRADOR o DIVISION_ESTUDIOS
+
+Menú:
+Carreras
+
+Acción:
+Registrar la carrera o programa educativo al que pertenecerán los
+estudiantes.
+
+Resultado:
+La carrera queda disponible para asignarse al estudiante y para
+filtrar asesores internos compatibles.
+
+
+PASO 2. Crear empresa
+Usuario:
+ADMINISTRADOR, DIVISION_ESTUDIOS o VINCULACION
+
+Menú:
+Empresas
+
+Acción:
+Registrar la empresa, incluyendo representante, puesto, datos de
+contacto y estado del convenio.
+
+Resultado:
+La empresa queda disponible para residencia.
+
+Importante:
+La empresa debe tener convenio activo para poder asignarse en una
+residencia.
+
+
+PASO 3. Crear docente
+Usuario:
+ADMINISTRADOR o DIVISION_ESTUDIOS
+
+Menú:
+Docentes
+
+Acción:
+Registrar al docente con su número de empleado, nombre, correo y
+carreras habilitadas.
+
+Resultado:
+El docente puede después convertirse en asesor interno o directivo.
+
+
+PASO 4. Crear asesor interno
+Usuario:
+ADMINISTRADOR, DIVISION_ESTUDIOS o JEFE_DEPARTAMENTO
+
+Menú:
+Asesores Internos
+
+Acción:
+Seleccionar a un docente y registrarlo como asesor interno.
+
+Resultado:
+Se crea el asesor interno y también se genera usuario automático.
+
+Credenciales generadas:
+username = noEmpleado del docente
+password = 123
+
+
+PASO 5. Crear asesor externo
+Usuario:
+ADMINISTRADOR, DIVISION_ESTUDIOS o VINCULACION
+
+Menú:
+Asesores Externos
+
+Acción:
+Registrar al asesor externo con nombre, empresa, cargo, correo y
+teléfono.
+
+Resultado:
+Se crea el asesor externo y también se genera usuario automático.
+
+Credenciales generadas:
+username = correo del asesor externo
+si no tiene correo, usa asesorext{id}
+password = 123
+
+
+PASO 6. Crear directivo
+Usuario:
+ADMINISTRADOR o DIVISION_ESTUDIOS
+
+Menú:
+Jefes y Directivos
+
+Acción:
+Seleccionar un docente y asignarle un tipo de directivo, por ejemplo
+JEFE_DEPARTAMENTO o JEFE_DIVISION.
+
+Resultado:
+El sistema podrá usar esos datos en dictámenes, oficios y validaciones.
+
+Credenciales generadas:
+username = noEmpleado del docente
+password = 123
+
+
+PASO 7. Crear estudiante
+Usuario:
+ADMINISTRADOR o DIVISION_ESTUDIOS
+
+Menú:
+Estudiantes
+
+Acción:
+Registrar al estudiante con:
+- matrícula
+- nombre
+- apellidos
+- carrera
+- semestre
+- teléfono
+- correo
+
+Resultado:
+El estudiante queda disponible para convertirse en residente.
+
+Validaciones importantes:
+- semestre mínimo: 8
+- semestre máximo: 13
+- teléfono: 10 dígitos
+
+
+PASO 8. Crear residente a partir del estudiante
+Usuario:
+ADMINISTRADOR o DIVISION_ESTUDIOS
+
+Menú:
+Residentes
+
+Acción:
+Capturar la matrícula del estudiante.
+El sistema busca al estudiante y autocompleta sus datos.
+Luego se guarda el residente.
+
+Resultado:
+Se crea el residente vinculado al estudiante y también se genera
+usuario automático.
+
+Credenciales generadas:
+username = matrícula
+password = 123
+
+Importante:
+Un estudiante no puede estar registrado en dos residentes distintos.
+
+
+PASO 9. Crear residencia
+Usuario:
+ADMINISTRADOR o DIVISION_ESTUDIOS
+
+Menú:
+Proyectos
+
+Acción:
+Registrar la residencia seleccionando:
+- empresa
+- residente
+- asesor externo
+- asesor interno, si ya aplica
+
+Resultado:
+Se crea la residencia con estado inicial del proyecto.
+
+Importante:
+Un mismo residente no puede tener dos residencias activas.
+
+
+PASO 10. Crear residencia desde banco de proyectos
+Usuario:
+ADMINISTRADOR o DIVISION_ESTUDIOS
+
+Menú:
+Banco de Proyectos
+
+Acción:
+Elegir un proyecto del banco y generar la residencia desde ese registro.
+
+Resultado:
+La residencia se crea con información precargada.
+
+Importante:
+Cuando viene desde banco de proyectos, puede quedar ya autorizada
+según la lógica del sistema.
+
+
+PASO 11. Dictaminar proyecto
+Usuario:
+ADMINISTRADOR, DIVISION_ESTUDIOS o JEFE_DEPARTAMENTO
+
+Menú:
+Proyectos -> Dictamen
+
+Acción:
+Dictaminar la residencia en alguno de estos estados:
+- AUTORIZADO
+- AUTORIZADO_CON_OBSERVACIONES
+- RECHAZADO
+
+Resultado:
+La residencia cambia de estado de autorización.
+
+Notas:
+- Si el proyecto está autorizado, el flujo documental continúa.
+- Si se rechaza dos veces, la propuesta puede eliminarse.
+
+
+PASO 12. Asignación de asesor interno
+Usuario:
+ADMINISTRADOR o DIVISION_ESTUDIOS
+
+Menú:
+Proyectos -> Editar residencia
+
+Acción:
+Seleccionar asesor interno.
+
+Resultado:
+La residencia queda vinculada a un asesor interno.
+
+Importante:
+El asesor interno debe ser compatible con la carrera del residente.
+
+
+PASO 13. Acceso del estudiante a documentos
+Usuario:
+ESTUDIANTE o ADMINISTRADOR
+
+Menú:
+Documentos y Evaluaciones
+
+Acción:
+Entrar al expediente documental de la residencia.
+
+Resultado:
+Se visualiza el panel de documentos y evaluaciones del proceso.
+
+
+PASO 14. Subir reporte preliminar
+Usuario:
+ESTUDIANTE o ADMINISTRADOR
+
+Menú:
+Documentos y Evaluaciones -> Reporte preliminar
+
+Acción:
+Subir el archivo PDF del reporte preliminar.
+
+Resultado:
+El documento queda registrado.
+
+Política actual del sistema:
+El reporte preliminar queda aprobado automáticamente al cargarse.
+
+
+PASO 15. Habilitación de documentos iniciales
+Condición:
+- reporte preliminar cargado
+- proyecto autorizado
+
+Documentos que se habilitan:
+- Proyecto de Residencia
+- Carta de presentación
+- Primera evaluación
+
+Resultado:
+El estudiante y el área administrativa ya pueden descargar esos
+documentos iniciales.
+
+
+PASO 16. Generar Proyecto de Residencia
+Usuario:
+ESTUDIANTE o ADMINISTRADOR
+
+Menú:
+Documentos y Evaluaciones -> Proyecto de Residencia
+
+Acción:
+Descargar el PDF.
+
+Resultado:
+El sistema genera el documento automáticamente con datos de la BD.
+
+
+PASO 17. Generar Carta de Presentación
+Usuario:
+ESTUDIANTE o ADMINISTRADOR
+
+Menú:
+Documentos y Evaluaciones -> Carta de presentación
+
+Acción:
+Descargar el PDF.
+
+Resultado:
+El sistema genera el oficio con datos de la residencia y empresa.
+
+
+PASO 18. Generar Calendario de Residencia
+Usuario:
+ESTUDIANTE o ADMINISTRADOR
+
+Menú:
+Documentos y Evaluaciones -> Calendario de Residencia
+
+Acción:
+Descargar o visualizar el calendario.
+
+Resultado:
+El sistema genera el calendario oficial para el periodo.
+
+
+PASO 19. Evaluación del primer informe por asesor externo
+Usuario:
+ASESOR_EXTERNO o ADMINISTRADOR
+
+Menú:
+Documentos y Evaluaciones -> Primer informe
+
+Acción:
+Capturar la evaluación externa del primer seguimiento.
+
+Resultado:
+Se guarda la evaluación externa del primer informe.
+
+
+PASO 20. Evaluación del primer informe por asesor interno
+Usuario:
+ASESOR_INTERNO o ADMINISTRADOR
+
+Menú:
+Documentos y Evaluaciones -> Primer informe
+
+Acción:
+Capturar la evaluación interna del primer seguimiento.
+
+Resultado:
+Se guarda la evaluación interna del primer informe.
+
+
+PASO 21. Generar primer informe
+Condición:
+Deben existir ambas evaluaciones del primer informe.
+
+Usuario:
+Cualquiera con acceso al expediente
+
+Menú:
+Documentos y Evaluaciones -> Primer informe
+
+Acción:
+Descargar ANEXO XXIX.
+
+Resultado:
+El sistema genera el PDF del primer informe.
+
+
+PASO 22. Evaluación del segundo informe por asesor externo
+Usuario:
+ASESOR_EXTERNO o ADMINISTRADOR
+
+Menú:
+Documentos y Evaluaciones -> Segundo informe
+
+Acción:
+Capturar la evaluación externa del segundo seguimiento.
+
+Resultado:
+Se guarda la evaluación externa del segundo informe.
+
+
+PASO 23. Evaluación del segundo informe por asesor interno
+Usuario:
+ASESOR_INTERNO o ADMINISTRADOR
+
+Menú:
+Documentos y Evaluaciones -> Segundo informe
+
+Acción:
+Capturar la evaluación interna del segundo seguimiento.
+
+Resultado:
+Se guarda la evaluación interna del segundo informe.
+
+
+PASO 24. Generar segundo informe
+Condición:
+Deben existir ambas evaluaciones del segundo informe.
+
+Usuario:
+Cualquiera con acceso al expediente
+
+Menú:
+Documentos y Evaluaciones -> Segundo informe
+
+Acción:
+Descargar ANEXO XXIX del segundo seguimiento.
+
+Resultado:
+El sistema genera el PDF del segundo informe.
+
+
+PASO 25. Evaluación final por asesor externo
+Usuario:
+ASESOR_EXTERNO o ADMINISTRADOR
+
+Menú:
+Documentos y Evaluaciones -> Informe final
+
+Acción:
+Capturar la evaluación final externa.
+
+Resultado:
+Se guarda la evaluación final externa del reporte final.
+
+
+PASO 26. Evaluación final por asesor interno
+Usuario:
+ASESOR_INTERNO o ADMINISTRADOR
+
+Menú:
+Documentos y Evaluaciones -> Informe final
+
+Acción:
+Capturar la evaluación final interna.
+
+Resultado:
+Se guarda la evaluación final interna del reporte final.
+
+
+PASO 27. Generar evaluación final
+Condición:
+Deben existir ambas evaluaciones finales.
+
+Usuario:
+Cualquiera con acceso al expediente
+
+Menú:
+Documentos y Evaluaciones -> Informe final
+
+Acción:
+Descargar ANEXO XXX.
+
+Resultado:
+Se genera el PDF de evaluación final.
+
+
+PASO 28. Generar liberación del asesor interno
+Condición:
+Ambas evaluaciones finales deben estar completas.
+
+Usuario:
+Cualquiera con acceso al expediente
+
+Menú:
+Documentos y Evaluaciones -> Liberación Asesor Interno
+
+Acción:
+Descargar la liberación.
+
+Resultado:
+El sistema genera el oficio automáticamente.
+
+
+PASO 29. Generar entrega de reporte a empresa
+Condición:
+El expediente ya debe haber avanzado hasta la fase final.
+
+Usuario:
+Cualquiera con acceso al expediente
+
+Menú:
+Documentos y Evaluaciones -> Entrega Reporte Empresa
+
+Acción:
+Descargar el PDF.
+
+Resultado:
+El sistema genera el oficio automáticamente con datos de la BD.
+
+
+PASO 30. Generar oficio de entrega a división
+Condición:
+El expediente ya debe haber avanzado hasta la fase final.
+
+Usuario:
+Cualquiera con acceso al expediente
+
+Menú:
+Documentos y Evaluaciones -> Oficio Entrega División
+
+Acción:
+Descargar el PDF.
+
+Resultado:
+El sistema genera el oficio automáticamente con logos y datos de la BD.
+
+
+PASO 31. Revisar cierre de expediente
+Usuario:
+ADMINISTRADOR, DIVISION_ESTUDIOS o SERVICIOS_ESCOLARES
+
+Menú:
+Cierre Expediente
+
+Acción:
+Abrir la residencia y revisar:
+- documentos obligatorios
+- promedio final
+- documentos faltantes
+- no aprobados
+
+Resultado:
+El sistema calcula si la residencia ya está lista para cierre.
+
+
+PASO 32. Política documental actual
+Situación actual del sistema:
+No existe un revisor documental separado.
+
+Por lo tanto:
+- los documentos subidos manualmente se aprueban automáticamente
+- los documentos generados por el sistema también se registran como aprobados
+- documentos antiguos que sigan en CARGADO o EN_REVISION se normalizan al
+  entrar a Cierre de expediente
+
+Resultado:
+El cierre ya no depende de un aprobador inexistente.
+
+
+PASO 33. Cerrar expediente
+Usuario:
+ADMINISTRADOR, DIVISION_ESTUDIOS o SERVICIOS_ESCOLARES
+
+Menú:
+Cierre Expediente
+
+Acción:
+Presionar el botón Cerrar expediente.
+
+Resultado:
+La residencia cambia a estado:
+estatusProceso = CERRADO
+
+
+PASO 34. Reabrir expediente
+Usuario:
+ADMINISTRADOR, DIVISION_ESTUDIOS o SERVICIOS_ESCOLARES
+
+Menú:
+Cierre Expediente
+
+Acción:
+Presionar el botón Reabrir expediente.
+
+Resultado:
+La residencia vuelve a:
+estatusProceso = EN_PROCESO
+
+====================================================================
+4. RESUMEN RÁPIDO DEL FLUJO
+====================================================================
+
+1. Crear carrera
+2. Crear empresa
+3. Crear docente
+4. Crear asesor interno
+5. Crear asesor externo
+6. Crear directivo
+7. Crear estudiante
+8. Crear residente desde matrícula
+9. Crear residencia
+10. Dictaminar proyecto
+11. Subir reporte preliminar
+12. Generar documentos iniciales
+13. Capturar evaluaciones parciales
+14. Generar informes
+15. Capturar evaluaciones finales
+16. Generar documentos finales
+17. Revisar cierre
+18. Cerrar expediente
+
+====================================================================
+5. CREDENCIALES AUTOMÁTICAS GENERADAS POR EL SISTEMA
+====================================================================
+
+Residente:
+username = matrícula
+password = 123
+
+Asesor interno:
+username = noEmpleado
+password = 123
+
+Asesor externo:
+username = correo
+si no hay correo, usa asesorext{id}
+password = 123
+
+Directivo:
+username = noEmpleado
+password = 123
+
+====================================================================
+6. REGLAS IMPORTANTES ACTUALES
+====================================================================
+
+1. Un estudiante no puede quedar duplicado en dos residentes.
+2. Un residente no puede tener dos residencias activas.
+3. La empresa debe tener convenio activo.
+4. El semestre del estudiante/residente debe estar entre 8 y 13.
+5. El teléfono debe tener exactamente 10 dígitos.
+6. Si no existe revisor documental formal, los documentos se aprueban
+   automáticamente.
+

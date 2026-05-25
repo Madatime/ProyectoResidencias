@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+<title>Formulario Directivo</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+
+<style>
+body {
+	font-family: 'Inter', sans-serif;
+	background:
+		radial-gradient(circle at top left, rgba(0, 59, 143, 0.10), transparent 28%),
+		linear-gradient(135deg, #f7f9fb 0%, #eef4fb 45%, #f8fafc 100%);
+	min-height: 100vh;
+	overflow-x: hidden;
+}
+
+h1, h2, h3, .font-headline {
+	font-family: 'Manrope', sans-serif;
+}
+
+.material-symbols-outlined {
+	font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.primary-gradient {
+	background: linear-gradient(135deg, #002046 0%, #003B8F 100%);
+}
+
+.grid-pattern {
+	position: fixed;
+	inset: 0;
+	z-index: 0;
+	opacity: 0.035;
+	background-image:
+		linear-gradient(#002046 1px, transparent 1px),
+		linear-gradient(90deg, #002046 1px, transparent 1px);
+	background-size: 42px 42px;
+	pointer-events: none;
+}
+
+.float-shape {
+	position: fixed;
+	border-radius: 9999px;
+	background: rgba(0, 59, 143, 0.08);
+	filter: blur(1px);
+	z-index: 0;
+	animation: float 8s ease-in-out infinite;
+}
+
+.page-enter {
+	animation: fadeUp 0.75s ease-out both;
+}
+
+.card-animate {
+	animation: fadeUp 0.8s ease-out both;
+	transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.card-animate:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 24px 45px -18px rgba(0, 32, 70, 0.20);
+	border-color: rgba(0, 59, 143, 0.20);
+}
+
+.input-form {
+	width: 100%;
+	background-color: #f1f5f9;
+	border: 1px solid transparent;
+	border-radius: 0.85rem;
+	padding: 0.8rem 1rem;
+	outline: none;
+	transition: all 0.2s ease;
+}
+
+.input-form:focus {
+	background-color: white;
+	border-color: #003B8F;
+	box-shadow: 0 0 0 3px rgba(0, 59, 143, 0.14);
+}
+
+.readonly-form {
+	width: 100%;
+	background-color: #e5e7eb;
+	color: #475569;
+	border: 1px solid transparent;
+	border-radius: 0.85rem;
+	padding: 0.8rem 1rem;
+	cursor: not-allowed;
+}
+
+@keyframes fadeUp {
+	from {
+		opacity: 0;
+		transform: translateY(24px) scale(0.98);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
+}
+
+@keyframes float {
+	0%, 100% {
+		transform: translateY(0) translateX(0);
+	}
+	50% {
+		transform: translateY(-18px) translateX(10px);
+	}
+}
+</style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+<div class="grid-pattern"></div>
+<div class="float-shape w-72 h-72 top-[-80px] left-[250px]"></div>
+<div class="float-shape w-52 h-52 bottom-[-70px] right-[6%]"></div>
+<div class="float-shape w-40 h-40 top-[22%] right-[12%]"></div>
+
+<div th:replace="~{fragments/sidebar :: sidebar('directivos')}"></div>
+
+<main class="ml-64 min-h-screen relative z-10">
+
+		<header th:replace="~{fragments/ui :: topbar(@{/directivos/index}, 'Volver')}"></header>
+
+	<div class="max-w-6xl mx-auto p-8 page-enter">
+
+		<div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#00152f] via-[#002046] to-[#003B8F] text-white p-8 shadow-2xl border border-white/10 mb-8">
+
+			<div class="absolute inset-0 opacity-20"
+				style="background:
+					radial-gradient(circle at top left, #ffffff 0, transparent 28%),
+					radial-gradient(circle at bottom right, #60a5fa 0, transparent 30%);">
+			</div>
+
+			<div class="relative flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+				<div>
+					<p class="text-sm text-blue-100 font-semibold mb-2 flex items-center gap-2">
+						<span>Panel de Control</span>
+						<span class="text-blue-300">›</span>
+						<span class="text-white">Jefes y Directivos</span>
+					</p>
+
+					<h1 class="text-4xl font-black tracking-tight mb-3 drop-shadow-lg"
+						th:text="${directivo != null and directivo.id != null} ? 'Editar Directivo o Jefe' : 'Registro de Directivo o Jefe'">
+						Registro de Directivo o Jefe
+					</h1>
+
+					<p class="text-slate-100 text-base max-w-3xl leading-relaxed">
+						Selecciona un docente registrado y asígnale un cargo institucional dentro del proceso de residencias.
+					</p>
+				</div>
+
+				<div class="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl px-6 py-5 shadow-2xl">
+					<p class="text-xs font-bold text-blue-100 uppercase tracking-[0.15em] mb-2">
+						Módulo activo
+					</p>
+					<p class="text-xl font-black text-white">
+						Gestión directiva
+					</p>
+				</div>
+			</div>
+
+			<div class="absolute -bottom-16 -right-16 w-72 h-72 bg-white/10 rounded-full blur-3xl"></div>
+		</div>
+
+			<th:block th:replace="~{fragments/ui :: flashMessages(${msgSuccess}, ${msgError})}"></th:block>
+
+		<div class="bg-white/95 backdrop-blur rounded-3xl shadow-xl overflow-hidden border border-slate-200 card-animate">
+
+			<form id="formDirectivo" method="post"
+				th:action="${directivo != null and directivo.id != null} ? @{/directivos/update} : @{/directivos/save}">
+
+				<input type="hidden" name="id" th:if="${directivo != null}" th:value="${directivo.id}">
+				<input type="hidden" name="estatus" th:if="${directivo != null}" th:value="${directivo.estatus}">
+				<input type="hidden" name="claveDirectivo" th:if="${directivo != null}" th:value="${directivo.claveDirectivo}">
+				<input type="hidden" name="firmaPath" th:if="${directivo != null}" th:value="${directivo.firmaPath}">
+				<input type="hidden" name="selloPath" th:if="${directivo != null}" th:value="${directivo.selloPath}">
+
+				<div class="grid grid-cols-1 lg:grid-cols-2">
+
+					<div class="p-10 border-r border-slate-200">
+
+						<div class="mb-8">
+							<h2 class="text-xl font-black text-[#002046]">
+								Datos del directivo
+							</h2>
+							<p class="text-sm text-slate-500">
+								La clave se genera automáticamente con formato institucional.
+							</p>
+						</div>
+
+						<div class="space-y-6">
+
+							<div th:if="${directivo != null and directivo.claveDirectivo != null}">
+								<label class="block text-sm font-bold text-slate-600 mb-2">
+									Clave de directivo
+								</label>
+
+								<input type="text"
+									th:value="${directivo.claveDirectivo}"
+									readonly
+									class="readonly-form" />
+							</div>
+
+							<div>
+								<label class="block text-sm font-bold text-slate-600 mb-2">
+									Docente <span class="text-red-600">*</span>
+								</label>
+
+								<select id="docenteId" name="docente.id" required class="input-form">
+									<option value="">Selecciona un docente</option>
+
+									<option th:each="docente : ${docentes}"
+										th:value="${docente.id}"
+										th:selected="${directivo != null and directivo.docente != null and directivo.docente.id == docente.id}"
+										th:text="${docente.noEmpleado + ' - ' + docente.nombreCompleto}">
+									</option>
+								</select>
+
+								<p class="text-xs text-slate-500 mt-2">
+									Solo se muestran docentes activos disponibles para asignación.
+								</p>
+							</div>
+
+							<div>
+								<label class="block text-sm font-bold text-slate-600 mb-2">
+									Tipo de directivo <span class="text-red-600">*</span>
+								</label>
+
+								<select id="tipoDirectivo" name="tipoDirectivo" required class="input-form">
+									<option value="">Selecciona el tipo</option>
+
+									<option th:each="tipo : ${tiposDirectivo}"
+										th:value="${tipo}"
+										th:selected="${directivo != null and directivo.tipoDirectivo == tipo}"
+										th:text="${tipo}">
+									</option>
+								</select>
+							</div>
+
+							<div>
+								<label class="block text-sm font-bold text-slate-600 mb-2">
+									Puesto <span class="text-red-600">*</span>
+								</label>
+
+								<input id="puesto" type="text" name="puesto" required
+									th:value="${directivo != null ? directivo.puesto : ''}"
+									placeholder="Ej. Jefe de División de Estudios Profesionales"
+									class="input-form" />
+							</div>
+
+							<div>
+								<label class="block text-sm font-bold text-slate-600 mb-2">
+									Departamento / carrera
+								</label>
+
+								<input id="departamentoTexto" type="text" name="departamento"
+									th:value="${directivo != null ? directivo.departamento : ''}"
+									placeholder="Ej. División de Estudios Profesionales"
+									class="input-form" />
+
+								<select id="departamentoCarrera" name="departamento"
+									class="input-form hidden" disabled>
+									<option value="">Selecciona una carrera</option>
+									<option th:each="carrera : ${carreras}"
+										th:value="${carrera.nombre}"
+										th:text="${carrera.nombre}"
+										th:selected="${directivo != null and directivo.departamento == carrera.nombre}">
+									</option>
+								</select>
+
+								<p class="text-xs text-slate-500 mt-2">
+									Para jefe de departamento debes seleccionar una carrera activa del sistema.
+								</p>
+							</div>
+
+						</div>
+
+					</div>
+
+					<div class="p-10 bg-slate-50/80">
+
+						<div class="mb-8">
+							<h2 class="text-xl font-black text-[#002046]">
+								Información institucional
+							</h2>
+							<p class="text-sm text-slate-500">
+								Este perfil se usará en procesos de revisión, dictamen y validación.
+							</p>
+						</div>
+
+						<div class="space-y-6">
+
+							<div class="rounded-2xl bg-white border border-slate-200 p-5 shadow-sm">
+								<div class="flex gap-3">
+									<div class="w-12 h-12 rounded-2xl bg-blue-100 text-[#003B8F] flex items-center justify-center shrink-0">
+										<span class="material-symbols-outlined">badge</span>
+									</div>
+
+									<div>
+										<h3 class="font-black text-[#002046] mb-1">
+											Clave automática
+										</h3>
+										<p class="text-sm text-slate-600 leading-relaxed">
+											Al guardar un nuevo registro, el sistema generará una clave institucional como
+											<span class="font-bold text-[#003B8F]">ITCH-DIR-0001</span>.
+										</p>
+									</div>
+								</div>
+							</div>
+
+							<div class="rounded-2xl bg-white border border-slate-200 p-5 shadow-sm">
+								<div class="flex gap-3">
+									<div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+										<span class="material-symbols-outlined">verified_user</span>
+									</div>
+
+									<div>
+										<h3 class="font-black text-[#002046] mb-1">
+											Validación de rol
+										</h3>
+										<p class="text-sm text-slate-600 leading-relaxed">
+											Este registro permite identificar al responsable académico o administrativo
+											en el flujo de residencias profesionales.
+										</p>
+									</div>
+								</div>
+							</div>
+
+							<div class="rounded-2xl bg-white border border-slate-200 p-5 shadow-sm">
+								<div class="flex gap-3">
+									<div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
+										<span class="material-symbols-outlined">domain</span>
+									</div>
+
+									<div>
+										<h3 class="font-black text-[#002046] mb-1">
+											Departamento
+										</h3>
+										<p class="text-sm text-slate-600 leading-relaxed">
+											Asigna el departamento correspondiente para mejorar la trazabilidad
+											de autorizaciones y dictámenes.
+										</p>
+									</div>
+								</div>
+							</div>
+
+							<div class="rounded-2xl bg-blue-50 border border-blue-200 px-5 py-4 text-blue-800 text-sm font-semibold">
+								<div class="flex gap-3">
+									<span class="material-symbols-outlined text-[#003B8F]">info</span>
+									<p>
+										Antes de registrar un directivo, verifica que el docente ya exista en el módulo de docentes.
+									</p>
+								</div>
+							</div>
+
+						</div>
+
+					</div>
+
+				</div>
+
+				<div class="px-10 py-6 border-t border-slate-200 bg-white flex flex-wrap justify-end gap-4">
+
+					<a th:href="@{/directivos/index}"
+						class="px-8 py-3 rounded-xl font-bold text-slate-600 hover:bg-slate-100 transition">
+						Cancelar
+					</a>
+
+					<button type="submit"
+						class="px-10 py-3 rounded-xl font-bold text-white primary-gradient shadow-lg hover:scale-[1.02] transition"
+						th:text="${directivo != null and directivo.id != null} ? 'Actualizar Directivo' : 'Guardar Directivo'">
+						Guardar Directivo
+					</button>
+
+				</div>
+
+			</form>
+
+		</div>
+
+	</div>
+
+</main>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+	const form = document.getElementById("formDirectivo");
+	const docenteId = document.getElementById("docenteId");
+	const tipoDirectivo = document.getElementById("tipoDirectivo");
+	const puesto = document.getElementById("puesto");
+	const departamentoTexto = document.getElementById("departamentoTexto");
+	const departamentoCarrera = document.getElementById("departamentoCarrera");
+
+	if (puesto) {
+		puesto.addEventListener("input", function () {
+			this.value = this.value.replace(/[0-9]/g, "");
+		});
+	}
+
+	if (departamentoTexto) {
+		departamentoTexto.addEventListener("input", function () {
+			this.value = this.value.replace(/[0-9]/g, "");
+		});
+	}
+
+	function actualizarCampoDepartamento() {
+		const esJefeDepartamento = tipoDirectivo.value === "JEFE_DEPARTAMENTO";
+
+		if (esJefeDepartamento) {
+			departamentoTexto.classList.add("hidden");
+			departamentoTexto.disabled = true;
+			departamentoCarrera.classList.remove("hidden");
+			departamentoCarrera.disabled = false;
+		} else {
+			departamentoCarrera.classList.add("hidden");
+			departamentoCarrera.disabled = true;
+			departamentoTexto.classList.remove("hidden");
+			departamentoTexto.disabled = false;
+		}
+	}
+
+	tipoDirectivo.addEventListener("change", actualizarCampoDepartamento);
+	actualizarCampoDepartamento();
+
+	form.addEventListener("submit", function (e) {
+		if (!docenteId.value) {
+			e.preventDefault();
+			Swal.fire({
+				icon: "warning",
+				title: "Docente requerido",
+				text: "Selecciona un docente para continuar.",
+				confirmButtonColor: "#003B8F"
+			});
+			return;
+		}
+
+		if (!tipoDirectivo.value) {
+			e.preventDefault();
+			Swal.fire({
+				icon: "warning",
+				title: "Tipo requerido",
+				text: "Selecciona el tipo de directivo.",
+				confirmButtonColor: "#003B8F"
+			});
+			return;
+		}
+
+		if (puesto.value.trim() === "") {
+			e.preventDefault();
+			Swal.fire({
+				icon: "warning",
+				title: "Puesto requerido",
+				text: "Ingresa el puesto del directivo.",
+				confirmButtonColor: "#003B8F"
+			});
+			return;
+		}
+
+		if (tipoDirectivo.value === "JEFE_DEPARTAMENTO" && !departamentoCarrera.value) {
+			e.preventDefault();
+			Swal.fire({
+				icon: "warning",
+				title: "Carrera requerida",
+				text: "Selecciona la carrera del jefe de departamento.",
+				confirmButtonColor: "#003B8F"
+			});
+			return;
+		}
+	});
+
+});
+</script>
+
+</body>
+</html>

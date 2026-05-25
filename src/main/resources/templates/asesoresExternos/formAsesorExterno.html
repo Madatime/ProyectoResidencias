@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+<title>Formulario Asesor Externo</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<link
+	href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+	rel="stylesheet" />
+
+<style>
+body {
+	font-family: 'Inter', sans-serif;
+	background:
+		radial-gradient(circle at top left, rgba(0, 59, 143, 0.10), transparent 28%),
+		linear-gradient(135deg, #f7f9fb 0%, #eef4fb 45%, #f8fafc 100%);
+	min-height: 100vh;
+	overflow-x: hidden;
+}
+
+h1, h2, h3 {
+	font-family: 'Manrope', sans-serif;
+}
+
+.material-symbols-outlined {
+	font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.primary-gradient {
+	background: linear-gradient(135deg, #002046 0%, #003B8F 100%);
+}
+
+.grid-pattern {
+	position: fixed;
+	inset: 0;
+	z-index: 0;
+	opacity: 0.035;
+	background-image:
+		linear-gradient(#002046 1px, transparent 1px),
+		linear-gradient(90deg, #002046 1px, transparent 1px);
+	background-size: 42px 42px;
+	pointer-events: none;
+}
+
+.float-shape {
+	position: fixed;
+	border-radius: 9999px;
+	background: rgba(0, 59, 143, 0.08);
+	filter: blur(1px);
+	z-index: 0;
+	animation: float 8s ease-in-out infinite;
+	pointer-events: none;
+}
+
+.page-enter {
+	animation: fadeUp 0.75s ease-out both;
+}
+
+.card-animate {
+	animation: fadeUp 0.8s ease-out both;
+	transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.card-animate:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 24px 45px -18px rgba(0, 32, 70, 0.20);
+	border-color: rgba(0, 59, 143, 0.20);
+}
+
+.input-form {
+	width: 100%;
+	background-color: #f1f5f9;
+	border: 1px solid transparent;
+	border-radius: 0.85rem;
+	padding: 0.8rem 1rem;
+	outline: none;
+	transition: all 0.2s ease;
+}
+
+.input-form:focus {
+	background-color: white;
+	border-color: #003B8F;
+	box-shadow: 0 0 0 3px rgba(0, 59, 143, 0.14);
+}
+
+.input-form:invalid:not(:placeholder-shown) {
+	border-color: #dc2626;
+	background-color: #fef2f2;
+}
+
+.error-text {
+	display: none;
+	color: #dc2626;
+	font-size: 0.75rem;
+	font-weight: 700;
+	margin-top: 0.35rem;
+}
+
+.input-form:invalid:not(:placeholder-shown) + .error-text {
+	display: block;
+}
+
+@keyframes fadeUp {
+	from {
+		opacity: 0;
+		transform: translateY(24px) scale(0.98);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
+}
+
+@keyframes float {
+	0%, 100% {
+		transform: translateY(0) translateX(0);
+	}
+	50% {
+		transform: translateY(-18px) translateX(10px);
+	}
+}
+</style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+<div class="grid-pattern"></div>
+<div class="float-shape w-72 h-72 top-[-80px] left-[250px]"></div>
+<div class="float-shape w-52 h-52 bottom-[-70px] right-[6%]"></div>
+<div class="float-shape w-40 h-40 top-[22%] right-[12%]"></div>
+
+<div th:replace="~{fragments/sidebar :: sidebar('asesoresExternos')}"></div>
+
+<main class="ml-64 min-h-screen relative z-10">
+
+		<header th:replace="~{fragments/ui :: topbar(@{/asesores-externos/index}, 'Volver')}"></header>
+
+	<div class="max-w-6xl mx-auto p-8 page-enter">
+
+		
+		<div class="relative overflow-hidden rounded-3xl primary-gradient text-white p-8 shadow-2xl border border-white/10 mb-8">
+
+			<div class="absolute inset-0 opacity-20 pointer-events-none"
+				style="background:
+					radial-gradient(circle at top left, #ffffff 0, transparent 28%),
+					radial-gradient(circle at bottom right, #60a5fa 0, transparent 30%);">
+			</div>
+
+			<div class="absolute -bottom-16 -right-16 w-72 h-72 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
+
+			<div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+
+				<div class="max-w-4xl">
+
+					<p class="text-sm text-blue-100 font-semibold mb-2 flex items-center gap-2">
+						<span>Panel de Control</span>
+						<span class="text-blue-300">›</span>
+						<span class="text-white">Asesores Externos</span>
+					</p>
+
+					<h1 class="text-4xl font-black tracking-tight mb-3 drop-shadow-lg"
+						th:text="${asesorExterno != null and asesorExterno.id != null} ? 'Editar Asesor Externo' : 'Registro de Asesor Externo'">
+						Registro de Asesor Externo
+					</h1>
+
+					<p class="text-slate-100 text-base leading-relaxed">
+						Registra la información del asesor externo vinculado a una empresa
+						o institución participante en el proceso de residencia profesional.
+					</p>
+
+				</div>
+
+				<div class="relative z-20 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl px-6 py-5 shadow-2xl min-w-[230px]">
+					<p class="text-xs font-bold text-blue-100 uppercase tracking-[0.15em] mb-2">
+						Módulo activo
+					</p>
+
+					<p class="text-xl font-black text-white">
+						Asesoría externa
+					</p>
+				</div>
+
+			</div>
+
+		</div>
+
+			<th:block th:replace="~{fragments/ui :: flashMessages(${msgSuccess}, ${msgError})}"></th:block>
+
+		<div th:if="${success}" th:data-success="${success}" id="successMsg"></div>
+		<div th:if="${error}" th:data-error="${error}" id="errorMsg"></div>
+
+		<div class="bg-white/95 backdrop-blur rounded-3xl shadow-xl overflow-hidden border border-slate-200 card-animate">
+
+			<form id="formAsesorExterno" method="post" enctype="multipart/form-data"
+				th:object="${asesorExterno}"
+				th:action="${asesorExterno != null and asesorExterno.id != null} ? @{/asesores-externos/update} : @{/asesores-externos/save}">
+
+				<input type="hidden" name="id"
+					th:if="${asesorExterno != null and asesorExterno.id != null}"
+					th:value="${asesorExterno.id}" />
+
+				<input type="hidden" name="fotoPath"
+					th:if="${asesorExterno != null}"
+					th:value="${asesorExterno.fotoPath}" />
+
+				<input type="hidden" name="estatus"
+					th:if="${asesorExterno != null}"
+					th:value="${asesorExterno.estatus}" />
+
+				<div class="grid grid-cols-1 lg:grid-cols-2">
+
+					<div class="p-10 border-r border-slate-200">
+
+						<div class="mb-8">
+							<h2 class="text-xl font-black text-[#002046]">
+								Datos personales
+							</h2>
+							<p class="text-sm text-slate-500">
+								Completa la información de contacto del asesor externo.
+							</p>
+						</div>
+
+						<div class="space-y-6">
+
+							<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+								<div>
+									<label class="block text-sm font-bold text-slate-600 mb-2">
+										Nombre <span class="text-red-600">*</span>
+									</label>
+
+									<input type="text"
+										name="nombre"
+										id="nombre"
+										required
+										minlength="3"
+										maxlength="60"
+										pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ ]{3,60}"
+										placeholder="Ej. Juan"
+										th:value="${asesorExterno != null ? asesorExterno.nombre : ''}"
+										class="input-form solo-letras" />
+
+									<p class="error-text">
+										Ingresa un nombre válido, solo letras.
+									</p>
+								</div>
+
+								<div>
+									<label class="block text-sm font-bold text-slate-600 mb-2">
+										Apellidos <span class="text-red-600">*</span>
+									</label>
+
+									<input type="text"
+										name="apellidos"
+										id="apellidos"
+										required
+										minlength="3"
+										maxlength="80"
+										pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ ]{3,80}"
+										placeholder="Ej. Pérez García"
+										th:value="${asesorExterno != null ? asesorExterno.apellidos : ''}"
+										class="input-form solo-letras" />
+
+									<p class="error-text">
+										Ingresa apellidos válidos, solo letras.
+									</p>
+								</div>
+
+							</div>
+
+							<div>
+								<label class="block text-sm font-bold text-slate-600 mb-2">
+									Empresa <span class="text-red-600">*</span>
+								</label>
+
+								<input type="text"
+									name="empresa"
+									id="empresa"
+									list="empresasRegistradas"
+									required
+									minlength="3"
+									maxlength="100"
+									pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ0-9 .,&\-]{3,100}"
+									placeholder="Ej. Instituto Tecnológico de Chilpancingo"
+									th:value="${asesorExterno != null ? asesorExterno.empresa : ''}"
+									class="input-form" />
+
+								<datalist id="empresasRegistradas">
+									<option th:each="empresaItem : ${empresasRegistradas}"
+										th:value="${empresaItem.nombre}"></option>
+								</datalist>
+
+								<p class="text-xs text-slate-500 mt-2">
+									Puedes escribir para autocompletar o abrir la lista de empresas registradas.
+								</p>
+
+								<p class="error-text">
+									Ingresa una empresa válida.
+								</p>
+							</div>
+
+							<div>
+								<label class="block text-sm font-bold text-slate-600 mb-2">
+									Cargo <span class="text-red-600">*</span>
+								</label>
+
+								<input type="text"
+									name="cargo"
+									id="cargo"
+									required
+									minlength="3"
+									maxlength="80"
+									pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ ]{3,80}"
+									placeholder="Ej. Gerente, Director, Encargado"
+									th:value="${asesorExterno != null ? asesorExterno.cargo : ''}"
+									class="input-form solo-letras" />
+
+								<p class="error-text">
+									Ingresa un cargo válido, solo letras.
+								</p>
+							</div>
+
+							<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+								<div>
+									<label class="block text-sm font-bold text-slate-600 mb-2">
+										Teléfono <span class="text-red-600">*</span>
+									</label>
+
+									<input type="text"
+										name="telefono"
+										id="telefono"
+										required
+										minlength="10"
+										maxlength="10"
+										inputmode="numeric"
+										pattern="[0-9]{10}"
+										placeholder="Ej. 7471234567"
+										th:value="${asesorExterno != null ? asesorExterno.telefono : ''}"
+										class="input-form" />
+
+									<p class="error-text">
+										El teléfono debe contener exactamente 10 números.
+									</p>
+								</div>
+
+								<div>
+									<label class="block text-sm font-bold text-slate-600 mb-2">
+										Correo <span class="text-red-600">*</span>
+									</label>
+
+									<input type="email"
+										name="correo"
+										id="correo"
+										required
+										maxlength="100"
+										placeholder="ejemplo@correo.com"
+										th:value="${asesorExterno != null ? asesorExterno.correo : ''}"
+										class="input-form" />
+
+									<p class="error-text">
+										Ingresa un correo electrónico válido.
+									</p>
+								</div>
+
+							</div>
+
+						</div>
+
+					</div>
+
+					<div class="p-10 bg-slate-50/80">
+
+						<div class="mb-8">
+							<h2 class="text-xl font-black text-[#002046]">
+								Fotografía y recomendaciones
+							</h2>
+							<p class="text-sm text-slate-500">
+								Agrega una fotografía del asesor externo si está disponible.
+							</p>
+						</div>
+
+						<div class="space-y-8">
+
+							<div>
+								<label class="block text-sm font-bold text-slate-600 mb-2">
+									Foto
+								</label>
+
+								<input type="file"
+									name="foto"
+									id="foto"
+									accept=".jpg,.jpeg,.png"
+									class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3" />
+
+								<p class="text-xs text-slate-500 mt-2">
+									Formatos permitidos: JPG, JPEG o PNG. Tamaño máximo recomendado: 5 MB.
+								</p>
+
+								<div class="mt-4"
+									th:if="${asesorExterno != null and asesorExterno.fotoPath != null and !#strings.isEmpty(asesorExterno.fotoPath)}">
+
+									<img
+										th:src="@{/asesores-externos-archivos/{foto}(foto=${asesorExterno.fotoPath})}"
+										class="w-48 h-48 object-cover rounded-2xl border border-slate-200 shadow-md"
+										alt="Foto actual" />
+
+								</div>
+							</div>
+
+							<div class="rounded-2xl bg-white border border-slate-200 p-5 shadow-sm">
+								<div class="flex gap-3">
+
+									<div class="w-12 h-12 rounded-2xl bg-blue-100 text-[#003B8F] flex items-center justify-center shrink-0">
+										<span class="material-symbols-outlined">business_center</span>
+									</div>
+
+									<div>
+										<h3 class="font-black text-[#002046] mb-1">
+											Vinculación empresarial
+										</h3>
+										<p class="text-sm text-slate-600 leading-relaxed">
+											El asesor externo se relaciona con empresas o instituciones donde
+											los residentes realizan su proyecto profesional.
+										</p>
+									</div>
+
+								</div>
+							</div>
+
+							<div class="rounded-2xl bg-white border border-slate-200 p-5 shadow-sm">
+								<div class="flex gap-3">
+
+									<div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+										<span class="material-symbols-outlined">verified_user</span>
+									</div>
+
+									<div>
+										<h3 class="font-black text-[#002046] mb-1">
+											Seguimiento externo
+										</h3>
+										<p class="text-sm text-slate-600 leading-relaxed">
+											Este registro podrá utilizarse para seguimiento, evaluación y validación
+											de actividades del residente.
+										</p>
+									</div>
+
+								</div>
+							</div>
+
+							<div class="rounded-2xl bg-blue-50 border border-blue-200 px-5 py-4 text-blue-800 text-sm font-semibold">
+								<div class="flex gap-3">
+									<span class="material-symbols-outlined text-[#003B8F]">
+										info
+									</span>
+									<p>
+										Verifica que el correo y teléfono sean correctos, ya que pueden usarse
+										para contacto institucional.
+									</p>
+								</div>
+							</div>
+
+						</div>
+
+					</div>
+
+				</div>
+
+				<div class="px-10 py-6 border-t border-slate-200 bg-white flex flex-wrap justify-end gap-4">
+
+					<a th:href="@{/asesores-externos/index}"
+						class="px-8 py-3 rounded-xl font-bold text-slate-600 hover:bg-slate-100 transition">
+						Cancelar
+					</a>
+
+					<button type="submit"
+						class="px-10 py-3 rounded-xl font-bold text-white primary-gradient shadow-lg hover:scale-[1.02] transition"
+						th:text="${asesorExterno != null and asesorExterno.id != null} ? 'Actualizar Asesor Externo' : 'Guardar Asesor Externo'">
+						Guardar Asesor Externo
+					</button>
+
+				</div>
+
+			</form>
+
+		</div>
+
+	</div>
+
+</main>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+	const camposSoloLetras = document.querySelectorAll(".solo-letras");
+
+	camposSoloLetras.forEach(function (campo) {
+		campo.addEventListener("input", function () {
+			this.value = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, "");
+		});
+	});
+
+	const telefono = document.getElementById("telefono");
+
+	if (telefono) {
+		telefono.addEventListener("input", function () {
+			this.value = this.value.replace(/[^0-9]/g, "").slice(0, 10);
+		});
+	}
+
+	const foto = document.getElementById("foto");
+
+	if (foto) {
+		foto.addEventListener("change", function () {
+			validarArchivo(this, ["jpg", "jpeg", "png"], "La foto solo puede ser JPG, JPEG o PNG.");
+		});
+	}
+
+	function validarArchivo(input, extensionesPermitidas, mensaje) {
+		if (!input.files || input.files.length === 0) {
+			return;
+		}
+
+		const archivo = input.files[0];
+		const nombre = archivo.name.toLowerCase();
+		const extension = nombre.split(".").pop();
+		const tamanioMaximo = 5 * 1024 * 1024;
+
+		if (!extensionesPermitidas.includes(extension)) {
+			input.value = "";
+
+			Swal.fire({
+				icon: "warning",
+				title: "Archivo no permitido",
+				text: mensaje,
+				confirmButtonColor: "#003B8F",
+				confirmButtonText: "Entendido"
+			});
+
+			return;
+		}
+
+		if (archivo.size > tamanioMaximo) {
+			input.value = "";
+
+			Swal.fire({
+				icon: "warning",
+				title: "Archivo demasiado grande",
+				text: "El archivo no debe pesar más de 5 MB.",
+				confirmButtonColor: "#003B8F",
+				confirmButtonText: "Entendido"
+			});
+		}
+	}
+
+	const form = document.getElementById("formAsesorExterno");
+
+	if (form) {
+		form.addEventListener("submit", function (e) {
+
+			e.preventDefault();
+
+			if (!form.checkValidity()) {
+				Swal.fire({
+					icon: "warning",
+					title: "Campos inválidos",
+					text: "Completa correctamente todos los campos obligatorios.",
+					confirmButtonColor: "#003B8F",
+					confirmButtonText: "Entendido"
+				});
+
+				form.reportValidity();
+				return;
+			}
+
+			Swal.fire({
+				title: "¿Guardar asesor externo?",
+				text: "Se registrará la información del asesor externo.",
+				icon: "question",
+				showCancelButton: true,
+				confirmButtonColor: "#003B8F",
+				cancelButtonColor: "#64748b",
+				confirmButtonText: "Sí, guardar",
+				cancelButtonText: "Cancelar"
+			}).then((result) => {
+
+				if (result.isConfirmed) {
+
+					Swal.fire({
+						title: "Guardando...",
+						text: "Espera un momento",
+						allowOutsideClick: false,
+						didOpen: () => {
+							Swal.showLoading();
+						}
+					});
+
+					form.submit();
+				}
+			});
+		});
+	}
+
+	const success = document.getElementById("successMsg");
+	const error = document.getElementById("errorMsg");
+
+	if (success) {
+		Swal.fire({
+			icon: "success",
+			title: "Éxito",
+			text: success.dataset.success,
+			confirmButtonColor: "#003B8F"
+		});
+	}
+
+	if (error) {
+		Swal.fire({
+			icon: "error",
+			title: "Error",
+			text: error.dataset.error,
+			confirmButtonColor: "#dc2626"
+		});
+	}
+
+});
+</script>
+
+</body>
+</html>

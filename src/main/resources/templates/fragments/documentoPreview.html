@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<th:block th:fragment="reportePreliminarCard(reportePreliminar, reportePreliminarDisponible, titulo, subtitulo)">
+	<div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+		<div class="px-6 py-5 border-b border-slate-200 flex flex-wrap items-start justify-between gap-4">
+			<div>
+				<h3 class="text-lg font-black text-[#002046] flex items-center gap-2">
+					<span class="material-symbols-outlined text-[#003B8F]">picture_as_pdf</span>
+					<span th:text="${titulo}">Reporte preliminar del alumno</span>
+				</h3>
+				<p class="text-sm text-slate-500 mt-1" th:text="${subtitulo}">
+					Revisa el documento final antes de emitir el dictamen.
+				</p>
+			</div>
+
+			<div th:if="${reportePreliminarDisponible}" class="flex flex-wrap gap-3">
+				<a th:href="@{/documentos-residencia/archivo/{id}/inline(id=${reportePreliminar.id})}"
+					target="_blank"
+					class="inline-flex items-center gap-2 rounded-xl bg-blue-100 hover:bg-blue-200 text-blue-700 px-4 py-2.5 font-bold text-sm transition">
+					<span class="material-symbols-outlined text-base">visibility</span>
+					Ver documento
+				</a>
+
+				<a th:href="@{/documentos-residencia/archivo/{id}(id=${reportePreliminar.id})}"
+					class="inline-flex items-center gap-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2.5 font-bold text-sm transition">
+					<span class="material-symbols-outlined text-base">download</span>
+					Descargar PDF
+				</a>
+			</div>
+		</div>
+
+		<div th:if="${reportePreliminarDisponible}" class="p-6 space-y-4">
+			<div class="rounded-xl bg-slate-50 border border-slate-200 px-4 py-3 text-sm text-slate-600">
+				Archivo cargado:
+				<span class="font-bold text-[#002046]" th:text="${reportePreliminar.nombreArchivo}"></span>
+			</div>
+
+			<div class="rounded-2xl border border-slate-200 bg-slate-50 overflow-hidden">
+				<object
+					th:data="@{/documentos-residencia/archivo/{id}/inline(id=${reportePreliminar.id})}"
+					type="application/pdf"
+					class="w-full h-[720px]">
+					<div class="h-[720px] flex flex-col items-center justify-center gap-4 px-6 text-center bg-slate-50">
+						<span class="material-symbols-outlined text-6xl text-slate-300">picture_as_pdf</span>
+						<p class="text-sm text-slate-500 max-w-md">
+							La vista previa no pudo cargarse en este navegador. Puedes abrir el documento en otra pestaña o descargarlo.
+						</p>
+						<div class="flex flex-wrap justify-center gap-3">
+							<a th:href="@{/documentos-residencia/archivo/{id}/inline(id=${reportePreliminar.id})}"
+								target="_blank"
+								class="inline-flex items-center gap-2 rounded-xl bg-blue-100 hover:bg-blue-200 text-blue-700 px-4 py-2.5 font-bold text-sm transition">
+								<span class="material-symbols-outlined text-base">open_in_new</span>
+								Abrir vista previa
+							</a>
+							<a th:href="@{/documentos-residencia/archivo/{id}(id=${reportePreliminar.id})}"
+								class="inline-flex items-center gap-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2.5 font-bold text-sm transition">
+								<span class="material-symbols-outlined text-base">download</span>
+								Descargar PDF
+							</a>
+						</div>
+					</div>
+				</object>
+			</div>
+		</div>
+
+		<div th:if="${!reportePreliminarDisponible}" class="p-6">
+			<div class="rounded-xl bg-amber-50 border border-amber-200 text-amber-800 px-4 py-4 text-sm font-semibold">
+				El alumno aún no tiene un reporte preliminar PDF disponible para revisión.
+			</div>
+		</div>
+	</div>
+</th:block>
+
+</body>
+</html>

@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Formulario Docente | TecNM Campus Chilpancingo</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@300;400;500;600&family=Material+Symbols+Outlined"
+	rel="stylesheet" />
+
+<style>
+body {
+	font-family: 'Inter', sans-serif;
+	background:
+		radial-gradient(circle at top left, rgba(0, 59, 143, 0.10), transparent 28%),
+		linear-gradient(135deg, #f7f9fb 0%, #eef4fb 45%, #f8fafc 100%);
+	min-height: 100vh;
+	overflow-x: hidden;
+}
+
+h1, h2, h3 {
+	font-family: 'Manrope', sans-serif;
+}
+
+.material-symbols-outlined {
+	font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.campo-obligatorio {
+	color: #dc2626;
+	font-weight: 900;
+}
+
+.grid-pattern {
+	position: fixed;
+	inset: 0;
+	z-index: 0;
+	opacity: 0.035;
+	background-image:
+		linear-gradient(#002046 1px, transparent 1px),
+		linear-gradient(90deg, #002046 1px, transparent 1px);
+	background-size: 42px 42px;
+	pointer-events: none;
+}
+
+.float-shape {
+	position: fixed;
+	border-radius: 9999px;
+	background: rgba(0, 59, 143, 0.08);
+	filter: blur(1px);
+	z-index: 0;
+	animation: float 8s ease-in-out infinite;
+}
+
+.float-shape:nth-child(2) {
+	animation-delay: 2s;
+}
+
+.float-shape:nth-child(3) {
+	animation-delay: 4s;
+}
+
+.page-enter {
+	animation: fadeUp 0.75s ease-out both;
+}
+
+.card-animate {
+	animation: fadeUp 0.8s ease-out both;
+	transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.card-animate:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 24px 45px -18px rgba(0, 32, 70, 0.20);
+	border-color: rgba(0, 59, 143, 0.18);
+}
+
+.input-form {
+	width: 100%;
+	background-color: #f8fafc;
+	border: 1px solid #e2e8f0;
+	border-radius: 0.9rem;
+	padding: 0.85rem 1rem;
+	outline: none;
+	transition: all 0.2s ease;
+}
+
+.input-form:focus {
+	background-color: white;
+	border-color: #003B8F;
+	box-shadow: 0 0 0 3px rgba(0, 59, 143, 0.12);
+}
+
+.check-card {
+	transition: all 0.2s ease;
+}
+
+.check-card:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 12px 24px -18px rgba(0, 32, 70, 0.25);
+}
+
+.check-card:has(input:checked) {
+	border-color: #003B8F;
+	background: #eff6ff;
+}
+
+@keyframes fadeUp {
+	from {
+		opacity: 0;
+		transform: translateY(24px) scale(0.98);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
+}
+
+@keyframes float {
+	0%, 100% {
+		transform: translateY(0) translateX(0);
+	}
+
+	50% {
+		transform: translateY(-18px) translateX(10px);
+	}
+}
+</style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+<div class="grid-pattern"></div>
+<div class="float-shape w-72 h-72 top-[-80px] left-[250px]"></div>
+<div class="float-shape w-52 h-52 bottom-[-70px] right-[6%]"></div>
+<div class="float-shape w-40 h-40 top-[22%] right-[12%]"></div>
+
+<div th:replace="~{fragments/sidebar :: sidebar('docentes')}"></div>
+
+<main class="ml-64 min-h-screen relative z-10">
+
+		<header th:replace="~{fragments/ui :: topbar(@{/docentes/index}, 'Volver')}"></header>
+
+	<div class="max-w-5xl mx-auto p-8 page-enter">
+
+		<div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#00152f] via-[#002046] to-[#003B8F] text-white p-8 shadow-2xl border border-white/10 mb-8 card-animate">
+
+			<div class="pointer-events-none absolute inset-0 opacity-20"
+				style="background:
+					radial-gradient(circle at top left, #ffffff 0, transparent 28%),
+					radial-gradient(circle at bottom right, #60a5fa 0, transparent 30%);">
+			</div>
+
+			<div class="relative flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+				<div>
+					<p class="text-sm text-blue-100 font-semibold mb-2 flex items-center gap-2">
+						<span>Panel de Control</span>
+						<span class="text-blue-300">›</span>
+						<span class="text-white">Docentes</span>
+					</p>
+
+					<h1 class="text-4xl font-black tracking-tight mb-3 drop-shadow-lg"
+						th:text="${docente.id != null ? 'Editar Docente' : 'Registrar Docente'}">
+						Registrar Docente
+					</h1>
+
+					<p class="text-slate-100 text-base max-w-3xl leading-relaxed">
+						Registra la información del docente y las carreras en las que puede participar
+						como asesor o docente habilitado.
+					</p>
+				</div>
+
+				<div class="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl px-6 py-5 shadow-2xl">
+					<p class="text-xs font-bold text-blue-100 uppercase tracking-[0.15em] mb-2">
+						Módulo activo
+					</p>
+					<p class="text-xl font-black text-white">
+						Gestión docente
+					</p>
+				</div>
+			</div>
+
+			<div class="pointer-events-none absolute -bottom-16 -right-16 w-72 h-72 bg-white/10 rounded-full blur-3xl"></div>
+		</div>
+
+		<form id="formDocente" th:action="@{/docentes/save}" th:object="${docente}" method="post"
+			class="bg-white/95 backdrop-blur rounded-3xl shadow-xl border border-slate-200 overflow-hidden card-animate">
+
+			<input type="hidden" th:field="*{id}">
+			<input type="hidden" th:field="*{noEmpleado}">
+			<input type="hidden" th:field="*{estatus}">
+
+			<div class="px-8 py-6 border-b border-slate-200 bg-white">
+				<h2 class="text-xl font-black text-[#002046]">
+					Datos generales
+				</h2>
+				<p class="text-sm text-slate-500">
+					El número de empleado se genera automáticamente.
+				</p>
+			</div>
+
+			<div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+
+				<div th:if="${docente.noEmpleado != null}" class="md:col-span-2">
+					<label class="block text-sm font-bold text-slate-700 mb-2">
+						No. de empleado
+					</label>
+					<input type="text" th:value="${docente.noEmpleado}" readonly
+						class="input-form bg-slate-100 text-slate-500 cursor-not-allowed">
+				</div>
+
+				<div>
+					<label class="block text-sm font-bold text-slate-700 mb-2">
+						Nombre <span class="campo-obligatorio">*</span>
+					</label>
+					<input type="text" th:field="*{nombre}" required
+						pattern="[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]+"
+						title="El nombre solo debe contener letras."
+						oninput="this.value = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]/g, '')"
+						class="input-form"
+						placeholder="Ej. Ricardo">
+				</div>
+
+				<div>
+					<label class="block text-sm font-bold text-slate-700 mb-2">
+						Apellidos <span class="campo-obligatorio">*</span>
+					</label>
+					<input type="text" th:field="*{apellidos}" required
+						pattern="[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]+"
+						title="Los apellidos solo deben contener letras."
+						oninput="this.value = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]/g, '')"
+						class="input-form"
+						placeholder="Ej. Olivar Herrera">
+				</div>
+
+				<div>
+					<label class="block text-sm font-bold text-slate-700 mb-2">
+						Correo <span class="campo-obligatorio">*</span>
+					</label>
+					<input type="email" th:field="*{correo}" required
+						class="input-form"
+						placeholder="docente@chilpancingo.tecnm.mx">
+				</div>
+
+				<div>
+					<label class="block text-sm font-bold text-slate-700 mb-2">
+						Teléfono <span class="campo-obligatorio">*</span>
+					</label>
+					<input type="text" th:field="*{telefono}" required
+						minlength="10"
+						maxlength="10"
+						pattern="[0-9]{10}"
+						inputmode="numeric"
+						title="El teléfono debe contener exactamente 10 dígitos."
+						oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)"
+						class="input-form"
+						placeholder="7470000000">
+				</div>
+
+				<div class="md:col-span-2">
+					<label class="block text-sm font-bold text-slate-700 mb-2">
+						Carreras habilitadas <span class="campo-obligatorio">*</span>
+					</label>
+
+					<div class="grid grid-cols-1 md:grid-cols-2 gap-3 bg-slate-50 border border-slate-200 rounded-3xl p-5">
+						<label th:each="carrera : ${carreras}"
+							class="check-card flex items-center gap-3 bg-white border border-slate-200 rounded-2xl px-4 py-3 cursor-pointer hover:border-[#003B8F]">
+
+							<input type="checkbox" name="idsCarreras" th:value="${carrera.id}"
+								class="rounded border-slate-300 text-[#003B8F] focus:ring-[#003B8F]"
+								th:checked="${docente.carrerasHabilitadas != null and docente.carrerasHabilitadas.contains(carrera)}">
+
+							<span class="text-sm font-semibold text-slate-700" th:text="${carrera.nombre}"></span>
+						</label>
+					</div>
+
+					<p class="text-xs text-slate-400 mt-2">
+						Selecciona una o varias carreras en las que el docente puede dar clases o asesorar.
+					</p>
+				</div>
+			</div>
+
+			<div class="px-8 py-5 bg-slate-50 border-t border-slate-200 flex justify-end gap-3">
+				<a th:href="@{/docentes/index}"
+					class="px-6 py-3 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold transition">
+					Cancelar
+				</a>
+
+				<button type="submit"
+					class="px-6 py-3 rounded-xl bg-[#003B8F] hover:bg-[#002f73] text-white font-bold shadow-lg shadow-blue-900/20 transition hover:scale-[1.02] flex items-center gap-2">
+					<span class="material-symbols-outlined text-base">save</span>
+					Guardar docente
+				</button>
+			</div>
+
+		</form>
+	</div>
+</main>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+	const form = document.getElementById("formDocente");
+
+	form.addEventListener("submit", function (e) {
+		e.preventDefault();
+
+		const carrerasSeleccionadas = document.querySelectorAll("input[name='idsCarreras']:checked");
+
+		if (!form.checkValidity()) {
+			Swal.fire({
+				icon: "warning",
+				title: "Campos incompletos",
+				text: "Revisa que todos los campos obligatorios estén completos correctamente.",
+				confirmButtonColor: "#003B8F",
+				showClass: {
+					popup: "swal2-show"
+				}
+			});
+
+			form.reportValidity();
+			return;
+		}
+
+		if (carrerasSeleccionadas.length === 0) {
+			Swal.fire({
+				icon: "warning",
+				title: "Selecciona una carrera",
+				text: "Debes seleccionar al menos una carrera habilitada para el docente.",
+				confirmButtonColor: "#003B8F"
+			});
+
+			return;
+		}
+
+		Swal.fire({
+			title: "¿Guardar docente?",
+			text: "Se registrará la información del docente.",
+			icon: "question",
+			showCancelButton: true,
+			confirmButtonColor: "#003B8F",
+			cancelButtonColor: "#64748b",
+			confirmButtonText: "Sí, guardar",
+			cancelButtonText: "Cancelar"
+		}).then((result) => {
+			if (result.isConfirmed) {
+				Swal.fire({
+					title: "Guardando...",
+					text: "Espera un momento",
+					allowOutsideClick: false,
+					didOpen: () => {
+						Swal.showLoading();
+					}
+				});
+
+				form.submit();
+			}
+		});
+	});
+});
+</script>
+
+</body>
+</html>

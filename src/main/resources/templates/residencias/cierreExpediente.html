@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Revision Final de Documentos</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@300;400;500;600&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+<style>
+body { font-family:'Inter', sans-serif; background:#f7f9fb; }
+h1,h2,h3 { font-family:'Manrope', sans-serif; }
+.material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; }
+.primary-gradient { background:linear-gradient(135deg,#002046 0%,#003B8F 100%); }
+</style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+
+<div th:replace="~{fragments/sidebar :: sidebar('cierreExpediente')}"></div>
+
+<main class="ml-64 min-h-screen">
+
+	<header th:replace="~{fragments/ui :: topbar(@{/dashboard}, 'Dashboard')}"></header>
+
+	<div class="max-w-7xl mx-auto p-8">
+
+		<div class="relative overflow-hidden rounded-3xl primary-gradient text-white p-8 shadow-2xl mb-8">
+			<p class="text-sm text-blue-100 font-semibold mb-2">
+				Panel de Control › Cierre Expediente
+			</p>
+
+			<h1 class="text-4xl font-black mb-3">
+				Revision Final de Documentos
+			</h1>
+
+			<p class="text-blue-100 max-w-3xl">
+				Revisa expedientes de residencia, documentos obligatorios y estado final antes de cerrar el proceso.
+			</p>
+		</div>
+
+		<div th:if="${residencia == null}" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+
+			<div class="px-6 py-5 border-b border-slate-200 flex justify-between items-center">
+				<div>
+					<h2 class="text-xl font-black text-[#002046]">
+						Residencias con revision final
+					</h2>
+					<p class="text-sm text-slate-500">
+						Listado de residencias disponibles para revisión final.
+					</p>
+				</div>
+
+				<span class="text-sm text-slate-500">
+					Total:
+					<b th:text="${residencias != null ? #lists.size(residencias) : 0}">0</b>
+				</span>
+			</div>
+
+			<div class="overflow-x-auto">
+				<table class="w-full text-sm text-center border-collapse">
+					<thead class="bg-slate-100 text-[#002046]">
+						<tr>
+							<th class="px-4 py-4 border border-slate-300 text-xs font-black uppercase">ID</th>
+							<th class="px-4 py-4 border border-slate-300 text-xs font-black uppercase">Residente</th>
+							<th class="px-4 py-4 border border-slate-300 text-xs font-black uppercase">Proyecto</th>
+							<th class="px-4 py-4 border border-slate-300 text-xs font-black uppercase">Empresa</th>
+							<th class="px-4 py-4 border border-slate-300 text-xs font-black uppercase">Periodo</th>
+							<th class="px-4 py-4 border border-slate-300 text-xs font-black uppercase">Autorización</th>
+							<th class="px-4 py-4 border border-slate-300 text-xs font-black uppercase">Acción</th>
+						</tr>
+					</thead>
+
+					<tbody>
+						<tr th:if="${residencias == null or #lists.isEmpty(residencias)}">
+							<td colspan="7" class="py-12 text-slate-500 font-semibold">
+								No hay residencias disponibles para revision final.
+							</td>
+						</tr>
+
+						<tr th:each="residencia : ${residencias}" class="hover:bg-blue-50/40">
+							<td class="px-4 py-4 border border-slate-200 font-black text-[#002046]"
+								th:text="${residencia.id}"></td>
+
+							<td class="px-4 py-4 border border-slate-200"
+								th:text="${residencia.residente != null ? residencia.residente.nombreCompleto : 'Sin residente'}"></td>
+
+							<td class="px-4 py-4 border border-slate-200 font-semibold text-[#002046]"
+								th:text="${residencia.nombreProyecto}"></td>
+
+							<td class="px-4 py-4 border border-slate-200"
+								th:text="${residencia.empresa != null ? residencia.empresa.nombre : 'Sin empresa'}"></td>
+
+							<td class="px-4 py-4 border border-slate-200"
+								th:text="${residencia.periodo}"></td>
+
+							<td class="px-4 py-4 border border-slate-200">
+								<span class="inline-flex px-3 py-1 rounded-full text-xs font-black"
+									th:classappend="${residencia.estadoAutorizacion == 'AUTORIZADO'} ? ' bg-green-100 text-green-700' : ' bg-amber-100 text-amber-700'"
+									th:text="${residencia.estadoAutorizacion != null ? residencia.estadoAutorizacion : 'PENDIENTE'}">
+								</span>
+							</td>
+
+							<td class="px-4 py-4 border border-slate-200">
+								<a th:href="@{/cierre-expediente/{id}(id=${residencia.id})}"
+									class="inline-flex items-center gap-2 bg-[#003B8F] hover:bg-[#002f73] text-white px-4 py-2 rounded-xl font-bold text-xs">
+									<span class="material-symbols-outlined text-sm">task_alt</span>
+									Revision final
+								</a>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+		</div>
+
+		<div th:if="${residencia != null}" class="space-y-6">
+			<div class="flex items-center justify-between">
+				<div>
+					<h2 class="text-2xl font-black text-[#002046]">Detalle de revisión final</h2>
+					<p class="text-sm text-slate-500">Validación documental y académica previa al cierre del expediente.</p>
+				</div>
+				<a th:href="@{/cierre-expediente/index}"
+					class="inline-flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-xl font-bold text-sm">
+					<span class="material-symbols-outlined text-sm">arrow_back</span>
+					Volver al listado
+				</a>
+			</div>
+
+			<div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+				<div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 lg:col-span-2">
+					<h3 class="text-lg font-black text-[#002046] mb-4">Resumen del proyecto</h3>
+					<div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+						<div>
+							<p class="text-slate-500">Residente</p>
+							<p class="font-bold text-slate-800" th:text="${residencia.residente != null ? residencia.residente.nombreCompleto : 'Sin residente'}"></p>
+						</div>
+						<div>
+							<p class="text-slate-500">Periodo</p>
+							<p class="font-bold text-slate-800" th:text="${residencia.periodo}"></p>
+						</div>
+						<div>
+							<p class="text-slate-500">Proyecto</p>
+							<p class="font-bold text-slate-800" th:text="${residencia.nombreProyecto}"></p>
+						</div>
+						<div>
+							<p class="text-slate-500">Empresa</p>
+							<p class="font-bold text-slate-800" th:text="${residencia.empresa != null ? residencia.empresa.nombre : 'Sin empresa'}"></p>
+						</div>
+						<div>
+							<p class="text-slate-500">Autorización</p>
+							<p class="font-bold text-slate-800" th:text="${residencia.estadoAutorizacion}"></p>
+						</div>
+						<div>
+							<p class="text-slate-500">Estado del proceso</p>
+							<p class="font-bold text-slate-800" th:text="${residencia.estatusProceso}"></p>
+						</div>
+					</div>
+				</div>
+
+				<div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+					<h3 class="text-lg font-black text-[#002046] mb-4">Estatus de cierre</h3>
+					<div class="space-y-3 text-sm">
+						<div class="flex items-center justify-between">
+							<span class="text-slate-500">Promedio final</span>
+							<span class="font-black text-slate-800" th:text="${promedioFinal != null ? #numbers.formatDecimal(promedioFinal,1,2) : 'N/D'}"></span>
+						</div>
+						<div class="flex items-center justify-between">
+							<span class="text-slate-500">Documentos faltantes</span>
+							<span class="font-black text-slate-800" th:text="${faltantes}"></span>
+						</div>
+						<div class="flex items-center justify-between">
+							<span class="text-slate-500">No aprobados</span>
+							<span class="font-black text-slate-800" th:text="${noAprobados}"></span>
+						</div>
+						<div class="pt-2">
+							<span class="inline-flex px-3 py-1 rounded-full text-xs font-black"
+								th:classappend="${puedeCerrar} ? ' bg-green-100 text-green-700' : ' bg-amber-100 text-amber-700'"
+								th:text="${puedeCerrar} ? 'LISTO PARA CERRAR' : 'PENDIENTE DE VALIDACIÓN'"></span>
+						</div>
+						<div class="pt-3 flex gap-2 flex-wrap">
+							<a th:if="${puedeCerrar and residencia.estatusProceso != 'CERRADO'}"
+								th:href="@{/cierre-expediente/cerrar/{id}(id=${residencia.id})}"
+								class="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl font-bold text-sm">
+								<span class="material-symbols-outlined text-sm">task_alt</span>
+								Cerrar expediente
+							</a>
+							<a th:if="${residencia.estatusProceso == 'CERRADO'}"
+								th:href="@{/cierre-expediente/reabrir/{id}(id=${residencia.id})}"
+								class="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-xl font-bold text-sm">
+								<span class="material-symbols-outlined text-sm">restart_alt</span>
+								Reabrir expediente
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+				<div class="px-6 py-5 border-b border-slate-200">
+					<h3 class="text-lg font-black text-[#002046]">Documentos obligatorios</h3>
+					<p class="text-sm text-slate-500">Se revisan los ocho documentos requeridos para el cierre.</p>
+				</div>
+				<div class="overflow-x-auto">
+					<table class="w-full text-sm border-collapse">
+						<thead class="bg-slate-100 text-[#002046]">
+							<tr>
+								<th class="px-4 py-4 border border-slate-300 text-left text-xs font-black uppercase">Documento</th>
+								<th class="px-4 py-4 border border-slate-300 text-left text-xs font-black uppercase">Archivo</th>
+								<th class="px-4 py-4 border border-slate-300 text-center text-xs font-black uppercase">Estatus</th>
+								<th class="px-4 py-4 border border-slate-300 text-left text-xs font-black uppercase">Observaciones</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="entry : ${mapaDocumentos}" class="hover:bg-blue-50/40">
+								<td class="px-4 py-4 border border-slate-200 font-semibold text-[#002046]"
+									th:text="${#strings.replace(entry.key.name(), '_', ' ')}"></td>
+								<td class="px-4 py-4 border border-slate-200 text-slate-700">
+									<th:block th:if="${entry.key.name() == 'ENTREGA_REPORTE_EMPRESA'}">
+										<a th:href="@{/documentos-residencia/{id}/entrega-reporte-empresa-pdf(id=${residencia.id})}"
+											class="font-semibold text-[#003B8F] hover:underline"
+											th:text="'Descargar entrega de reporte a empresa'">
+										</a>
+									</th:block>
+
+									<th:block th:if="${entry.key.name() == 'OFICIO_ENTREGA_DIVISION'}">
+										<a th:href="@{/documentos-residencia/{id}/oficio-entrega-division-pdf(id=${residencia.id})}"
+											class="font-semibold text-[#003B8F] hover:underline"
+											th:text="'Descargar oficio de entrega a división'">
+										</a>
+									</th:block>
+
+									<th:block th:if="${entry.key.name() != 'ENTREGA_REPORTE_EMPRESA' and entry.key.name() != 'OFICIO_ENTREGA_DIVISION' and entry.value != null and entry.value.rutaArchivo != null and entry.value.rutaArchivo != 'GENERADO_EN_LINEA'}">
+										<a th:href="@{/documentos-residencia/archivo/{id}(id=${entry.value.id})}"
+											class="font-semibold text-[#003B8F] hover:underline"
+											th:text="${
+												entry.key.name() == 'REPORTE_PRELIMINAR' ? 'Descargar reporte preliminar' :
+												(entry.key.name() == 'LIBERACION_ASESOR_INTERNO' ? 'Descargar liberación asesor interno' :
+												'Descargar archivo')
+											}">
+										</a>
+									</th:block>
+
+									<th:block th:if="${(entry.value == null or entry.value.rutaArchivo == null or entry.value.rutaArchivo == 'GENERADO_EN_LINEA') and entry.key.name() == 'PROYECTO_RESIDENCIA'}">
+										<a th:href="@{/documentos-residencia/{id}/proyecto-pdf(id=${residencia.id})}"
+											class="font-semibold text-[#003B8F] hover:underline"
+											th:text="'Descargar proyecto de residencia'">
+										</a>
+									</th:block>
+
+									<th:block th:if="${(entry.value == null or entry.value.rutaArchivo == null or entry.value.rutaArchivo == 'GENERADO_EN_LINEA') and entry.key.name() == 'PRIMER_INFORME'}">
+										<a th:href="@{/documentos-residencia/{id}/anexo-xxix-pdf/{numero}(id=${residencia.id},numero=1)}"
+											class="font-semibold text-[#003B8F] hover:underline"
+											th:text="'Descargar primer informe'">
+										</a>
+									</th:block>
+
+									<th:block th:if="${(entry.value == null or entry.value.rutaArchivo == null or entry.value.rutaArchivo == 'GENERADO_EN_LINEA') and entry.key.name() == 'SEGUNDO_INFORME'}">
+										<a th:href="@{/documentos-residencia/{id}/anexo-xxix-pdf/{numero}(id=${residencia.id},numero=2)}"
+											class="font-semibold text-[#003B8F] hover:underline"
+											th:text="'Descargar segundo informe'">
+										</a>
+									</th:block>
+
+									<th:block th:if="${(entry.value == null or entry.value.rutaArchivo == null or entry.value.rutaArchivo == 'GENERADO_EN_LINEA') and entry.key.name() == 'EVALUACION_FINAL'}">
+										<a th:href="@{/documentos-residencia/{id}/anexo-xxx-pdf(id=${residencia.id})}"
+											class="font-semibold text-[#003B8F] hover:underline"
+											th:text="'Descargar evaluación final'">
+										</a>
+									</th:block>
+
+									<th:block th:if="${(entry.value == null or entry.value.rutaArchivo == null or entry.value.rutaArchivo == 'GENERADO_EN_LINEA') and entry.key.name() == 'LIBERACION_ASESOR_INTERNO'}">
+										<a th:href="@{/documentos-residencia/{id}/liberacion-asesor-interno-pdf(id=${residencia.id})}"
+											class="font-semibold text-[#003B8F] hover:underline"
+											th:text="'Descargar liberación asesor interno'">
+										</a>
+									</th:block>
+
+									<th:block th:if="${entry.value == null and entry.key.name() != 'PROYECTO_RESIDENCIA' and entry.key.name() != 'PRIMER_INFORME' and entry.key.name() != 'SEGUNDO_INFORME' and entry.key.name() != 'EVALUACION_FINAL' and entry.key.name() != 'LIBERACION_ASESOR_INTERNO' and entry.key.name() != 'ENTREGA_REPORTE_EMPRESA' and entry.key.name() != 'OFICIO_ENTREGA_DIVISION'}">
+										<span>Sin archivo cargado</span>
+									</th:block>
+								</td>
+								<td class="px-4 py-4 border border-slate-200 text-center">
+									<span class="inline-flex px-3 py-1 rounded-full text-xs font-black"
+										th:classappend="${
+											entry.value == null || entry.value.estatus == null ? ' bg-slate-100 text-slate-600' :
+											(entry.value.estatus.name() == 'APROBADO' ? ' bg-green-100 text-green-700' :
+											(entry.value.estatus.name() == 'RECHAZADO' ? ' bg-red-100 text-red-700' : ' bg-amber-100 text-amber-700'))
+										}"
+										th:text="${
+											entry.value == null || entry.value.estatus == null ? 'PENDIENTE' :
+											#strings.replace(entry.value.estatus.name(), '_', ' ')
+										}"></span>
+								</td>
+								<td class="px-4 py-4 border border-slate-200 text-slate-600"
+									th:text="${entry.value != null && entry.value.observaciones != null && !#strings.isEmpty(entry.value.observaciones) ? entry.value.observaciones : 'Sin observaciones'}"></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+</main>
+
+</body>
+</html>

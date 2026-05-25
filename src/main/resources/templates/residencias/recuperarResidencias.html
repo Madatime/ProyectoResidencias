@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+<title>Recuperar Proyectos | TecNM Campus Chilpancingo</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<link
+	href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+	rel="stylesheet" />
+
+<style>
+.material-symbols-outlined {
+	font-variation-settings:
+	'FILL' 0,
+	'wght' 400,
+	'GRAD' 0,
+	'opsz' 24;
+}
+
+body {
+	font-family: 'Inter', sans-serif;
+	background:
+		radial-gradient(circle at top left, rgba(0, 59, 143, 0.10), transparent 28%),
+		linear-gradient(135deg, #f7f9fb 0%, #eef4fb 45%, #f8fafc 100%);
+	min-height: 100vh;
+	overflow-x: hidden;
+}
+
+h1, h2, h3 {
+	font-family: 'Manrope', sans-serif;
+}
+
+.primary-gradient {
+	background: linear-gradient(135deg, #002046 0%, #003B8F 100%);
+}
+
+.grid-pattern {
+	position: fixed;
+	inset: 0;
+	z-index: 0;
+	opacity: 0.035;
+	background-image:
+		linear-gradient(#002046 1px, transparent 1px),
+		linear-gradient(90deg, #002046 1px, transparent 1px);
+	background-size: 42px 42px;
+	pointer-events: none;
+}
+
+.float-shape {
+	position: fixed;
+	border-radius: 9999px;
+	background: rgba(0, 59, 143, 0.08);
+	filter: blur(1px);
+	z-index: 0;
+	animation: float 8s ease-in-out infinite;
+	pointer-events: none;
+}
+
+.fade-in {
+	animation: fadeUp 0.7s ease-out both;
+}
+
+.tabla-ajustable {
+	transform-origin: top left;
+	transition: all 0.3s ease;
+}
+
+.tabla-ajustable.tabla-reducida {
+	transform: scale(0.87);
+	width: 115%;
+}
+
+@keyframes fadeUp {
+	from {
+		opacity: 0;
+		transform: translateY(24px) scale(0.98);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
+}
+
+@keyframes float {
+	0%, 100% {
+		transform: translateY(0) translateX(0);
+	}
+	50% {
+		transform: translateY(-18px) translateX(10px);
+	}
+}
+</style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+<div class="grid-pattern"></div>
+
+<div class="float-shape w-72 h-72 top-[-80px] left-[250px]"></div>
+<div class="float-shape w-52 h-52 bottom-[-70px] right-[6%]"></div>
+<div class="float-shape w-40 h-40 top-[22%] right-[12%]"></div>
+
+<div th:replace="~{fragments/sidebar :: sidebar('residencias')}"></div>
+
+<main class="ml-64 min-h-screen relative z-10">
+
+		<header th:replace="~{fragments/ui :: topbar(@{/residencias/index}, 'Volver')}"></header>
+
+	<div class="max-w-7xl mx-auto p-8 fade-in">
+
+		
+		<div class="relative overflow-hidden rounded-3xl primary-gradient text-white p-8 shadow-2xl border border-white/10 mb-8">
+
+			<div class="absolute inset-0 opacity-20 pointer-events-none"
+				style="background:
+					radial-gradient(circle at top left, #ffffff 0, transparent 28%),
+					radial-gradient(circle at bottom right, #60a5fa 0, transparent 30%);">
+			</div>
+
+			<div class="absolute -bottom-16 -right-16 w-72 h-72 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
+
+			<div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+
+				<div class="max-w-4xl">
+
+					<p class="text-sm text-blue-100 font-semibold mb-2 flex items-center gap-2">
+						<span>Panel de Control</span>
+						<span class="text-blue-300">›</span>
+						<span class="text-white">Recuperar Proyectos</span>
+					</p>
+
+					<h1 class="text-4xl md:text-5xl font-black tracking-tight mb-4">
+						Recuperar Proyectos
+					</h1>
+
+					<p class="text-blue-100 text-base max-w-3xl leading-relaxed">
+						Consulta y recupera proyectos eliminados lógicamente del sistema de residencias profesionales.
+					</p>
+
+				</div>
+
+				<div class="relative z-20 bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl px-7 py-6 shadow-2xl min-w-[280px]">
+
+					<p class="text-xs font-bold text-blue-100 uppercase tracking-[0.15em] mb-2">
+						Registros eliminados
+					</p>
+
+					<h3 class="text-4xl font-black text-white"
+						th:text="${residencias != null ? #lists.size(residencias) : 0}">
+						0
+					</h3>
+
+					<p class="text-sm text-blue-100 mt-2 leading-relaxed">
+						Proyectos disponibles para recuperación.
+					</p>
+
+				</div>
+
+			</div>
+
+		</div>
+
+			<th:block th:replace="~{fragments/ui :: flashMessages(${msgSuccess}, ${msgError})}"></th:block>
+
+		
+		<div class="tabla-card bg-white/95 backdrop-blur rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
+
+			<div class="px-8 py-6 border-b border-slate-200 flex flex-col xl:flex-row xl:items-center justify-between gap-5">
+
+				<div>
+					<h2 class="text-2xl font-black text-[#002046]">
+						Proyectos eliminados
+					</h2>
+
+					<p class="text-slate-500">
+						Recuperación de registros eliminados lógicamente.
+					</p>
+				</div>
+
+				<div class="flex flex-wrap items-center gap-3">
+
+					<div class="relative">
+						<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+							search
+						</span>
+
+						<input id="buscadorTabla"
+							type="text"
+							placeholder="Buscar proyecto..."
+							class="w-72 rounded-2xl border border-slate-200 bg-white pl-12 pr-4 py-3 shadow-sm focus:ring-[#003B8F] focus:border-[#003B8F]">
+					</div>
+
+						<button th:replace="~{fragments/ui :: tableZoomButton()}"></button>
+
+				</div>
+
+			</div>
+
+			<div class="overflow-x-auto">
+
+					<div class="tabla-ajustable">
+
+					<table class="min-w-[1450px] w-full text-[12px] text-center border-collapse">
+
+						<thead class="bg-slate-100 text-[#002046]">
+							<tr>
+
+								<th class="border border-slate-300 px-3 py-3 text-[11px] font-black uppercase tracking-wide">
+									ID Proyecto
+								</th>
+
+								<th class="border border-slate-300 px-3 py-3 text-[11px] font-black uppercase tracking-wide">
+									No. Control
+								</th>
+
+								<th class="border border-slate-300 px-3 py-3 text-[11px] font-black uppercase tracking-wide">
+									Estudiante
+								</th>
+
+								<th class="border border-slate-300 px-3 py-3 text-[11px] font-black uppercase tracking-wide">
+									Proyecto
+								</th>
+
+								<th class="border border-slate-300 px-3 py-3 text-[11px] font-black uppercase tracking-wide">
+									Empresa
+								</th>
+
+								<th class="border border-slate-300 px-3 py-3 text-[11px] font-black uppercase tracking-wide">
+									Periodo
+								</th>
+
+								<th class="border border-slate-300 px-3 py-3 text-[11px] font-black uppercase tracking-wide">
+									Autorización
+								</th>
+
+								<th class="border border-slate-300 px-3 py-3 text-[11px] font-black uppercase tracking-wide">
+									Acción
+								</th>
+
+							</tr>
+						</thead>
+
+						<tbody id="tablaResidencias">
+
+							<tr th:if="${residencias == null or #lists.isEmpty(residencias)}">
+
+								<td colspan="8"
+									class="border border-slate-300 px-4 py-14 text-slate-500">
+
+									<div class="flex flex-col items-center gap-3">
+
+										<span class="material-symbols-outlined text-6xl text-slate-300">
+											folder_off
+										</span>
+
+										<span class="font-semibold">
+											No hay proyectos eliminados.
+										</span>
+
+									</div>
+
+								</td>
+
+							</tr>
+
+							<tr th:each="residencia : ${residencias}"
+								class="hover:bg-blue-50/40 transition">
+
+								<td class="border border-slate-200 px-3 py-3 font-black text-[#002046]"
+									th:text="${residencia.idProyectoCarrera != null ? residencia.idProyectoCarrera : residencia.id}">
+								</td>
+
+								<td class="border border-slate-200 px-3 py-3 font-semibold"
+									th:text="${residencia.residente != null ? residencia.residente.matricula : ''}">
+								</td>
+
+								<td class="border border-slate-200 px-3 py-3">
+
+									<div class="font-bold text-slate-800"
+										th:text="${residencia.residente != null ? residencia.residente.nombreCompleto : ''}">
+									</div>
+
+									<div class="text-[11px] text-slate-400 mt-1"
+										th:text="${residencia.residente != null 
+											and residencia.residente.estudiante != null 
+											and residencia.residente.estudiante.carrera != null 
+											? residencia.residente.estudiante.carrera.nombre 
+											: 'Sin carrera'}">
+									</div>
+
+								</td>
+
+								<td class="border border-slate-200 px-3 py-3 text-left">
+
+									<div class="font-bold text-slate-800 leading-tight"
+										th:text="${residencia.nombreProyecto}">
+									</div>
+
+								</td>
+
+								<td class="border border-slate-200 px-3 py-3">
+
+									<div class="font-semibold"
+										th:text="${residencia.empresa != null ? residencia.empresa.nombre : 'Sin empresa'}">
+									</div>
+
+									<div class="text-[10px] text-slate-400 mt-1"
+										th:if="${residencia.empresa != null}"
+										th:text="${residencia.empresa.anioConvenio != null and residencia.empresa.anioFinConvenio != null
+											? 'Convenio: ' + residencia.empresa.anioConvenio + ' - ' + residencia.empresa.anioFinConvenio
+											: 'Sin vigencia'}">
+									</div>
+
+								</td>
+
+								<td class="border border-slate-200 px-3 py-3 font-semibold"
+									th:text="${residencia.periodo}">
+								</td>
+
+								<td class="border border-slate-200 px-3 py-3">
+
+									<span th:if="${residencia.estadoAutorizacion == 'AUTORIZADO'}"
+										class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-green-100 text-green-700 text-[11px] font-black">
+
+										<span class="material-symbols-outlined text-sm">
+											check_circle
+										</span>
+
+										AUTORIZADO
+									</span>
+
+									<span th:if="${residencia.estadoAutorizacion == 'AUTORIZADO_CON_OBSERVACIONES'}"
+										class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-amber-100 text-amber-700 text-[11px] font-black">
+
+										<span class="material-symbols-outlined text-sm">
+											warning
+										</span>
+
+										CON OBS.
+									</span>
+
+									<span th:if="${residencia.estadoAutorizacion == 'RECHAZADO'}"
+										class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-red-100 text-red-700 text-[11px] font-black">
+
+										<span class="material-symbols-outlined text-sm">
+											cancel
+										</span>
+
+										RECHAZADO
+									</span>
+
+									<span th:if="${residencia.estadoAutorizacion == null or residencia.estadoAutorizacion == 'PENDIENTE'}"
+										class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-slate-100 text-slate-600 text-[11px] font-black">
+
+										<span class="material-symbols-outlined text-sm">
+											schedule
+										</span>
+
+										PENDIENTE
+									</span>
+
+								</td>
+
+								<td class="border border-slate-200 px-3 py-3">
+
+									<a th:href="@{/residencias/recuperar/{id}(id=${residencia.id})}"
+										th:attr="onclick=|confirmarRecuperacion(event, this, '${residencia.nombreProyecto}')|"
+										class="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl font-bold text-sm shadow-lg transition">
+
+										<span class="material-symbols-outlined text-base">
+											restore
+										</span>
+
+										Recuperar
+									</a>
+
+								</td>
+
+							</tr>
+
+						</tbody>
+
+					</table>
+
+				</div>
+
+			</div>
+
+			<div class="bg-slate-50 px-8 py-5 border-t border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-3">
+
+				<span class="text-xs text-slate-500">
+					Mostrando
+					<span class="font-black text-[#002046]"
+						th:text="${residencias != null ? #lists.size(residencias) : 0}">
+					</span>
+					proyectos eliminados
+				</span>
+
+				<span class="text-xs text-slate-400">
+					Usa “Ajustar tabla” para reducir o restaurar el tamaño visual.
+				</span>
+
+			</div>
+
+		</div>
+
+	</div>
+
+</main>
+
+	<script th:replace="~{fragments/ui :: tableZoomScript()}"></script>
+	<script>
+	function confirmarRecuperacion(event, elemento, nombre) {
+
+	event.preventDefault();
+
+	Swal.fire({
+		title: '¿Recuperar proyecto?',
+		text: 'Se recuperará el proyecto: ' + nombre,
+		icon: 'question',
+		showCancelButton: true,
+		confirmButtonColor: '#16a34a',
+		cancelButtonColor: '#64748b',
+		confirmButtonText: 'Sí, recuperar',
+		cancelButtonText: 'Cancelar',
+		reverseButtons: true
+
+	}).then((result) => {
+
+		if (result.isConfirmed) {
+
+			Swal.fire({
+				title: 'Proyecto recuperado',
+				text: 'El proyecto fue restaurado correctamente.',
+				icon: 'success',
+				timer: 1400,
+				showConfirmButton: false
+
+			}).then(() => {
+
+				window.location.href = elemento.href;
+
+			});
+		}
+	});
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+
+	const buscador = document.getElementById("buscadorTabla");
+
+	if (!buscador) {
+		return;
+	}
+
+	buscador.addEventListener("keyup", function () {
+
+		const texto = this.value.toLowerCase();
+		const filas = document.querySelectorAll("#tablaResidencias tr");
+
+		filas.forEach(fila => {
+
+			const contenido = fila.textContent.toLowerCase();
+
+			fila.style.display = contenido.includes(texto) ? "" : "none";
+
+		});
+	});
+});
+
+</script>
+
+</body>
+</html>

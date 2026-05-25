@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+<title>Formulario Residente</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+	rel="stylesheet" />
+
+<style>
+body {
+	font-family: 'Inter', sans-serif;
+	background:
+		radial-gradient(circle at top left, rgba(0, 59, 143, 0.10), transparent 28%),
+		linear-gradient(135deg, #f7f9fb 0%, #eef4fb 45%, #f8fafc 100%);
+	min-height: 100vh;
+	overflow-x: hidden;
+}
+
+h1, h2, h3 {
+	font-family: 'Manrope', sans-serif;
+}
+
+.material-symbols-outlined {
+	font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.primary-gradient {
+	background: linear-gradient(135deg, #002046 0%, #003B8F 100%);
+}
+
+.grid-pattern {
+	position: fixed;
+	inset: 0;
+	z-index: 0;
+	opacity: 0.035;
+	background-image:
+		linear-gradient(#002046 1px, transparent 1px),
+		linear-gradient(90deg, #002046 1px, transparent 1px);
+	background-size: 42px 42px;
+	pointer-events: none;
+}
+
+.float-shape {
+	position: fixed;
+	border-radius: 9999px;
+	background: rgba(0, 59, 143, 0.08);
+	filter: blur(1px);
+	z-index: 0;
+	animation: float 8s ease-in-out infinite;
+}
+
+.float-shape:nth-child(2) {
+	animation-delay: 2s;
+}
+
+.float-shape:nth-child(3) {
+	animation-delay: 4s;
+}
+
+.page-enter {
+	animation: fadeUp 0.75s ease-out both;
+}
+
+.card-animate {
+	animation: fadeUp 0.8s ease-out both;
+	transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.card-animate:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 24px 45px -18px rgba(0, 32, 70, 0.20);
+	border-color: rgba(0, 59, 143, 0.20);
+}
+
+.input-form {
+	width: 100%;
+	background-color: #f1f5f9;
+	border: 1px solid transparent;
+	border-radius: 0.75rem;
+	padding: 0.75rem 1rem;
+	outline: none;
+	transition: all 0.2s ease;
+}
+
+.input-form:focus {
+	background-color: white;
+	border-color: #003B8F;
+	box-shadow: 0 0 0 3px rgba(0, 59, 143, 0.14);
+}
+
+@keyframes fadeUp {
+	from {
+		opacity: 0;
+		transform: translateY(24px) scale(0.98);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
+}
+
+@keyframes float {
+	0%, 100% {
+		transform: translateY(0) translateX(0);
+	}
+
+	50% {
+		transform: translateY(-18px) translateX(10px);
+	}
+}
+</style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+<div class="grid-pattern"></div>
+<div class="float-shape w-72 h-72 top-[-80px] left-[250px]"></div>
+<div class="float-shape w-52 h-52 bottom-[-70px] right-[6%]"></div>
+<div class="float-shape w-40 h-40 top-[22%] right-[12%]"></div>
+
+<div th:replace="~{fragments/sidebar :: sidebar('residentes')}"></div>
+
+<main class="ml-64 min-h-screen relative z-10">
+
+	<header th:replace="~{fragments/ui :: topbar(@{/residentes/index}, 'Volver')}"></header>
+
+	<div class="max-w-6xl mx-auto p-8 page-enter">
+
+		<div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#00152f] via-[#002046] to-[#003B8F] text-white p-8 shadow-2xl border border-white/10 mb-8">
+			<div class="absolute inset-0 opacity-20"
+				style="background:
+					radial-gradient(circle at top left, #ffffff 0, transparent 28%),
+					radial-gradient(circle at bottom right, #60a5fa 0, transparent 30%);">
+			</div>
+
+			<div class="relative flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+				<div>
+					<p class="text-sm text-blue-100 font-semibold mb-2 flex items-center gap-2">
+						<span>Panel de Control</span>
+						<span class="text-blue-300">›</span>
+						<span class="text-white">Residentes</span>
+					</p>
+
+					<h1 class="text-4xl font-black tracking-tight mb-3 drop-shadow-lg"
+						th:text="${residente != null and residente.id != null} ? 'Editar Residente' : 'Registro de Residente'">
+						Registro de Residente
+					</h1>
+
+					<p class="text-slate-100 text-base max-w-3xl leading-relaxed">
+						Ingresa la matricula del estudiante. Si existe en el modulo estudiantes,
+						sus datos se mostraran automaticamente y podras actualizarlos desde aqui.
+					</p>
+				</div>
+
+				<div class="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl px-6 py-5 shadow-2xl">
+					<p class="text-xs font-bold text-blue-100 uppercase tracking-[0.15em] mb-2">
+						Modulo activo
+					</p>
+					<p class="text-xl font-black text-white">
+						Gestion de residentes
+					</p>
+				</div>
+			</div>
+
+			<div class="absolute -bottom-16 -right-16 w-72 h-72 bg-white/10 rounded-full blur-3xl"></div>
+		</div>
+
+		<th:block th:replace="~{fragments/ui :: flashMessages(${msgSuccess}, ${msgError})}"></th:block>
+
+		<div class="bg-white/95 backdrop-blur rounded-3xl shadow-xl overflow-hidden border border-slate-200 card-animate">
+
+			<form id="formResidente" method="post" enctype="multipart/form-data"
+				th:action="${residente != null and residente.id != null} ? @{/residentes/update} : @{/residentes/save}">
+
+				<input type="hidden" name="id"
+					th:if="${residente != null and residente.id != null}"
+					th:value="${residente.id}" />
+
+				<input type="hidden" name="fotoPath"
+					th:if="${residente != null}"
+					th:value="${residente.fotoPath}" />
+
+				<input type="hidden" name="estatus"
+					th:if="${residente != null}"
+					th:value="${residente.estatus}" />
+
+				<div class="grid grid-cols-1 lg:grid-cols-2">
+
+					<div class="p-10 border-r border-slate-200">
+
+						<div class="mb-8">
+							<h2 class="text-xl font-black text-[#002046]">
+								Datos del estudiante
+							</h2>
+							<p class="text-sm text-slate-500">
+								La informacion se obtiene desde estudiantes, pero puede actualizarse aqui.
+							</p>
+						</div>
+
+						<div class="space-y-6">
+
+							<div>
+								<label class="block text-sm font-bold text-slate-600 mb-2">
+									Matricula <span class="text-red-600">*</span>
+								</label>
+
+								<input id="matricula"
+									type="text"
+									name="matricula"
+									maxlength="9"
+									pattern="^(C[0-9]{8}|[0-9]{8})$"
+									required
+									th:value="${residente != null and residente.estudiante != null ? residente.estudiante.matricula : ''}"
+									class="input-form"
+									placeholder="Ej. 22520224" />
+
+								<p class="text-xs text-slate-500 mt-2">
+									La matricula debe tener 8 numeros, o iniciar con C y tener 8 numeros.
+								</p>
+								<div th:if="${mostrarCrearEstudiante}"
+									class="mt-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-4 text-sm text-amber-900 shadow-sm">
+									<div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+										<div>
+											<p class="font-bold">
+												No existe un estudiante registrado con la matricula capturada.
+											</p>
+											<p class="mt-1 text-amber-800">
+												Puedes crearlo ahora mismo y continuar despues con el alta del residente.
+											</p>
+										</div>
+										<a th:href="@{/estudiantes/create(matricula=${matriculaSugerida})}"
+											class="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 py-3 font-bold text-white shadow-md transition hover:scale-[1.02] hover:bg-emerald-700">
+											<span class="material-symbols-outlined text-[20px]">person_add</span>
+											Crear estudiante
+										</a>
+									</div>
+								</div>
+							</div>
+
+							<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+								<div>
+									<label class="block text-sm font-bold text-slate-600 mb-2">
+										Nombre <span class="text-red-600">*</span>
+									</label>
+
+									<input id="nombre"
+										type="text"
+										name="nombre"
+										pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ ]+"
+										required
+										th:value="${residente != null and residente.estudiante != null ? residente.estudiante.nombre : ''}"
+										class="input-form"
+										placeholder="Nombre del estudiante" />
+								</div>
+
+								<div>
+									<label class="block text-sm font-bold text-slate-600 mb-2">
+										Apellidos <span class="text-red-600">*</span>
+									</label>
+
+									<input id="apellidos"
+										type="text"
+										name="apellidos"
+										pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ ]+"
+										required
+										th:value="${residente != null and residente.estudiante != null ? residente.estudiante.apellidos : ''}"
+										class="input-form"
+										placeholder="Apellidos del estudiante" />
+								</div>
+
+							</div>
+
+							<div>
+								<label class="block text-sm font-bold text-slate-600 mb-2">
+									Semestre <span class="text-red-600">*</span>
+								</label>
+
+								<input id="semestre"
+									type="number"
+									name="semestre"
+									min="8"
+									max="13"
+									step="1"
+									inputmode="numeric"
+									required
+									th:value="${residente != null and residente.estudiante != null ? residente.estudiante.semestre : ''}"
+									class="input-form"
+									placeholder="Semestre" />
+							</div>
+
+							<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+								<div>
+									<label class="block text-sm font-bold text-slate-600 mb-2">
+										Telefono <span class="text-red-600">*</span>
+									</label>
+
+									<input id="telefono"
+										type="text"
+										name="telefono"
+										maxlength="10"
+										pattern="[0-9]{10}"
+										required
+										th:value="${residente != null and residente.estudiante != null ? residente.estudiante.telefono : ''}"
+										class="input-form"
+										placeholder="Telefono" />
+								</div>
+
+								<div>
+									<label class="block text-sm font-bold text-slate-600 mb-2">
+										Correo <span class="text-red-600">*</span>
+									</label>
+
+									<input id="correo"
+										type="email"
+										name="correo"
+										required
+										th:value="${residente != null and residente.estudiante != null ? residente.estudiante.correo : ''}"
+										class="input-form"
+										placeholder="Correo electronico" />
+								</div>
+
+							</div>
+
+						</div>
+
+					</div>
+
+					<div class="p-10 bg-slate-50/80">
+
+						<div class="mb-8">
+							<h2 class="text-xl font-black text-[#002046]">
+								Fotografia y estado
+							</h2>
+							<p class="text-sm text-slate-500">
+								Agrega una fotografia del residente si esta disponible.
+							</p>
+						</div>
+
+						<div class="space-y-8">
+
+							<div>
+								<label class="block text-sm font-bold text-slate-600 mb-2">
+									Foto
+								</label>
+
+								<input type="file"
+									name="foto"
+									id="foto"
+									accept=".jpg,.jpeg,.png"
+									class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3" />
+
+								<p class="text-xs text-slate-500 mt-2">
+									Formatos permitidos: JPG, JPEG o PNG. Tamano maximo recomendado: 5 MB.
+								</p>
+
+								<div class="mt-4"
+									th:if="${residente != null and residente.fotoPath != null and !#strings.isEmpty(residente.fotoPath)}">
+
+									<img th:src="@{/residentes-archivos/{foto}(foto=${residente.fotoPath})}"
+										class="w-48 h-48 object-cover rounded-2xl border border-slate-200 shadow-md"
+										alt="Foto actual" />
+
+								</div>
+							</div>
+
+							<div id="mensajeAutollenado"
+								class="hidden rounded-2xl bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 text-sm font-semibold">
+								Los datos fueron recuperados desde estudiantes. Puedes revisarlos y modificarlos antes de guardar.
+							</div>
+
+							<div id="mensajeNoEncontrado"
+								class="hidden rounded-2xl bg-red-50 border border-red-200 text-red-800 px-4 py-3 text-sm font-semibold">
+								No se encontro un estudiante activo con esa matricula.
+							</div>
+
+							<div class="rounded-2xl bg-white border border-slate-200 text-slate-600 px-5 py-4 text-sm shadow-sm">
+								<div class="flex gap-3">
+									<span class="material-symbols-outlined text-[#003B8F]">info</span>
+									<p>
+										El residente se crea con base en la matricula registrada en estudiantes,
+										pero los datos personales tambien pueden actualizarse desde este formulario.
+									</p>
+								</div>
+							</div>
+
+						</div>
+
+					</div>
+
+				</div>
+
+				<div class="px-10 py-6 border-t border-slate-200 bg-white flex flex-wrap justify-end gap-4">
+
+					<a th:href="@{/residentes/index}"
+						class="px-8 py-3 rounded-xl font-bold text-slate-600 hover:bg-slate-100 transition">
+						Cancelar
+					</a>
+
+					<button type="submit"
+						class="px-10 py-3 rounded-xl font-bold text-white primary-gradient shadow-lg hover:scale-[1.02] transition"
+						th:text="${residente != null and residente.id != null} ? 'Actualizar Residente' : 'Guardar Residente'">
+						Guardar Residente
+					</button>
+
+					<a th:if="${residente != null and residente.estudiante != null}"
+						th:href="@{/estudiantes/edit/{id}(id=${residente.estudiante.id})}"
+						class="inline-flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-5 py-3 rounded-xl font-bold text-sm shadow-lg transition hover:scale-[1.02]">
+						<span class="material-symbols-outlined text-base">edit</span>
+						Modificar en modulo estudiantes
+					</a>
+
+				</div>
+
+			</form>
+
+		</div>
+
+	</div>
+
+</main>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+	const matriculaInput = document.getElementById("matricula");
+	const nombreInput = document.getElementById("nombre");
+	const apellidosInput = document.getElementById("apellidos");
+	const semestreInput = document.getElementById("semestre");
+	const telefonoInput = document.getElementById("telefono");
+	const correoInput = document.getElementById("correo");
+	const fotoInput = document.getElementById("foto");
+	const formResidente = document.getElementById("formResidente");
+
+	const mensajeAutollenado = document.getElementById("mensajeAutollenado");
+	const mensajeNoEncontrado = document.getElementById("mensajeNoEncontrado");
+
+	const matriculaRegex = /^(C\d{8}|\d{8})$/;
+	const telefonoRegex = /^\d{10}$/;
+	const textoRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$/;
+
+	const esEdicion = document.querySelector("input[name='id']") !== null;
+	let temporizadorBusqueda = null;
+	let ultimaMatriculaConsultada = null;
+
+	function limpiarDatos() {
+		nombreInput.value = "";
+		apellidosInput.value = "";
+		semestreInput.value = "";
+		telefonoInput.value = "";
+		correoInput.value = "";
+	}
+
+	function mostrarAutollenado() {
+		mensajeAutollenado.classList.remove("hidden");
+		mensajeNoEncontrado.classList.add("hidden");
+	}
+
+	function mostrarNoEncontrado() {
+		mensajeNoEncontrado.classList.remove("hidden");
+		mensajeAutollenado.classList.add("hidden");
+	}
+
+	function ocultarMensajes() {
+		mensajeAutollenado.classList.add("hidden");
+		mensajeNoEncontrado.classList.add("hidden");
+	}
+
+	function limpiarTextoConEspacios(valor) {
+		return valor
+			.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ ]/g, "")
+			.replace(/\s{2,}/g, " ")
+			.replace(/^\s+/, "");
+	}
+
+	matriculaInput.addEventListener("input", function () {
+		let valor = matriculaInput.value.toUpperCase();
+
+		valor = valor.replace(/[^C0-9]/g, "");
+
+		if (valor.includes("C")) {
+			valor = "C" + valor.replace(/C/g, "");
+		}
+
+		if (valor.startsWith("C")) {
+			valor = "C" + valor.substring(1).replace(/\D/g, "").slice(0, 8);
+		} else {
+			valor = valor.replace(/\D/g, "").slice(0, 8);
+		}
+
+		matriculaInput.value = valor;
+
+		if (temporizadorBusqueda) {
+			clearTimeout(temporizadorBusqueda);
+		}
+
+		if (!matriculaRegex.test(valor)) {
+			ultimaMatriculaConsultada = null;
+
+			if (!esEdicion) {
+				limpiarDatos();
+			}
+
+			ocultarMensajes();
+			return;
+		}
+
+		temporizadorBusqueda = setTimeout(buscarEstudiante, 250);
+	});
+
+	nombreInput.addEventListener("input", function () {
+		this.value = limpiarTextoConEspacios(this.value);
+	});
+
+	apellidosInput.addEventListener("input", function () {
+		this.value = limpiarTextoConEspacios(this.value);
+	});
+
+	telefonoInput.addEventListener("input", function () {
+		this.value = this.value.replace(/\D/g, "").slice(0, 10);
+	});
+
+	semestreInput.addEventListener("input", function () {
+		this.value = this.value.replace(/\D/g, "").slice(0, 2);
+	});
+
+	async function buscarEstudiante() {
+		const matricula = matriculaInput.value.trim().toUpperCase();
+
+		if (matricula === "") {
+			if (!esEdicion) {
+				limpiarDatos();
+			}
+			ocultarMensajes();
+			return;
+		}
+
+		if (!matriculaRegex.test(matricula)) {
+			if (!esEdicion) {
+				limpiarDatos();
+			}
+			ocultarMensajes();
+			return;
+		}
+
+		if (ultimaMatriculaConsultada === matricula) {
+			return;
+		}
+
+		try {
+			const response = await fetch(`/estudiantes/buscar-por-matricula?matricula=${encodeURIComponent(matricula)}`);
+
+			if (!response.ok) {
+				ultimaMatriculaConsultada = null;
+				if (!esEdicion) {
+					limpiarDatos();
+				}
+				mostrarNoEncontrado();
+				return;
+			}
+
+			const estudiante = await response.json();
+
+			if (estudiante) {
+				ultimaMatriculaConsultada = matricula;
+				nombreInput.value = limpiarTextoConEspacios(estudiante.nombre || "");
+				apellidosInput.value = limpiarTextoConEspacios(estudiante.apellidos || "");
+				semestreInput.value = estudiante.semestre || "";
+				telefonoInput.value = (estudiante.telefono || "").toString().replace(/\D/g, "").slice(0, 10);
+				correoInput.value = estudiante.correo || "";
+
+				mostrarAutollenado();
+			} else {
+				ultimaMatriculaConsultada = null;
+				if (!esEdicion) {
+					limpiarDatos();
+				}
+				mostrarNoEncontrado();
+			}
+
+		} catch (error) {
+			console.error("No se pudo consultar el estudiante:", error);
+			ultimaMatriculaConsultada = null;
+
+			if (!esEdicion) {
+				limpiarDatos();
+			}
+
+			ocultarMensajes();
+		}
+	}
+
+	matriculaInput.addEventListener("blur", buscarEstudiante);
+	matriculaInput.addEventListener("change", buscarEstudiante);
+
+	if (fotoInput) {
+		fotoInput.addEventListener("change", function () {
+			if (!fotoInput.files || fotoInput.files.length === 0) {
+				return;
+			}
+
+			const archivo = fotoInput.files[0];
+			const nombre = archivo.name.toLowerCase();
+			const extension = nombre.split(".").pop();
+			const permitidas = ["jpg", "jpeg", "png"];
+			const maximo = 5 * 1024 * 1024;
+
+			if (!permitidas.includes(extension)) {
+				fotoInput.value = "";
+
+				Swal.fire({
+					icon: "warning",
+					title: "Archivo no permitido",
+					text: "La foto solo puede ser JPG, JPEG o PNG.",
+					confirmButtonColor: "#003B8F"
+				});
+
+				return;
+			}
+
+			if (archivo.size > maximo) {
+				fotoInput.value = "";
+
+				Swal.fire({
+					icon: "warning",
+					title: "Archivo demasiado grande",
+					text: "La foto no debe pesar mas de 5 MB.",
+					confirmButtonColor: "#003B8F"
+				});
+			}
+		});
+	}
+
+	formResidente.addEventListener("submit", function (e) {
+		const matricula = matriculaInput.value.trim().toUpperCase();
+		const nombre = nombreInput.value.trim();
+		const apellidos = apellidosInput.value.trim();
+		const semestre = semestreInput.value.trim();
+		const telefono = telefonoInput.value.trim();
+		const correo = correoInput.value.trim();
+
+		if (!matriculaRegex.test(matricula)) {
+			e.preventDefault();
+
+			Swal.fire({
+				icon: "warning",
+				title: "Matricula invalida",
+				text: "La matricula debe tener 8 numeros, o iniciar con C y tener 8 numeros.",
+				confirmButtonColor: "#003B8F"
+			});
+
+			return;
+		}
+
+		if (nombre === "" || apellidos === "" || semestre === "" || telefono === "" || correo === "") {
+			e.preventDefault();
+
+			Swal.fire({
+				icon: "warning",
+				title: "Campos incompletos",
+				text: "Completa nombre, apellidos, semestre, telefono y correo.",
+				confirmButtonColor: "#003B8F"
+			});
+
+			return;
+		}
+
+		if (!textoRegex.test(nombre) || !textoRegex.test(apellidos)) {
+			e.preventDefault();
+
+			Swal.fire({
+				icon: "warning",
+				title: "Nombre invalido",
+				text: "Nombre y apellidos solo deben contener letras y espacios.",
+				confirmButtonColor: "#003B8F"
+			});
+
+			return;
+		}
+
+		if (!telefonoRegex.test(telefono)) {
+			e.preventDefault();
+
+			Swal.fire({
+				icon: "warning",
+				title: "Telefono invalido",
+				text: "El telefono debe tener exactamente 10 digitos.",
+				confirmButtonColor: "#003B8F"
+			});
+
+			return;
+		}
+
+		const semestreNumero = parseInt(semestre, 10);
+
+		if (Number.isNaN(semestreNumero) || semestreNumero < 8) {
+			e.preventDefault();
+
+			Swal.fire({
+				icon: "warning",
+				title: "Semestre invalido",
+				text: "El semestre minimo permitido es 8.",
+				confirmButtonColor: "#003B8F"
+			});
+
+			return;
+		}
+
+		if (semestreNumero > 13) {
+			e.preventDefault();
+
+			Swal.fire({
+				icon: "warning",
+				title: "Semestre invalido",
+				text: "El semestre maximo permitido es 13.",
+				confirmButtonColor: "#003B8F"
+			});
+		}
+	});
+
+	if (!esEdicion && matriculaInput.value.trim() !== "") {
+		buscarEstudiante();
+	}
+
+});
+</script>
+
+</body>
+</html>

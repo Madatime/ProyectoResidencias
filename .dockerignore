@@ -1,0 +1,10 @@
+.git
+.settings
+target
+tmp
+uploads
+uploadsresidentes
+uploadsasesores-externos
+*.class
+*.log
+HELP.md

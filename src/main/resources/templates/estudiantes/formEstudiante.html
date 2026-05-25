@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Formulario Estudiante | TecNM Campus Chilpancingo</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&family=Material+Symbols+Outlined" rel="stylesheet">
+<style>
+body { font-family:'Inter',sans-serif; background:radial-gradient(circle at top left, rgba(0,59,143,.10), transparent 28%), linear-gradient(135deg,#f7f9fb 0%,#eef4fb 45%,#f8fafc 100%); min-height:100vh; overflow-x:hidden; }
+h1,h2,h3 { font-family:'Manrope',sans-serif; }
+.material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; }
+.grid-pattern { position:fixed; inset:0; z-index:0; opacity:.035; background-image:linear-gradient(#002046 1px, transparent 1px), linear-gradient(90deg,#002046 1px, transparent 1px); background-size:42px 42px; pointer-events:none; }
+.float-shape { position:fixed; border-radius:9999px; background:rgba(0,59,143,.08); filter:blur(1px); z-index:0; animation:float 8s ease-in-out infinite; }
+.float-shape:nth-child(2) { animation-delay:2s; }
+.float-shape:nth-child(3) { animation-delay:4s; }
+.page-enter { animation:fadeUp .75s ease-out both; }
+.card-animate { animation:fadeUp .8s ease-out both; transition:all .25s ease; }
+.input-form { width:100%; background-color:#f1f5f9; border:1px solid transparent; border-radius:1rem; padding:.85rem 1rem; outline:none; transition:all .2s ease; }
+.input-form:focus { background-color:white; border-color:#003B8F; box-shadow:0 0 0 3px rgba(0,59,143,.12); }
+@keyframes fadeUp { from { opacity:0; transform:translateY(24px) scale(.98);} to { opacity:1; transform:translateY(0) scale(1);} }
+@keyframes float { 0%,100% { transform:translateY(0) translateX(0);} 50% { transform:translateY(-18px) translateX(10px);} }
+</style>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased">
+<div class="grid-pattern"></div>
+<div class="float-shape w-72 h-72 top-[-80px] left-[250px]"></div>
+<div class="float-shape w-52 h-52 bottom-[-70px] right-[6%]"></div>
+<div class="float-shape w-40 h-40 top-[22%] right-[12%]"></div>
+
+<div th:replace="~{fragments/sidebar :: sidebar('estudiantes')}"></div>
+
+<main class="ml-64 min-h-screen relative z-10">
+	<header th:replace="~{fragments/ui :: topbar(@{/estudiantes/index}, 'Volver')}"></header>
+
+	<div class="max-w-5xl mx-auto p-8 page-enter">
+		<div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#00152f] via-[#002046] to-[#003B8F] text-white p-8 shadow-2xl border border-white/10 mb-8 card-animate">
+			<div class="pointer-events-none absolute inset-0 opacity-20" style="background:radial-gradient(circle at top left, #ffffff 0, transparent 28%), radial-gradient(circle at bottom right, #60a5fa 0, transparent 30%);"></div>
+			<div class="relative flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+				<div>
+					<p class="text-sm text-blue-100 font-semibold mb-2 flex items-center gap-2">
+						<span>Panel de Control</span>
+						<span class="text-blue-300">›</span>
+						<span class="text-white">Estudiantes</span>
+					</p>
+					<h2 class="text-5xl font-black tracking-tight mb-3 drop-shadow-lg" th:text="${estudiante != null and estudiante.id != null} ? 'Editar Estudiante' : 'Agregar Estudiante'">Agregar Estudiante</h2>
+					<p class="text-slate-100 text-base max-w-3xl leading-relaxed">Registra estudiantes para que puedan participar después en el proceso de residencias profesionales.</p>
+				</div>
+				<div class="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl px-6 py-5 shadow-2xl">
+					<p class="text-xs font-bold text-blue-100 uppercase tracking-[0.15em] mb-2">Módulo activo</p>
+					<p class="text-xl font-black text-white">Control estudiantil</p>
+				</div>
+			</div>
+			<div class="pointer-events-none absolute -bottom-16 -right-16 w-72 h-72 bg-white/10 rounded-full blur-3xl"></div>
+		</div>
+
+		<th:block th:replace="~{fragments/ui :: flashMessages(${msgSuccess}, ${msgError})}"></th:block>
+
+		<div class="bg-white/95 backdrop-blur rounded-3xl shadow-xl border border-slate-200 overflow-hidden card-animate">
+			<form th:action="@{/estudiantes/save}" th:object="${estudiante}" method="post">
+				<input type="hidden" th:field="*{id}">
+				<input type="hidden" th:field="*{estatus}">
+				<div class="p-10 space-y-8">
+					<div>
+						<h3 class="text-2xl font-black text-[#002046] mb-2">Información del estudiante</h3>
+						<p class="text-slate-500 text-sm">Captura los datos principales del estudiante y su carrera.</p>
+					</div>
+
+					<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+						<div>
+							<label class="block text-sm font-bold text-slate-700 mb-3">No. de control <span class="text-red-600">*</span></label>
+							<input type="text"
+								th:field="*{matricula}"
+								required
+								minlength="8"
+								maxlength="9"
+								pattern="C?\d{8}"
+								inputmode="text"
+								placeholder="Ej. 22520224 o C22520224"
+								title="Debe contener 8 digitos o iniciar con C seguida de 8 digitos."
+								class="input-form"
+								oninput="this.value = this.value.toUpperCase().replace(/[^C0-9]/g, '').replace(/(?!^)C/g, '').replace(/^([^C]?)(.*)$/, function(_, primero, resto) { if (primero === 'C') { return 'C' + resto.replace(/C/g, '').replace(/\D/g, '').slice(0, 8); } return (primero + resto).replace(/C/g, '').replace(/\D/g, '').slice(0, 8); });">
+							<p class="mt-2 text-xs text-slate-500">Solo se permiten 8 digitos o una C al inicio seguida de 8 digitos.</p>
+						</div>
+						<div>
+							<label class="block text-sm font-bold text-slate-700 mb-3">Sexo <span class="text-red-600">*</span></label>
+							<select th:field="*{sexo}" required class="input-form">
+								<option value="">Selecciona una opción</option>
+								<option value="M">Masculino</option>
+								<option value="F">Femenino</option>
+							</select>
+						</div>
+						<div>
+							<label class="block text-sm font-bold text-slate-700 mb-3">Nombre(s) <span class="text-red-600">*</span></label>
+							<input type="text" th:field="*{nombre}" required maxlength="120" placeholder="Nombre del estudiante" class="input-form">
+						</div>
+						<div>
+							<label class="block text-sm font-bold text-slate-700 mb-3">Apellidos <span class="text-red-600">*</span></label>
+							<input type="text" th:field="*{apellidos}" required maxlength="160" placeholder="Apellidos del estudiante" class="input-form">
+						</div>
+						<div>
+							<label class="block text-sm font-bold text-slate-700 mb-3">Carrera <span class="text-red-600">*</span></label>
+							<select th:field="*{carrera.id}" required class="input-form">
+								<option value="">Selecciona una carrera</option>
+								<option th:each="carrera : ${carreras}" th:value="${carrera.id}" th:text="${carrera.nombre}"></option>
+							</select>
+						</div>
+						<div>
+							<label class="block text-sm font-bold text-slate-700 mb-3">Semestre</label>
+							<input type="number" th:field="*{semestre}" min="8" max="13" step="1" inputmode="numeric" placeholder="Ej. 8" class="input-form">
+						</div>
+						<div>
+							<label class="block text-sm font-bold text-slate-700 mb-3">Teléfono</label>
+							<input type="text" th:field="*{telefono}" maxlength="30" placeholder="Ej. 7471234567" class="input-form">
+						</div>
+						<div>
+							<label class="block text-sm font-bold text-slate-700 mb-3">Correo electrónico</label>
+							<input type="email" th:field="*{correo}" maxlength="120" placeholder="Ej. alumno@itch.edu.mx" class="input-form">
+						</div>
+					</div>
+				</div>
+
+				<div class="bg-slate-50 px-10 py-6 border-t border-slate-200 flex flex-col sm:flex-row justify-end gap-3">
+					<a th:href="@{/estudiantes/index}" class="inline-flex justify-center items-center gap-2 bg-slate-200 hover:bg-slate-300 text-slate-700 px-6 py-3 rounded-2xl font-bold text-sm transition">Cancelar</a>
+					<button type="submit" class="inline-flex justify-center items-center gap-2 bg-[#003B8F] hover:bg-[#002f73] text-white px-6 py-3 rounded-2xl font-bold text-sm transition">
+						<span class="material-symbols-outlined text-base">save</span>
+						<span th:text="${estudiante != null and estudiante.id != null} ? 'Guardar cambios' : 'Registrar estudiante'">Registrar estudiante</span>
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</main>
+</body>
+</html>

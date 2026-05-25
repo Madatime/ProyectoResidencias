@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<title>Revisar Propuesta</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<link
+	href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+	rel="stylesheet" />
+
+<style>
+body {
+	font-family: 'Inter', sans-serif;
+	background:
+		radial-gradient(circle at top left, rgba(0, 59, 143, 0.10), transparent 28%),
+		linear-gradient(135deg, #f7f9fb 0%, #eef4fb 45%, #f8fafc 100%);
+	min-height: 100vh;
+	overflow-x: hidden;
+}
+
+h1, h2, h3 {
+	font-family: 'Manrope', sans-serif;
+}
+
+.primary-gradient {
+	background: linear-gradient(135deg, #002046 0%, #003B8F 100%);
+}
+
+.material-symbols-outlined {
+	font-variation-settings:
+	'FILL' 0,
+	'wght' 400,
+	'GRAD' 0,
+	'opsz' 24;
+}
+
+.grid-pattern {
+	position: fixed;
+	inset: 0;
+	z-index: 0;
+	opacity: 0.035;
+	background-image:
+		linear-gradient(#002046 1px, transparent 1px),
+		linear-gradient(90deg, #002046 1px, transparent 1px);
+	background-size: 42px 42px;
+	pointer-events: none;
+}
+
+.float-shape {
+	position: fixed;
+	border-radius: 9999px;
+	background: rgba(0, 59, 143, 0.08);
+	filter: blur(1px);
+	z-index: 0;
+	animation: float 8s ease-in-out infinite;
+	pointer-events: none;
+}
+
+.fade-in {
+	animation: fadeUp 0.7s ease-out both;
+}
+
+.input-form {
+	width: 100%;
+	border-radius: 1rem;
+	background-color: #f8fafc;
+	border: 1px solid #e2e8f0;
+	padding: 0.95rem 1rem;
+	outline: none;
+	font-size: 0.95rem;
+	font-weight: 500;
+	transition: all 0.25s ease;
+}
+
+.input-form:focus {
+	border-color: #003B8F;
+	box-shadow: 0 0 0 4px rgba(0, 59, 143, 0.12);
+	background-color: white;
+}
+
+@keyframes fadeUp {
+	from {
+		opacity: 0;
+		transform: translateY(24px) scale(0.98);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
+}
+
+@keyframes float {
+	0%, 100% {
+		transform: translateY(0) translateX(0);
+	}
+
+	50% {
+		transform: translateY(-18px) translateX(10px);
+	}
+}
+</style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+<div class="grid-pattern"></div>
+
+<div class="float-shape w-72 h-72 top-[-80px] left-[250px]"></div>
+<div class="float-shape w-52 h-52 bottom-[-70px] right-[6%]"></div>
+<div class="float-shape w-40 h-40 top-[22%] right-[12%]"></div>
+
+<div th:replace="~{fragments/sidebar :: sidebar('bancoProyectos')}"></div>
+
+<main class="ml-64 min-h-screen relative z-10">
+
+		<header th:replace="~{fragments/ui :: topbar(@{/banco-proyectos/pendientes}, 'Volver')}"></header>
+
+	<div class="max-w-7xl mx-auto p-8 fade-in">
+
+		
+		<div class="relative overflow-hidden rounded-3xl primary-gradient text-white p-8 shadow-2xl border border-white/10 mb-8">
+
+			<div class="absolute inset-0 opacity-20 pointer-events-none"
+				style="background:
+					radial-gradient(circle at top left, #ffffff 0, transparent 28%),
+					radial-gradient(circle at bottom right, #60a5fa 0, transparent 30%);">
+			</div>
+
+			<div class="absolute -bottom-16 -right-16 w-72 h-72 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
+
+			<div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+
+				<div class="max-w-4xl">
+
+					<p class="text-sm text-blue-100 font-semibold mb-2 flex items-center gap-2">
+
+						<span>Banco de Proyectos</span>
+
+						<span class="text-blue-300">›</span>
+
+						<span class="text-white">
+							Revisión de Propuesta
+						</span>
+
+					</p>
+
+					<h1 class="text-4xl md:text-5xl font-black tracking-tight mb-4">
+						Revisar Propuesta
+					</h1>
+
+					<p class="text-blue-100 text-base max-w-3xl leading-relaxed">
+						Autoriza, autoriza con observaciones o rechaza la propuesta enviada por el residente.
+					</p>
+
+				</div>
+
+				<div class="relative z-20 bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl px-7 py-6 shadow-2xl min-w-[300px]">
+
+					<p class="text-xs font-bold text-blue-100 uppercase tracking-[0.15em] mb-2">
+						Estado actual
+					</p>
+
+					<div class="flex items-center gap-3">
+
+						<div class="w-14 h-14 rounded-2xl bg-white/15 flex items-center justify-center backdrop-blur">
+
+							<span class="material-symbols-outlined text-3xl text-white">
+								fact_check
+							</span>
+
+						</div>
+
+						<div>
+
+							<h3 class="text-2xl font-black text-white"
+								th:text="${proyecto.estado}">
+							</h3>
+
+							<p class="text-sm text-blue-100 mt-1">
+								Propuesta pendiente de revisión.
+							</p>
+
+						</div>
+
+					</div>
+
+				</div>
+
+			</div>
+
+		</div>
+
+		<div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+
+			
+			<div class="xl:col-span-2 space-y-6">
+
+				<div class="bg-white/95 backdrop-blur rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
+
+					<div class="px-8 py-7 border-b border-slate-200">
+
+						<h2 class="text-3xl font-black text-[#002046]"
+							th:text="${proyecto.nombreProyecto}">
+						</h2>
+
+						<p class="text-slate-500 mt-2">
+							Información general de la propuesta enviada.
+						</p>
+
+					</div>
+
+					<div class="p-8">
+
+						<div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
+
+							<div class="bg-slate-50 rounded-2xl border border-slate-200 p-5">
+
+								<p class="text-xs uppercase tracking-widest text-slate-500 font-black mb-2">
+									Residente
+								</p>
+
+								<p class="text-lg font-black text-[#002046]"
+									th:text="${proyecto.propuestoPor != null ? proyecto.propuestoPor.nombreCompleto : 'Sin residente'}">
+								</p>
+
+							</div>
+
+							<div class="bg-slate-50 rounded-2xl border border-slate-200 p-5">
+
+								<p class="text-xs uppercase tracking-widest text-slate-500 font-black mb-2">
+									Matrícula
+								</p>
+
+								<p class="text-lg font-black text-[#002046]"
+									th:text="${proyecto.propuestoPor != null ? proyecto.propuestoPor.matricula : 'Sin matrícula'}">
+								</p>
+
+							</div>
+
+							<div class="bg-slate-50 rounded-2xl border border-slate-200 p-5">
+
+								<p class="text-xs uppercase tracking-widest text-slate-500 font-black mb-2">
+									Empresa
+								</p>
+
+								<p class="text-lg font-black text-[#002046]"
+									th:text="${proyecto.empresa != null ? proyecto.empresa.nombre : 'Sin empresa'}">
+								</p>
+
+							</div>
+
+							<div class="bg-slate-50 rounded-2xl border border-slate-200 p-5">
+
+								<p class="text-xs uppercase tracking-widest text-slate-500 font-black mb-2">
+									Carrera sugerida
+								</p>
+
+								<p class="text-lg font-black text-[#002046]"
+									th:text="${proyecto.carrera != null ? proyecto.carrera.nombre : 'Sin carrera'}">
+								</p>
+
+							</div>
+
+							<div class="bg-slate-50 rounded-2xl border border-slate-200 p-5">
+
+								<p class="text-xs uppercase tracking-widest text-slate-500 font-black mb-2">
+									Periodo
+								</p>
+
+								<p class="text-lg font-black text-[#002046]"
+									th:text="${proyecto.periodo}">
+								</p>
+
+							</div>
+
+							<div class="bg-slate-50 rounded-2xl border border-slate-200 p-5">
+
+								<p class="text-xs uppercase tracking-widest text-slate-500 font-black mb-2">
+									Estado actual
+								</p>
+
+								<span class="inline-flex items-center gap-2 bg-amber-100 text-amber-700 px-4 py-2 rounded-full text-sm font-black">
+
+									<span class="material-symbols-outlined text-base">
+										schedule
+									</span>
+
+									<th:block th:text="${proyecto.estado}">
+									</th:block>
+
+								</span>
+
+							</div>
+
+						</div>
+
+						<div class="space-y-8">
+
+							<div>
+
+								<h3 class="text-xl font-black text-[#002046] mb-3">
+									Descripción del Proyecto
+								</h3>
+
+								<div class="rounded-2xl border border-slate-200 bg-slate-50 p-6">
+
+									<p class="text-slate-700 leading-relaxed whitespace-pre-line text-justify"
+										th:text="${proyecto.descripcion}">
+									</p>
+
+								</div>
+
+							</div>
+
+							<div>
+
+								<h3 class="text-xl font-black text-[#002046] mb-3">
+									Objetivo General
+								</h3>
+
+								<div class="rounded-2xl border border-slate-200 bg-slate-50 p-6">
+
+									<p class="text-slate-700 leading-relaxed whitespace-pre-line text-justify"
+										th:text="${proyecto.objetivo}">
+									</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			
+			<div>
+
+				<div class="bg-white/95 backdrop-blur rounded-3xl shadow-xl border border-slate-200 overflow-hidden sticky top-28">
+
+					<div class="px-8 py-6 border-b border-slate-200">
+
+						<h2 class="text-2xl font-black text-[#002046]">
+							Dictamen del jefe
+						</h2>
+
+						<p class="text-slate-500 mt-2 text-sm">
+							Selecciona el resultado de la revisión.
+						</p>
+
+					</div>
+
+					<form method="post"
+						th:action="@{/banco-proyectos/revisar}"
+						class="p-8 space-y-6">
+
+						<input type="hidden"
+							name="idProyecto"
+							th:value="${proyecto.id}" />
+
+						<div>
+
+							<label class="block text-sm font-bold text-slate-700 mb-2">
+								Resultado de revisión
+								<span class="text-red-600">*</span>
+							</label>
+
+							<select name="estado"
+								required
+								class="input-form">
+
+								<option value="">
+									Seleccione un resultado
+								</option>
+
+								<option th:each="estadoItem : ${estadosRevision}"
+									th:value="${estadoItem}"
+									th:text="${estadoItem == T(itch.tsp.model.EstadoBancoProyecto).DISPONIBLE ? 'Autorizar y publicar en banco' :
+											 estadoItem == T(itch.tsp.model.EstadoBancoProyecto).RECHAZADO ? 'Rechazar propuesta' : estadoItem}">
+								</option>
+
+							</select>
+
+						</div>
+
+						<div>
+
+							<label class="block text-sm font-bold text-slate-700 mb-2">
+								Observaciones
+							</label>
+
+							<textarea name="observaciones"
+								rows="7"
+								placeholder="Escribe observaciones para el residente..."
+								class="input-form resize-none">
+							</textarea>
+
+						</div>
+
+						<div class="rounded-2xl bg-blue-50 border border-blue-200 text-blue-800 px-5 py-4 text-sm leading-relaxed">
+
+							<div class="flex items-start gap-3">
+
+								<span class="material-symbols-outlined mt-0.5">
+									info
+								</span>
+								<div>
+									<p class="font-black mb-1">
+										Importante
+									</p>
+									<p>
+										Si autorizas con observaciones, el proyecto podrá avanzar y el residente visualizará los comentarios realizados.
+									</p>
+								</div>
+							</div>
+						</div>
+
+						<div class="flex flex-col gap-3 pt-2">
+
+							<button type="submit"
+								class="inline-flex items-center justify-center gap-2 px-6 py-4 rounded-2xl text-white primary-gradient font-black shadow-xl transition-all duration-200 hover:scale-[1.02]">
+
+								<span class="material-symbols-outlined text-[20px]">
+									save
+								</span>
+
+								Guardar revisión
+							</button>
+
+							<a th:href="@{/banco-proyectos/pendientes}"
+								class="inline-flex items-center justify-center gap-2 px-6 py-4 rounded-2xl border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 font-bold transition">
+
+								<span class="material-symbols-outlined text-[20px]">
+									close
+								</span>
+
+								Cancelar
+							</a>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</main>
+
+</body>
+</html>

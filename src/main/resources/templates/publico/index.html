@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Portal Público de Residencias</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<link
+	href="https://fonts.googleapis.com/css2?family=Manrope:wght@700;800&family=Inter:wght@400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+	rel="stylesheet">
+
+<style>
+body {
+	font-family: 'Inter', sans-serif;
+	background:
+		radial-gradient(circle at top left, rgba(0, 59, 143, 0.10), transparent 28%),
+		linear-gradient(135deg, #f7f9fb 0%, #eef4fb 45%, #f8fafc 100%);
+	min-height: 100vh;
+	overflow-x: hidden;
+}
+
+h1, h2, h3 {
+	font-family: 'Manrope', sans-serif;
+}
+
+.material-symbols-outlined {
+	font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.hero-gradient {
+	background: linear-gradient(135deg, #002046 0%, #003B8F 100%);
+}
+
+.grid-pattern {
+	position: fixed;
+	inset: 0;
+	z-index: 0;
+	opacity: 0.035;
+	background-image:
+		linear-gradient(#002046 1px, transparent 1px),
+		linear-gradient(90deg, #002046 1px, transparent 1px);
+	background-size: 42px 42px;
+	pointer-events: none;
+}
+
+.float-shape {
+	position: fixed;
+	border-radius: 9999px;
+	background: rgba(0, 59, 143, 0.08);
+	filter: blur(1px);
+	z-index: 0;
+	animation: float 8s ease-in-out infinite;
+}
+
+.float-shape:nth-child(2) {
+	animation-delay: 2s;
+}
+
+.float-shape:nth-child(3) {
+	animation-delay: 4s;
+}
+
+.page-enter {
+	animation: fadeUp 0.75s ease-out both;
+}
+
+.card-hover {
+	animation: fadeUp 0.8s ease-out both;
+	transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.card-hover:hover {
+	transform: translateY(-6px);
+	box-shadow: 0 24px 45px -18px rgba(0, 32, 70, 0.25);
+	border-color: rgba(0, 59, 143, 0.20);
+}
+
+.tab-btn {
+	flex: 1;
+	padding: 14px 20px;
+	border-radius: 18px;
+	font-weight: 900;
+	background: #f1f5f9;
+	color: #002046;
+	transition: all 0.25s ease;
+}
+
+.tab-btn:hover {
+	transform: translateY(-2px);
+	background: #e0ecff;
+}
+
+.tab-btn.activo {
+	background: #003B8F;
+	color: white;
+	box-shadow: 0 14px 30px -18px rgba(0, 59, 143, 0.7);
+}
+
+@keyframes fadeUp {
+	from {
+		opacity: 0;
+		transform: translateY(24px) scale(0.98);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
+}
+
+@keyframes float {
+	0%, 100% {
+		transform: translateY(0) translateX(0);
+	}
+
+	50% {
+		transform: translateY(-18px) translateX(10px);
+	}
+}
+</style>
+</head>
+
+<body class="bg-slate-50 text-slate-900">
+
+	<div class="grid-pattern"></div>
+	<div class="float-shape w-72 h-72 top-[-80px] left-[12%]"></div>
+	<div class="float-shape w-52 h-52 bottom-[-70px] right-[6%]"></div>
+	<div class="float-shape w-40 h-40 top-[22%] right-[12%]"></div>
+
+	<header class="hero-gradient text-white shadow-xl relative z-10">
+
+		<div
+			class="max-w-7xl mx-auto px-8 py-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+
+			<div class="flex items-center gap-5">
+
+				<div
+					class="w-20 h-20 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-lg">
+
+					<img th:src="@{/img/logo-tecnm.png}" alt="Logo TecNM"
+						class="w-16 h-16 object-contain">
+
+				</div>
+
+				<div>
+
+					<h1 class="text-3xl font-extrabold tracking-tight">
+						TecNM Campus Chilpancingo
+					</h1>
+
+					<p class="text-blue-100 mt-2 text-sm md:text-base">
+						Sistema Integral de Residencias Profesionales
+					</p>
+
+				</div>
+
+			</div>
+
+			<div class="flex flex-wrap gap-3">
+
+				<a th:href="@{/calendario-actividades/descargar}"
+					class="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-5 py-3 rounded-xl font-bold shadow-lg transition hover:scale-[1.02]">
+
+					<span class="material-symbols-outlined">calendar_month</span>
+
+					Calendario
+				</a>
+
+				<a th:href="@{/login}"
+					class="inline-flex items-center gap-2 bg-white text-[#002046] hover:bg-slate-100 px-5 py-3 rounded-xl font-bold shadow-lg transition hover:scale-[1.02]">
+
+					<span class="material-symbols-outlined">login</span>
+
+					Iniciar sesión
+				</a>
+
+			</div>
+
+		</div>
+
+	</header>
+
+	<main class="relative z-10 page-enter">
+
+		<section class="max-w-7xl mx-auto px-8 pt-10">
+
+			<div
+				class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#00152f] via-[#002046] to-[#003B8F] text-white p-10 shadow-2xl border border-white/10">
+
+				<div class="pointer-events-none absolute inset-0 opacity-20"
+					style="background:
+						radial-gradient(circle at top left, #ffffff 0, transparent 28%),
+						radial-gradient(circle at bottom right, #60a5fa 0, transparent 30%);">
+				</div>
+
+				<div class="relative flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+
+					<div>
+
+						<div
+							class="inline-flex items-center gap-2 bg-white/10 border border-white/20 px-4 py-2 rounded-full text-sm font-bold mb-6">
+
+							<span class="material-symbols-outlined text-base">school</span>
+
+							Portal Público Institucional
+						</div>
+
+						<h2 class="text-4xl md:text-6xl leading-tight font-black mb-6 max-w-4xl">
+							Consulta proyectos de residencia profesional
+						</h2>
+
+						<p class="text-blue-100 text-lg leading-relaxed max-w-3xl">
+							Explora residencias registradas y proyectos disponibles del banco institucional
+							del TecNM Campus Chilpancingo.
+						</p>
+
+					</div>
+
+					<div class="grid grid-cols-2 gap-4 min-w-[320px]">
+
+						<div class="bg-white/10 border border-white/20 rounded-2xl p-5 backdrop-blur-xl">
+							<p class="text-xs text-blue-100 font-bold uppercase tracking-wide">
+								Residencias
+							</p>
+							<p class="text-4xl font-black"
+								th:text="${residencias != null ? #lists.size(residencias) : 0}">
+								0
+							</p>
+						</div>
+
+						<div class="bg-white/10 border border-white/20 rounded-2xl p-5 backdrop-blur-xl">
+							<p class="text-xs text-blue-100 font-bold uppercase tracking-wide">
+								Banco
+							</p>
+							<p class="text-4xl font-black"
+								th:text="${proyectosBanco != null ? #lists.size(proyectosBanco) : 0}">
+								0
+							</p>
+						</div>
+
+					</div>
+
+				</div>
+
+				<div class="pointer-events-none absolute -bottom-16 -right-16 w-72 h-72 bg-white/10 rounded-full blur-3xl"></div>
+
+			</div>
+
+		</section>
+
+		<section class="max-w-7xl mx-auto px-8 py-10">
+
+			<div class="bg-white rounded-3xl shadow-xl border border-slate-200 p-4 mb-8 flex gap-3">
+
+				<button type="button" id="btnResidencias"
+					class="tab-btn activo">
+					Residencias registradas
+				</button>
+
+				<button type="button" id="btnBanco"
+					class="tab-btn">
+					Banco de proyectos
+				</button>
+
+			</div>
+
+			<div id="tabResidencias">
+
+				<div
+					class="bg-white border border-slate-200 rounded-3xl shadow-lg p-8 mb-10">
+
+					<div
+						class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-8">
+
+						<div>
+
+							<h3 class="text-2xl font-extrabold text-[#002046] mb-2">
+								Búsqueda de residencias
+							</h3>
+
+							<p class="text-slate-500">
+								Filtra residencias por nombre del proyecto o periodo.
+							</p>
+
+						</div>
+
+						<div
+							class="inline-flex items-center gap-2 bg-slate-100 text-slate-700 px-4 py-2 rounded-xl font-bold text-sm">
+
+							<span class="material-symbols-outlined text-base">folder</span>
+
+							<span
+								th:text="${residencias != null ? #lists.size(residencias) : 0}">
+							</span>
+
+							Residencias encontradas
+						</div>
+
+					</div>
+
+					<form th:action="@{/residencias-publicas/buscar}" method="get"
+						class="grid grid-cols-1 md:grid-cols-5 gap-4">
+
+						<div class="md:col-span-2 relative">
+
+							<span
+								class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+								search
+							</span>
+
+							<input type="text" name="texto"
+								th:value="${textoBusqueda}"
+								placeholder="Buscar residencia..."
+								class="w-full rounded-2xl bg-slate-100 border border-slate-200 pl-12 pr-4 py-3 outline-none focus:ring-2 focus:ring-[#003B8F]">
+
+						</div>
+
+						<select name="periodo"
+							class="rounded-2xl bg-slate-100 border border-slate-200 px-4 py-3 outline-none focus:ring-2 focus:ring-[#003B8F] cursor-pointer">
+
+							<option value="">Todos los periodos</option>
+
+							<option value="ENE-JUN 2025"
+								th:selected="${periodoBusqueda == 'ENE-JUN 2025'}">
+								ENE-JUN 2025
+							</option>
+
+							<option value="AGO-DIC 2025"
+								th:selected="${periodoBusqueda == 'AGO-DIC 2025'}">
+								AGO-DIC 2025
+							</option>
+
+							<option value="ENE-JUN 2026"
+								th:selected="${periodoBusqueda == 'ENE-JUN 2026'}">
+								ENE-JUN 2026
+							</option>
+
+							<option value="AGO-DIC 2026"
+								th:selected="${periodoBusqueda == 'AGO-DIC 2026'}">
+								AGO-DIC 2026
+							</option>
+
+						</select>
+
+						<button type="submit"
+							class="rounded-2xl bg-[#003B8F] hover:bg-[#002f73] text-white font-bold px-5 py-3 transition shadow-lg shadow-blue-900/10">
+
+							Buscar
+						</button>
+
+						<a th:href="@{/}"
+							class="rounded-2xl bg-slate-100 hover:bg-slate-200 text-[#002046] font-bold px-5 py-3 text-center transition">
+
+							Limpiar
+						</a>
+
+					</form>
+
+				</div>
+
+				<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-7">
+
+					<div
+						th:if="${residencias == null or #lists.isEmpty(residencias)}"
+						class="col-span-full bg-white border border-slate-200 rounded-3xl shadow-lg p-16 text-center">
+
+						<div
+							class="w-24 h-24 mx-auto rounded-full bg-slate-100 flex items-center justify-center mb-6">
+
+							<span class="material-symbols-outlined text-5xl text-slate-400">
+								search_off
+							</span>
+
+						</div>
+
+						<h3 class="text-2xl font-extrabold text-[#002046] mb-3">
+							Sin resultados
+						</h3>
+
+						<p class="text-slate-500 max-w-lg mx-auto">
+							No se encontraron residencias con los filtros seleccionados.
+						</p>
+
+					</div>
+
+					<div th:each="residencia : ${residencias}"
+						class="bg-white border border-slate-200 rounded-3xl shadow-lg overflow-hidden card-hover">
+
+						<div class="hero-gradient px-6 py-5 text-white">
+
+							<div class="flex items-start justify-between gap-4">
+
+								<div>
+
+									<p class="text-xs uppercase tracking-widest text-blue-100 font-black mb-2"
+										th:text="${residencia.periodo}">
+										PERIODO
+									</p>
+
+									<h3 class="text-xl font-extrabold leading-snug"
+										th:text="${residencia.nombreProyecto}">
+										Proyecto
+									</h3>
+
+								</div>
+
+								<div
+									class="bg-white/10 border border-white/10 rounded-xl p-3 shrink-0">
+
+									<span class="material-symbols-outlined">
+										workspaces
+									</span>
+
+								</div>
+
+							</div>
+
+						</div>
+
+						<div class="p-6">
+
+							<div class="space-y-4 text-sm">
+
+								<div class="flex items-start gap-3">
+
+									<div
+										class="w-10 h-10 rounded-xl bg-blue-100 text-[#003B8F] flex items-center justify-center shrink-0">
+
+										<span class="material-symbols-outlined text-base">
+											apartment
+										</span>
+
+									</div>
+
+									<div>
+
+										<p class="text-slate-400 text-xs font-bold uppercase">
+											Empresa
+										</p>
+
+										<p class="font-semibold text-slate-700"
+											th:text="${residencia.empresa != null ? residencia.empresa.nombre : 'Sin empresa registrada'}">
+										</p>
+
+									</div>
+
+								</div>
+
+								<div class="flex items-start gap-3">
+
+									<div
+										class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+
+										<span class="material-symbols-outlined text-base">
+											school
+										</span>
+
+									</div>
+
+									<div>
+
+										<p class="text-slate-400 text-xs font-bold uppercase">
+											Asesor interno
+										</p>
+
+										<p class="font-semibold text-slate-700"
+											th:text="${residencia.asesorInterno != null ? residencia.asesorInterno.nombreCompleto : 'Sin asignar'}">
+										</p>
+
+									</div>
+
+								</div>
+
+								<div class="flex items-start gap-3">
+
+									<div
+										class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
+
+										<span class="material-symbols-outlined text-base">
+											business_center
+										</span>
+
+									</div>
+
+									<div>
+
+										<p class="text-slate-400 text-xs font-bold uppercase">
+											Asesor externo
+										</p>
+
+										<p class="font-semibold text-slate-700"
+											th:text="${residencia.asesorExterno != null ? residencia.asesorExterno.nombreCompleto : 'Sin asignar'}">
+										</p>
+
+									</div>
+
+								</div>
+
+							</div>
+
+							<div
+								class="mt-6 pt-5 border-t border-slate-100 text-sm text-slate-600 leading-relaxed min-h-[110px]">
+
+								<p
+									th:text="${residencia.descripcion != null ? residencia.descripcion : 'Sin descripción registrada.'}">
+								</p>
+
+							</div>
+
+							<a
+								th:href="@{/residencias-publicas/detalle/{id}(id=${residencia.id})}"
+								class="mt-6 inline-flex items-center justify-center gap-2 w-full bg-[#002046] hover:bg-[#003B8F] text-white rounded-2xl px-5 py-3 font-bold transition shadow-lg shadow-blue-900/10">
+
+								<span class="material-symbols-outlined text-base">
+									visibility
+								</span>
+
+								Ver detalle
+							</a>
+
+						</div>
+
+					</div>
+
+				</div>
+
+			</div>
+
+			<div id="tabBanco" class="hidden">
+
+				<div
+					class="bg-white border border-slate-200 rounded-3xl shadow-lg p-8 mb-10">
+
+					<div
+						class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+
+						<div>
+
+							<h3 class="text-2xl font-extrabold text-[#002046] mb-2">
+								Banco de proyectos
+							</h3>
+
+							<p class="text-slate-500">
+								Consulta proyectos disponibles para residencia profesional.
+							</p>
+
+						</div>
+
+						<div
+							class="inline-flex items-center gap-2 bg-slate-100 text-slate-700 px-4 py-2 rounded-xl font-bold text-sm">
+
+							<span class="material-symbols-outlined text-base">inventory_2</span>
+
+							<span
+								th:text="${proyectosBanco != null ? #lists.size(proyectosBanco) : 0}">
+							</span>
+
+							Proyectos disponibles
+						</div>
+
+					</div>
+
+				</div>
+
+				<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-7">
+
+					<div th:if="${proyectosBanco == null or #lists.isEmpty(proyectosBanco)}"
+						class="col-span-full bg-white border border-slate-200 rounded-3xl shadow-lg p-16 text-center">
+
+						<div
+							class="w-24 h-24 mx-auto rounded-full bg-slate-100 flex items-center justify-center mb-6">
+
+							<span class="material-symbols-outlined text-5xl text-slate-400">
+								inventory_2
+							</span>
+
+						</div>
+
+						<h3 class="text-2xl font-extrabold text-[#002046] mb-3">
+							Sin proyectos en banco
+						</h3>
+
+						<p class="text-slate-500 max-w-lg mx-auto">
+							No hay proyectos disponibles en el banco institucional.
+						</p>
+
+					</div>
+
+					<div th:each="proyecto : ${proyectosBanco}"
+						class="bg-white border border-slate-200 rounded-3xl shadow-lg overflow-hidden card-hover">
+
+						<div class="bg-gradient-to-br from-[#00152f] via-[#002046] to-[#003B8F] px-6 py-5 text-white">
+
+							<div class="flex items-start justify-between gap-4">
+
+								<div>
+
+									<p class="text-xs uppercase tracking-widest text-blue-100 font-black mb-2">
+										Banco de proyectos
+									</p>
+
+									<h3 class="text-xl font-extrabold leading-snug"
+										th:text="${proyecto.nombreProyecto}">
+										Proyecto
+									</h3>
+
+								</div>
+
+								<div
+									class="bg-white/10 border border-white/10 rounded-xl p-3 shrink-0">
+
+									<span class="material-symbols-outlined">
+										inventory_2
+									</span>
+
+								</div>
+
+							</div>
+
+						</div>
+
+						<div class="p-6">
+
+							<div class="space-y-4 text-sm">
+
+								<div class="flex items-start gap-3">
+
+									<div
+										class="w-10 h-10 rounded-xl bg-blue-100 text-[#003B8F] flex items-center justify-center shrink-0">
+
+										<span class="material-symbols-outlined text-base">
+											apartment
+										</span>
+
+									</div>
+
+									<div>
+
+										<p class="text-slate-400 text-xs font-bold uppercase">
+											Empresa
+										</p>
+
+										<p class="font-semibold text-slate-700"
+											th:text="${proyecto.empresa != null ? proyecto.empresa.nombre : 'Sin empresa registrada'}">
+										</p>
+
+									</div>
+
+								</div>
+
+								<div class="flex flex-wrap gap-2">
+
+									<span
+										class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold"
+										th:text="${proyecto.carrera != null ? proyecto.carrera.nombre : 'Sin carrera'}">
+									</span>
+
+									<span
+										class="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-xs font-bold"
+										th:text="${proyecto.periodo != null ? proyecto.periodo : 'Sin periodo'}">
+									</span>
+
+									<span
+										class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold"
+										th:text="${proyecto.estado != null ? proyecto.estado.name() : 'Sin estado'}">
+									</span>
+
+								</div>
+
+							</div>
+
+							<div
+								class="mt-6 pt-5 border-t border-slate-100 text-sm text-slate-600 leading-relaxed min-h-[110px]">
+
+								<p
+									th:text="${proyecto.descripcion != null ? proyecto.descripcion : 'Sin descripción registrada.'}">
+								</p>
+
+							</div>
+
+							<div
+								class="mt-6 inline-flex items-center justify-center gap-2 w-full bg-slate-100 text-[#002046] rounded-2xl px-5 py-3 font-bold">
+
+								<span class="material-symbols-outlined text-base">
+									info
+								</span>
+
+								Proyecto disponible
+							</div>
+
+						</div>
+
+					</div>
+
+				</div>
+
+			</div>
+
+		</section>
+
+	</main>
+
+<script>
+function mostrarTab(tab) {
+
+	const tabResidencias = document.getElementById("tabResidencias");
+	const tabBanco = document.getElementById("tabBanco");
+
+	const btnResidencias = document.getElementById("btnResidencias");
+	const btnBanco = document.getElementById("btnBanco");
+
+	if (tab === "residencias") {
+
+		tabResidencias.classList.remove("hidden");
+		tabBanco.classList.add("hidden");
+
+		btnResidencias.classList.add("activo");
+		btnBanco.classList.remove("activo");
+
+	} else {
+
+		tabBanco.classList.remove("hidden");
+		tabResidencias.classList.add("hidden");
+
+		btnBanco.classList.add("activo");
+		btnResidencias.classList.remove("activo");
+	}
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+	const btnResidencias = document.getElementById("btnResidencias");
+	const btnBanco = document.getElementById("btnBanco");
+
+	if (btnResidencias) {
+		btnResidencias.addEventListener("click", function() {
+			mostrarTab("residencias");
+		});
+	}
+
+	if (btnBanco) {
+		btnBanco.addEventListener("click", function() {
+			mostrarTab("banco");
+		});
+	}
+});
+</script>
+
+</body>
+</html>

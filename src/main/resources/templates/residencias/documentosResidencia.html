@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<meta charset="utf-8" />
+<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+<title>Documentos y Evaluaciones de Residencia</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link
+	href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+	rel="stylesheet" />
+
+<style>
+body {
+	font-family: 'Inter', sans-serif;
+	background: #f7f9fb;
+}
+
+h1, h2, h3 {
+	font-family: 'Manrope', sans-serif;
+}
+
+.material-symbols-outlined {
+	font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+</style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+	<div th:replace="~{fragments/sidebar :: sidebar('residencias')}"></div>
+
+	<main class="ml-64 min-h-screen">
+
+		<header
+			class="flex justify-between items-center w-full px-8 py-3 sticky top-0 z-30 bg-slate-50/95 backdrop-blur border-b border-slate-200">
+			<a th:href="@{/dashboard}"
+				class="text-xl font-bold text-[#002046] tracking-tight">
+				TecNM Campus Chilpancingo
+			</a>
+
+			<a th:href="@{/residencias/index}"
+				class="text-slate-600 hover:text-[#1B365D] font-semibold">
+				Volver
+			</a>
+		</header>
+
+		<div class="max-w-7xl mx-auto p-8">
+
+			<div
+				class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8">
+				<div>
+					<p class="text-sm text-slate-500 font-semibold mb-1">
+						Panel de Control <span class="mx-2 text-slate-300">›</span>
+						<span class="text-[#003B8F]">Documentos y Evaluaciones</span>
+					</p>
+
+					<h1 class="text-4xl font-black text-[#002046] tracking-tight mb-2">
+						Documentos y Evaluaciones
+					</h1>
+
+					<p class="text-slate-500"
+						th:text="${residencia != null ? residencia.nombreProyecto + ' - ' + residencia.periodo : 'Residencia'}">
+					</p>
+				</div>
+
+				<a th:href="@{/residencias/index}"
+					class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-6 py-3 rounded-xl font-bold text-sm flex items-center gap-2">
+					<span class="material-symbols-outlined text-base">arrow_back</span>
+					Regresar
+				</a>
+			</div>
+
+				<th:block th:replace="~{fragments/ui :: flashMessages(${msgSuccess}, ${msgError})}"></th:block>
+
+			<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+
+				<div
+					class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 lg:col-span-2">
+					<h2 class="text-lg font-black text-[#002046] mb-4">
+						Resumen documental
+					</h2>
+
+					<div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+						<div>
+							<span class="font-bold text-slate-600">Proyecto:</span>
+							<p class="text-slate-800" th:text="${residencia.nombreProyecto}"></p>
+						</div>
+
+						<div>
+							<span class="font-bold text-slate-600">Periodo:</span>
+							<p class="text-slate-800" th:text="${residencia.periodo}"></p>
+						</div>
+
+						<div>
+							<span class="font-bold text-slate-600">Residente:</span>
+							<p class="text-slate-800"
+								th:text="${residencia.residente != null ? residencia.residente.nombre + ' ' + residencia.residente.apellidos : 'Sin residente'}">
+							</p>
+						</div>
+
+						<div>
+							<span class="font-bold text-slate-600">No. Control:</span>
+							<p class="text-slate-800"
+								th:text="${residencia.residente != null ? residencia.residente.matricula : 'Sin matrícula'}">
+							</p>
+						</div>
+
+						<div>
+							<span class="font-bold text-slate-600">Asesor interno:</span>
+							<p class="text-slate-800"
+								th:text="${residencia.asesorInterno != null ? residencia.asesorInterno.nombre + ' ' + residencia.asesorInterno.apellidos : 'Sin asesor'}">
+							</p>
+						</div>
+
+						<div>
+							<span class="font-bold text-slate-600">Asesor externo:</span>
+							<p class="text-slate-800"
+								th:text="${residencia.asesorExterno != null ? residencia.asesorExterno.nombre + ' ' + residencia.asesorExterno.apellidos : 'Sin asesor'}">
+							</p>
+						</div>
+
+						<div>
+							<span class="font-bold text-slate-600">Autorización:</span>
+							<p class="font-black"
+								th:classappend="${residencia.estadoAutorizacion == 'AUTORIZADO'} ? ' text-green-700' : (${residencia.estadoAutorizacion == 'RECHAZADO'} ? ' text-red-700' : ' text-amber-700')"
+								th:text="${residencia.estadoAutorizacion != null ? residencia.estadoAutorizacion : 'PENDIENTE'}">
+							</p>
+						</div>
+
+						<div>
+							<span class="font-bold text-slate-600">Reporte preliminar:</span>
+							<p class="font-black"
+								th:classappend="${reportePreliminarCargado} ? ' text-green-700' : ' text-amber-700'"
+								th:text="${reportePreliminarCargado ? 'CARGADO' : 'PENDIENTE'}">
+							</p>
+						</div>
+					</div>
+
+					<div class="mt-6 rounded-xl px-5 py-4 font-bold"
+						th:classappend="${documentosInicialesDesbloqueados} ? ' bg-green-50 text-green-700' : ' bg-amber-50 text-amber-700'">
+						<span th:if="${documentosInicialesDesbloqueados}">
+							Flujo inicial desbloqueado: ya puedes descargar proyecto, carta y realizar la primera evaluación.
+						</span>
+
+						<span th:if="${!documentosInicialesDesbloqueados}">
+							Para desbloquear proyecto, carta y primera evaluación, el reporte preliminar debe estar cargado y el proyecto autorizado.
+						</span>
+					</div>
+				</div>
+
+				<div
+					class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+					<h2 class="text-lg font-black text-[#002046] mb-4">
+						Avance de evaluaciones
+					</h2>
+
+					<div class="space-y-3 text-sm">
+						<div class="flex justify-between">
+							<span>Primer informe:</span>
+							<span th:if="${primerInformeCompleto}"
+								class="font-black text-emerald-700">Completo</span>
+							<span th:if="${!primerInformeCompleto}"
+								class="font-black text-amber-700">Pendiente</span>
+						</div>
+
+						<div class="flex justify-between">
+							<span>Calificación parcial 1:</span>
+							<span class="font-black text-[#002046]"
+								th:text="${promedioPrimerInforme != null ? #numbers.formatDecimal(promedioPrimerInforme,1,2) : 'No disponible'}">
+							</span>
+						</div>
+
+						<div class="flex justify-between">
+							<span>Segundo informe:</span>
+							<span th:if="${segundoInformeCompleto}"
+								class="font-black text-emerald-700">Completo</span>
+							<span th:if="${!segundoInformeCompleto}"
+								class="font-black text-amber-700">Pendiente</span>
+						</div>
+
+						<div class="flex justify-between">
+							<span>Calificación parcial 2:</span>
+							<span class="font-black text-[#002046]"
+								th:text="${promedioSegundoInforme != null ? #numbers.formatDecimal(promedioSegundoInforme,1,2) : 'No disponible'}">
+							</span>
+						</div>
+
+						<div class="flex justify-between">
+							<span>Reporte final:</span>
+							<span th:if="${reporteFinalCompleto}"
+								class="font-black text-emerald-700">Completo</span>
+							<span th:if="${!reporteFinalCompleto}"
+								class="font-black text-amber-700">Pendiente</span>
+						</div>
+
+						<div class="pt-3 border-t border-slate-200 flex justify-between">
+							<span class="font-black">Calificación final:</span>
+							<span class="font-black text-green-700"
+								th:text="${calificacionFinalResidencia != null ? #numbers.formatDecimal(calificacionFinalResidencia,1,2) : 'No disponible'}">
+							</span>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+
+				<div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+					<div class="flex items-start justify-between mb-4">
+						<div>
+							<h3 class="text-lg font-black text-[#002046]">
+								Reporte preliminar
+							</h3>
+							<p class="text-sm text-slate-500">
+								Primer documento obligatorio. Solo se permite archivo PDF de hasta 25 MB.
+							</p>
+						</div>
+						<span class="material-symbols-outlined text-[#003B8F]">upload_file</span>
+					</div>
+
+					<div th:if="${reportePreliminarCargado}"
+						class="mb-4 rounded-xl bg-green-50 text-green-700 px-4 py-3 text-sm font-bold">
+						Reporte preliminar cargado:
+						<span th:text="${reportePreliminar.nombreArchivo}"></span>
+					</div>
+
+					<div th:if="${!reportePreliminarCargado}"
+						class="mb-4 rounded-xl bg-amber-50 text-amber-700 px-4 py-3 text-sm font-bold">
+						Aún no se ha cargado el reporte preliminar.
+					</div>
+
+					<form sec:authorize="hasAnyRole('ESTUDIANTE','ADMINISTRADOR')"
+						th:action="@{/documentos-residencia/reporte-preliminar/upload}"
+						method="post"
+						enctype="multipart/form-data"
+						class="space-y-3">
+
+						<input type="hidden" name="idResidencia" th:value="${residencia.id}">
+
+						<input type="file"
+							name="archivoPdf"
+							accept="application/pdf"
+							required
+							class="block w-full text-sm text-slate-600 file:mr-4 file:rounded-xl file:border-0 file:bg-slate-100 file:px-4 file:py-2 file:font-bold file:text-[#002046] hover:file:bg-slate-200">
+
+						<p class="text-xs text-slate-500">
+							Si el archivo fue escaneado y pesa demasiado, reduce el PDF antes de subirlo.
+						</p>
+
+						<button type="submit"
+							class="w-full inline-flex justify-center items-center gap-2 bg-[#003B8F] hover:bg-[#002f73] text-white px-4 py-3 rounded-xl font-bold text-sm">
+							<span class="material-symbols-outlined text-base">cloud_upload</span>
+							<span th:text="${reportePreliminarCargado ? 'Reemplazar reporte preliminar' : 'Subir reporte preliminar'}"></span>
+						</button>
+					</form>
+				</div>
+
+				<div
+					class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6"
+					th:classappend="${!documentosInicialesDesbloqueados} ? ' opacity-60' : ''">
+					<div class="flex items-start justify-between mb-4">
+						<div>
+							<h3 class="text-lg font-black text-[#002046]">
+								Proyecto de Residencia
+							</h3>
+							<p class="text-sm text-slate-500">
+								PDF generado automáticamente con los datos del proyecto.
+							</p>
+						</div>
+						<span class="material-symbols-outlined text-[#003B8F]">description</span>
+					</div>
+
+					<a th:if="${documentosInicialesDesbloqueados}"
+						th:href="@{/documentos-residencia/{id}/proyecto-pdf(id=${residencia.id})}"
+						target="_blank"
+						class="w-full inline-flex justify-center items-center gap-2 bg-[#003B8F] hover:bg-[#002f73] text-white px-4 py-3 rounded-xl font-bold text-sm">
+						<span class="material-symbols-outlined text-base">picture_as_pdf</span>
+						Descargar Proyecto de Residencia
+					</a>
+
+					<div th:if="${!documentosInicialesDesbloqueados}"
+						class="rounded-xl bg-slate-100 text-slate-500 px-4 py-3 text-sm font-semibold">
+						Disponible cuando el reporte preliminar esté cargado y el proyecto esté autorizado.
+					</div>
+				</div>
+
+				<div
+					class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6"
+					th:classappend="${!documentosInicialesDesbloqueados} ? ' opacity-60' : ''">
+					<div class="flex items-start justify-between mb-4">
+						<div>
+							<h3 class="text-lg font-black text-[#002046]">
+								Carta de presentación
+							</h3>
+							<p class="text-sm text-slate-500">
+								Oficio de presentación del estudiante ante la empresa.
+							</p>
+						</div>
+						<span class="material-symbols-outlined text-[#003B8F]">mail</span>
+					</div>
+
+					<a th:if="${documentosInicialesDesbloqueados}"
+						th:href="@{/documentos-residencia/{id}/carta-presentacion-pdf(id=${residencia.id})}"
+						target="_blank"
+						class="w-full inline-flex justify-center items-center gap-2 bg-[#003B8F] hover:bg-[#002f73] text-white px-4 py-3 rounded-xl font-bold text-sm">
+						<span class="material-symbols-outlined text-base">picture_as_pdf</span>
+						Descargar Carta de Presentación
+					</a>
+
+					<div th:if="${!documentosInicialesDesbloqueados}"
+						class="rounded-xl bg-slate-100 text-slate-500 px-4 py-3 text-sm font-semibold">
+						Disponible cuando el reporte preliminar esté cargado y el proyecto esté autorizado.
+					</div>
+				</div>
+
+				<div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+					<div class="flex justify-between items-start mb-3">
+						<div>
+							<h3 class="text-xl font-extrabold text-[#002046]">
+								Calendario de Residencia
+							</h3>
+
+							<p class="text-slate-500 text-sm">
+								Calendario oficial generado automáticamente para el periodo
+								<span class="font-semibold" th:text="${residencia.periodo}"></span>.
+							</p>
+						</div>
+
+						<span class="material-symbols-outlined text-[#004AAD]">
+							calendar_month
+						</span>
+					</div>
+
+					<a th:href="@{/documentos-residencia/{id}/calendario-pdf(id=${residencia.id})}"
+						target="_blank"
+						class="mt-5 inline-flex w-full justify-center items-center gap-2 bg-[#004AAD] text-white rounded-xl px-4 py-3 font-bold hover:bg-[#003B8F] transition">
+						<span class="material-symbols-outlined text-sm">picture_as_pdf</span>
+						Ver Calendario
+					</a>
+				</div>
+
+				<div
+					class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6"
+					th:classappend="${!documentosInicialesDesbloqueados} ? ' opacity-60' : ''">
+					<div class="flex items-start justify-between mb-4">
+						<div>
+							<h3 class="text-lg font-black text-[#002046]">
+								Primer informe
+							</h3>
+							<p class="text-sm text-slate-500">
+								ANEXO XXIX - Evaluación y seguimiento.
+							</p>
+						</div>
+						<span class="material-symbols-outlined text-[#003B8F]">assignment</span>
+					</div>
+
+					<div th:if="${!documentosInicialesDesbloqueados}"
+						class="rounded-xl bg-slate-100 text-slate-500 px-4 py-3 text-sm font-semibold">
+						La primera evaluación se habilita cuando el reporte preliminar esté cargado y el proyecto esté autorizado.
+					</div>
+
+					<div th:if="${documentosInicialesDesbloqueados}" class="space-y-3">
+						<a sec:authorize="hasAnyRole('ASESOR_EXTERNO','ADMINISTRADOR')"
+							th:if="${primerExterno == null}"
+							th:href="@{/evaluaciones-residencia/externo/{id}/{tipo}(id=${residencia.id},tipo='SEGUIMIENTO_1_EXTERNO')}"
+							class="w-full inline-flex justify-center items-center gap-2 bg-blue-100 hover:bg-blue-200 text-blue-700 px-4 py-3 rounded-xl font-bold text-sm">
+							Evaluar asesor externo
+						</a>
+
+						<div th:if="${primerExterno != null}"
+							class="w-full text-center bg-green-50 text-green-700 px-4 py-3 rounded-xl font-bold text-sm">
+							Evaluación externa finalizada
+						</div>
+
+						<a 	sec:authorize="hasAnyRole('ASESOR_INTERNO','ADMINISTRADOR')"
+							th:if="${primerInterno == null}"
+							th:href="@{/evaluaciones-residencia/interno/{id}/{tipo}(id=${residencia.id},tipo='SEGUIMIENTO_1_INTERNO')}"
+							class="w-full inline-flex justify-center items-center gap-2 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 px-4 py-3 rounded-xl font-bold text-sm">
+							Evaluar asesor interno
+						</a>
+
+						<div th:if="${primerInterno != null}"
+							class="w-full text-center bg-green-50 text-green-700 px-4 py-3 rounded-xl font-bold text-sm">
+							Evaluación interna finalizada
+						</div>
+
+						<a th:if="${primerInformeCompleto}"
+							th:href="@{/documentos-residencia/{id}/anexo-xxix-pdf/{numero}(id=${residencia.id},numero=1)}"
+							target="_blank"
+							class="w-full inline-flex justify-center items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-3 rounded-xl font-bold text-sm">
+							<span class="material-symbols-outlined text-base">picture_as_pdf</span>
+							Descargar ANEXO XXIX
+						</a>
+
+						<div th:if="${!primerInformeCompleto}"
+							class="rounded-xl bg-amber-50 text-amber-700 px-4 py-3 text-sm font-semibold">
+							El PDF se habilita cuando ambas evaluaciones estén completas.
+						</div>
+					</div>
+				</div>
+
+				<div
+					class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6"
+					th:classappend="${!primerInformeCompleto} ? ' opacity-60' : ''">
+
+					<div class="flex items-start justify-between mb-4">
+						<div>
+							<h3 class="text-lg font-black text-[#002046]">
+								Segundo informe
+							</h3>
+							<p class="text-sm text-slate-500">
+								ANEXO XXIX - Segundo seguimiento.
+							</p>
+						</div>
+						<span class="material-symbols-outlined text-[#003B8F]">assignment_turned_in</span>
+					</div>
+
+					<div th:if="${primerInformeCompleto}" class="space-y-3">
+						<a sec:authorize="hasAnyRole('ASESOR_EXTERNO','ADMINISTRADOR')"
+							th:if="${segundoExterno == null}"
+							th:href="@{/evaluaciones-residencia/externo/{id}/{tipo}(id=${residencia.id},tipo='SEGUIMIENTO_2_EXTERNO')}"
+							class="w-full inline-flex justify-center items-center gap-2 bg-blue-100 hover:bg-blue-200 text-blue-700 px-4 py-3 rounded-xl font-bold text-sm">
+							Evaluar asesor externo
+						</a>
+
+						<div th:if="${segundoExterno != null}"
+							class="w-full text-center bg-green-50 text-green-700 px-4 py-3 rounded-xl font-bold text-sm">
+							Evaluación externa finalizada
+						</div>
+
+						<a sec:authorize="hasAnyRole('ASESOR_INTERNO','ADMINISTRADOR')"
+							th:if="${segundoInterno == null}"
+							th:href="@{/evaluaciones-residencia/interno/{id}/{tipo}(id=${residencia.id},tipo='SEGUIMIENTO_2_INTERNO')}"
+							class="w-full inline-flex justify-center items-center gap-2 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 px-4 py-3 rounded-xl font-bold text-sm">
+							Evaluar asesor interno
+						</a>
+
+						<div th:if="${segundoInterno != null}"
+							class="w-full text-center bg-green-50 text-green-700 px-4 py-3 rounded-xl font-bold text-sm">
+							Evaluación interna finalizada
+						</div>
+
+						<a th:if="${segundoInformeCompleto}"
+							th:href="@{/documentos-residencia/{id}/anexo-xxix-pdf/{numero}(id=${residencia.id},numero=2)}"
+							target="_blank"
+							class="w-full inline-flex justify-center items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-3 rounded-xl font-bold text-sm">
+							<span class="material-symbols-outlined text-base">picture_as_pdf</span>
+							Descargar ANEXO XXIX
+						</a>
+
+						<div th:if="${!segundoInformeCompleto}"
+							class="rounded-xl bg-amber-50 text-amber-700 px-4 py-3 text-sm font-semibold">
+							El PDF se habilita cuando ambas evaluaciones estén completas.
+						</div>
+					</div>
+
+					<div th:if="${!primerInformeCompleto}"
+						class="rounded-xl bg-slate-100 text-slate-500 px-4 py-3 text-sm font-semibold">
+						Bloqueado hasta completar el primer informe.
+					</div>
+				</div>
+
+				<div
+					class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6"
+					th:classappend="${!segundoInformeCompleto} ? ' opacity-60' : ''">
+
+					<div class="flex items-start justify-between mb-4">
+						<div>
+							<h3 class="text-lg font-black text-[#002046]">
+								Informe final
+							</h3>
+							<p class="text-sm text-slate-500">
+								ANEXO XXX - Evaluación de reporte final.
+							</p>
+						</div>
+						<span class="material-symbols-outlined text-[#003B8F]">workspace_premium</span>
+					</div>
+
+					<div th:if="${segundoInformeCompleto}" class="space-y-3">
+						<a sec:authorize="hasAnyRole('ASESOR_EXTERNO','ADMINISTRADOR')"
+							th:if="${finalExterno == null}"
+							th:href="@{/evaluaciones-residencia/final/externo/{id}(id=${residencia.id})}"
+							class="w-full inline-flex justify-center items-center gap-2 bg-blue-100 hover:bg-blue-200 text-blue-700 px-4 py-3 rounded-xl font-bold text-sm">
+							Evaluar asesor externo
+						</a>
+
+						<div th:if="${finalExterno != null}"
+							class="w-full text-center bg-green-50 text-green-700 px-4 py-3 rounded-xl font-bold text-sm">
+							Evaluación externa finalizada
+						</div>
+
+						<a sec:authorize="hasAnyRole('ASESOR_INTERNO','ADMINISTRADOR')"
+							th:if="${finalInterno == null}"
+							th:href="@{/evaluaciones-residencia/final/interno/{id}(id=${residencia.id})}"
+							class="w-full inline-flex justify-center items-center gap-2 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 px-4 py-3 rounded-xl font-bold text-sm">
+							Evaluar asesor interno
+						</a>
+
+						<div th:if="${finalInterno != null}"
+							class="w-full text-center bg-green-50 text-green-700 px-4 py-3 rounded-xl font-bold text-sm">
+							Evaluación interna finalizada
+						</div>
+
+						<a th:if="${reporteFinalCompleto}"
+							th:href="@{/documentos-residencia/{id}/anexo-xxx-pdf(id=${residencia.id})}"
+							target="_blank"
+							class="w-full inline-flex justify-center items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-3 rounded-xl font-bold text-sm">
+							<span class="material-symbols-outlined text-base">picture_as_pdf</span>
+							Descargar ANEXO XXX
+						</a>
+
+						<div th:if="${!reporteFinalCompleto}"
+							class="rounded-xl bg-amber-50 text-amber-700 px-4 py-3 text-sm font-semibold">
+							El PDF se habilita cuando ambas evaluaciones finales estén completas.
+						</div>
+
+						<div th:if="${calificacionFinalResidencia != null}"
+							class="rounded-xl bg-green-50 text-green-700 px-4 py-3 text-sm font-bold">
+							Calificación final de residencia:
+							<span th:text="${#numbers.formatDecimal(calificacionFinalResidencia,1,2)}"></span>
+						</div>
+					</div>
+
+					<div th:if="${!segundoInformeCompleto}"
+						class="rounded-xl bg-slate-100 text-slate-500 px-4 py-3 text-sm font-semibold">
+						Bloqueado hasta completar el segundo informe.
+					</div>
+				</div>
+
+				<div
+					class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6"
+					th:classappend="${!liberacionInternoDisponible} ? ' opacity-60' : ''">
+					<div class="flex items-start justify-between mb-4">
+						<div>
+							<h3 class="text-lg font-black text-[#002046]">
+								Liberación Asesor Interno
+							</h3>
+							<p class="text-sm text-slate-500">
+								Oficio de liberación emitido por el asesor interno al concluir la residencia.
+							</p>
+						</div>
+						<span class="material-symbols-outlined text-[#003B8F]">verified</span>
+					</div>
+
+					<a th:if="${liberacionInternoDisponible}"
+						th:href="@{/documentos-residencia/{id}/liberacion-asesor-interno-pdf(id=${residencia.id})}"
+						target="_blank"
+						class="w-full inline-flex justify-center items-center gap-2 bg-[#003B8F] hover:bg-[#002f73] text-white px-4 py-3 rounded-xl font-bold text-sm">
+						<span class="material-symbols-outlined text-base">picture_as_pdf</span>
+						Descargar Liberación
+					</a>
+
+					<div th:if="${!liberacionInternoDisponible}"
+						class="rounded-xl bg-slate-100 text-slate-500 px-4 py-3 text-sm font-semibold">
+						Disponible cuando ambas evaluaciones finales estén completas.
+					</div>
+				</div>
+
+				<div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+					<div class="flex items-start justify-between mb-4">
+						<div>
+							<h3 class="text-lg font-black text-[#002046]">
+								Entrega Reporte Empresa
+							</h3>
+							<p class="text-sm text-slate-500">
+								Oficio generado automáticamente con los datos de la residencia y la empresa.
+							</p>
+						</div>
+						<span class="material-symbols-outlined text-[#003B8F]">domain_verification</span>
+					</div>
+
+					<a th:href="@{/documentos-residencia/{id}/entrega-reporte-empresa-pdf(id=${residencia.id})}"
+						target="_blank"
+						class="w-full inline-flex justify-center items-center gap-2 bg-[#003B8F] hover:bg-[#002f73] text-white px-4 py-3 rounded-xl font-bold text-sm">
+						<span class="material-symbols-outlined text-base">picture_as_pdf</span>
+						Descargar Entrega a Empresa
+					</a>
+				</div>
+
+				<div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+					<div class="flex items-start justify-between mb-4">
+						<div>
+							<h3 class="text-lg font-black text-[#002046]">
+								Oficio Entrega División
+							</h3>
+							<p class="text-sm text-slate-500">
+								Oficio institucional generado automáticamente para División de Estudios Profesionales.
+							</p>
+						</div>
+						<span class="material-symbols-outlined text-[#003B8F]">article</span>
+					</div>
+
+					<a th:href="@{/documentos-residencia/{id}/oficio-entrega-division-pdf(id=${residencia.id})}"
+						target="_blank"
+						class="w-full inline-flex justify-center items-center gap-2 bg-[#003B8F] hover:bg-[#002f73] text-white px-4 py-3 rounded-xl font-bold text-sm">
+						<span class="material-symbols-outlined text-base">picture_as_pdf</span>
+						Descargar Oficio a División
+					</a>
+				</div>
+			</div>
+
+			<div
+				class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mt-8">
+				<div class="px-6 py-5 border-b border-slate-200">
+					<h2 class="text-lg font-black text-[#002046]">
+						Evaluaciones registradas
+					</h2>
+					<p class="text-sm text-slate-500">
+						Resumen de evaluaciones por informe y asesor.
+					</p>
+				</div>
+
+				<div class="overflow-x-auto">
+					<table class="w-full text-sm text-center border-collapse">
+						<thead class="bg-slate-100 text-[#002046]">
+							<tr>
+								<th class="px-4 py-4 border border-slate-300 text-xs font-black uppercase">Documento</th>
+								<th class="px-4 py-4 border border-slate-300 text-xs font-black uppercase">Asesor externo</th>
+								<th class="px-4 py-4 border border-slate-300 text-xs font-black uppercase">Asesor interno</th>
+								<th class="px-4 py-4 border border-slate-300 text-xs font-black uppercase">Calificación parcial</th>
+							</tr>
+						</thead>
+
+						<tbody>
+							<tr class="hover:bg-blue-50/40">
+								<td class="px-4 py-4 border border-slate-200 font-black text-[#002046]">
+									Primer informe
+								</td>
+								<td class="px-4 py-4 border border-slate-200"
+									th:text="${primerExterno != null ? primerExterno.calificacion : 'Pendiente'}"></td>
+								<td class="px-4 py-4 border border-slate-200"
+									th:text="${primerInterno != null ? primerInterno.calificacion : 'Pendiente'}"></td>
+								<td class="px-4 py-4 border border-slate-200 font-black"
+									th:text="${promedioPrimerInforme != null ? #numbers.formatDecimal(promedioPrimerInforme,1,2) : 'No disponible'}"></td>
+							</tr>
+
+							<tr class="hover:bg-blue-50/40">
+								<td class="px-4 py-4 border border-slate-200 font-black text-[#002046]">
+									Segundo informe
+								</td>
+								<td class="px-4 py-4 border border-slate-200"
+									th:text="${segundoExterno != null ? segundoExterno.calificacion : 'Pendiente'}"></td>
+								<td class="px-4 py-4 border border-slate-200"
+									th:text="${segundoInterno != null ? segundoInterno.calificacion : 'Pendiente'}"></td>
+								<td class="px-4 py-4 border border-slate-200 font-black"
+									th:text="${promedioSegundoInforme != null ? #numbers.formatDecimal(promedioSegundoInforme,1,2) : 'No disponible'}"></td>
+							</tr>
+
+							<tr class="hover:bg-blue-50/40">
+								<td class="px-4 py-4 border border-slate-200 font-black text-[#002046]">
+									Informe final
+								</td>
+								<td class="px-4 py-4 border border-slate-200"
+									th:text="${finalExterno != null ? finalExterno.calificacion : 'Pendiente'}"></td>
+								<td class="px-4 py-4 border border-slate-200"
+									th:text="${finalInterno != null ? finalInterno.calificacion : 'Pendiente'}"></td>
+								<td class="px-4 py-4 border border-slate-200 font-black"
+									th:text="${promedioReporteFinal != null ? #numbers.formatDecimal(promedioReporteFinal,1,2) : 'No disponible'}"></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+
+		</div>
+	</main>
+
+</body>
+</html>

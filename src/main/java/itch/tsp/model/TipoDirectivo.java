@@ -1,0 +1,9 @@
+package itch.tsp.model;
+
+public enum TipoDirectivo {
+	JEFE_DEPARTAMENTO,
+	JEFE_DIVISION,
+	SUBDIRECTOR_ACADEMICO,
+	DIRECTOR,
+	COORDINADOR_CARRERA
+}

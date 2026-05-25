@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+<title>Formulario Residencia</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<link
+	href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+	rel="stylesheet" />
+
+<style>
+body {
+	font-family: 'Inter', sans-serif;
+	background:
+		radial-gradient(circle at top left, rgba(0, 59, 143, 0.10), transparent 28%),
+		linear-gradient(135deg, #f7f9fb 0%, #eef4fb 45%, #f8fafc 100%);
+	min-height: 100vh;
+	overflow-x: hidden;
+}
+
+h1, h2, h3 {
+	font-family: 'Manrope', sans-serif;
+}
+
+.primary-gradient {
+	background: linear-gradient(135deg, #002046 0%, #003B8F 100%);
+}
+
+.material-symbols-outlined {
+	font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.grid-pattern {
+	position: fixed;
+	inset: 0;
+	z-index: 0;
+	opacity: 0.035;
+	background-image:
+		linear-gradient(#002046 1px, transparent 1px),
+		linear-gradient(90deg, #002046 1px, transparent 1px);
+	background-size: 42px 42px;
+	pointer-events: none;
+}
+
+.float-shape {
+	position: fixed;
+	border-radius: 9999px;
+	background: rgba(0, 59, 143, 0.08);
+	filter: blur(1px);
+	z-index: 0;
+	animation: float 8s ease-in-out infinite;
+	pointer-events: none;
+}
+
+.fade-in {
+	animation: fadeUp 0.7s ease-out both;
+}
+
+.input-form {
+	width: 100%;
+	border-radius: 1rem;
+	background-color: #f8fafc;
+	border: 1px solid #e2e8f0;
+	padding: 0.95rem 1rem;
+	outline: none;
+	font-size: 0.95rem;
+	font-weight: 500;
+	transition: all 0.25s ease;
+}
+
+.input-form:focus {
+	border-color: #003B8F;
+	box-shadow: 0 0 0 4px rgba(0, 59, 143, 0.12);
+	background-color: white;
+}
+
+.input-disabled {
+	background-color: #e2e8f0;
+	color: #475569;
+	cursor: not-allowed;
+}
+
+@keyframes fadeUp {
+	from {
+		opacity: 0;
+		transform: translateY(24px) scale(0.98);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
+}
+
+@keyframes float {
+	0%, 100% {
+		transform: translateY(0) translateX(0);
+	}
+
+	50% {
+		transform: translateY(-18px) translateX(10px);
+	}
+}
+</style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+<div class="grid-pattern"></div>
+<div class="float-shape w-72 h-72 top-[-80px] left-[250px]"></div>
+<div class="float-shape w-52 h-52 bottom-[-70px] right-[6%]"></div>
+<div class="float-shape w-40 h-40 top-[22%] right-[12%]"></div>
+
+<div th:replace="~{fragments/sidebar :: sidebar('residencias')}"></div>
+
+<main class="ml-64 min-h-screen relative z-10">
+
+	<header th:replace="~{fragments/ui :: topbar(${idBancoProyecto != null} ? @{/banco-proyectos/index} : @{/residencias/index}, 'Volver')}"></header>
+
+	<div class="max-w-7xl mx-auto p-8 fade-in">
+
+		
+		<div class="relative overflow-hidden rounded-3xl primary-gradient text-white p-8 shadow-2xl border border-white/10 mb-8">
+
+			<div class="absolute inset-0 opacity-20 pointer-events-none"
+				style="background:
+					radial-gradient(circle at top left, #ffffff 0, transparent 28%),
+					radial-gradient(circle at bottom right, #60a5fa 0, transparent 30%);">
+			</div>
+
+			<div class="absolute -bottom-16 -right-16 w-72 h-72 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
+
+			<div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+
+				<div class="max-w-4xl">
+
+					<p class="text-sm text-blue-100 font-semibold mb-2 flex items-center gap-2">
+						<span>Panel de Control</span>
+						<span class="text-blue-300">›</span>
+						<span class="text-white">Residencias</span>
+					</p>
+
+					<h1 class="text-4xl md:text-5xl font-black tracking-tight mb-4"
+						th:text="${modoEstudiante == true}
+							? (${idBancoProyecto != null} ? 'Solicitar Proyecto del Banco' : 'Proponer Proyecto Propio')
+							: (${residencia != null and residencia.id != null} ? 'Editar Residencia' : 'Nueva Residencia')">
+						Nueva Residencia
+					</h1>
+
+					<p class="text-blue-100 text-base max-w-3xl leading-relaxed"
+						th:text="${modoEstudiante == true}
+							? 'Captura la informacion del proyecto que deseas solicitar y envia tu propuesta para revision institucional.'
+							: 'Registra o actualiza la informacion del proyecto, residente, empresa, asesores y periodo de residencia profesional.'">
+						Registra o actualiza la información del proyecto, residente, empresa,
+						asesores y periodo de residencia profesional.
+					</p>
+
+				</div>
+
+				<div class="relative z-20 bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl px-7 py-6 shadow-2xl min-w-[280px]">
+					<p class="text-xs font-bold text-blue-100 uppercase tracking-[0.15em] mb-2">
+						Validación activa
+					</p>
+
+					<h3 class="text-2xl font-black text-white">
+						Convenio empresarial
+					</h3>
+
+					<p class="text-sm text-blue-100 mt-2 leading-relaxed">
+						Solo se permitirá guardar con empresas de convenio activo.
+					</p>
+				</div>
+
+			</div>
+
+		</div>
+
+			<th:block th:replace="~{fragments/ui :: flashMessages(${msgSuccess}, ${msgError})}"></th:block>
+
+		<div class="bg-white/95 backdrop-blur rounded-3xl shadow-2xl border border-slate-200 overflow-hidden">
+
+			<form method="post" th:object="${residencia}"
+				th:action="${residencia != null and residencia.id != null} ? @{/residencias/update} : @{/residencias/save}">
+
+				<input type="hidden" name="id"
+					th:if="${residencia != null and residencia.id != null}"
+					th:value="${residencia.id}" />
+
+				<input type="hidden" name="estatus"
+					th:if="${residencia != null and residencia.estatus != null}"
+					th:value="${residencia.estatus}" />
+
+				<input type="hidden" name="idBancoProyecto"
+					th:if="${idBancoProyecto != null}"
+					th:value="${idBancoProyecto}" />
+
+				<div th:if="${idBancoProyecto != null}"
+					class="mx-10 mt-8 rounded-2xl bg-blue-50 border border-blue-200 text-blue-800 px-5 py-4 font-semibold flex items-center gap-3">
+					<span class="material-symbols-outlined">info</span>
+					<span th:text="${modoEstudiante == true}
+						? 'Este proyecto proviene del Banco de Proyectos. Completa tu solicitud para enviarla a revision.'
+						: 'Este proyecto proviene del Banco de Proyectos. Solo debes asignar residente y asesores.'">
+					</span>
+				</div>
+
+				<div class="grid grid-cols-1 lg:grid-cols-2">
+
+					
+					<div class="p-10 border-r border-slate-200">
+
+						<h2 class="text-2xl font-black text-[#002046] mb-2">
+							Datos del proyecto
+						</h2>
+
+						<p class="text-slate-500 text-sm mb-8"
+							th:text="${modoEstudiante == true}
+								? 'Describe el proyecto y la empresa donde deseas realizar tu residencia.'
+								: 'Informacion general del proyecto y empresa receptora.'">
+							Información general del proyecto y empresa receptora.
+						</p>
+
+						<div class="space-y-6">
+
+							<div>
+								<label class="block text-sm font-bold text-slate-700 mb-2">
+									Nombre del Proyecto <span class="text-red-600">*</span>
+								</label>
+
+								<input type="text" name="nombreProyecto" required
+									th:readonly="${idBancoProyecto != null}"
+									th:value="${residencia != null} ? ${residencia.nombreProyecto} : ''"
+									th:class="${idBancoProyecto != null} ?
+									'input-form input-disabled' :
+									'input-form'" />
+							</div>
+
+							
+							<div>
+								<label class="block text-sm font-bold text-slate-700 mb-2">
+									Empresa <span class="text-red-600">*</span>
+								</label>
+
+								<select id="idEmpresa" name="idEmpresa" required
+									th:disabled="${idBancoProyecto != null}"
+									th:class="${idBancoProyecto != null} ?
+									'input-form input-disabled' :
+									'input-form'">
+
+									<option value="">Seleccione una empresa</option>
+
+									<option th:each="empresaItem : ${empresas}"
+										th:value="${empresaItem.id}"
+										th:disabled="${empresaItem.convenioVisible != 'ACTIVO'}"
+										th:selected="${residencia != null and residencia.empresa != null and residencia.empresa.id == empresaItem.id}"
+										th:attr="data-convenio=${empresaItem.convenioVisible},
+												data-nombre=${empresaItem.nombre},
+												data-vigencia=${empresaItem.anioConvenio != null and empresaItem.anioFinConvenio != null ? 'Vigente: ' + empresaItem.anioConvenio + ' - ' + empresaItem.anioFinConvenio : 'Sin vigencia'}"
+										th:text="${empresaItem.nombre + ' | Convenio: ' + empresaItem.convenioVisible + 
+											(empresaItem.anioConvenio != null and empresaItem.anioFinConvenio != null 
+												? ' | Vigente: ' + empresaItem.anioConvenio + ' - ' + empresaItem.anioFinConvenio 
+												: ' | Sin vigencia')}">
+									</option>
+								</select>
+
+								<input type="hidden" name="idEmpresa"
+									th:if="${idBancoProyecto != null and residencia != null and residencia.empresa != null}"
+									th:value="${residencia.empresa.id}" />
+
+								<div id="empresaInfo"
+									class="mt-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600 hidden">
+									<div class="flex items-center gap-2">
+										<span id="empresaInfoIcon" class="material-symbols-outlined text-base">
+											info
+										</span>
+										<span id="empresaInfoTexto" class="font-semibold"></span>
+									</div>
+								</div>
+
+								<p class="text-xs text-slate-500 mt-2">
+									Las empresas con convenio vencido o inactivo no podrán seleccionarse.
+								</p>
+							</div>
+
+							<div>
+								<label class="block text-sm font-bold text-slate-700 mb-2">
+									Descripción <span class="text-red-600">*</span>
+								</label>
+
+								<textarea name="descripcion" rows="3" required
+									th:readonly="${idBancoProyecto != null}"
+									th:class="${idBancoProyecto != null} ?
+									'input-form input-disabled' :
+									'input-form'"
+									th:text="${residencia != null} ? ${residencia.descripcion} : ''"></textarea>
+							</div>
+
+							<div>
+								<label class="block text-sm font-bold text-slate-700 mb-2">
+									Objetivo <span class="text-red-600">*</span>
+								</label>
+
+								<textarea name="objetivo" rows="3" required
+									th:readonly="${idBancoProyecto != null}"
+									th:class="${idBancoProyecto != null} ?
+									'input-form input-disabled' :
+									'input-form'"
+									th:text="${residencia != null} ? ${residencia.objetivo} : ''"></textarea>
+							</div>
+
+							<div>
+								<label class="block text-sm font-bold text-slate-700 mb-2">
+									Periodo
+								</label>
+
+								<input type="text" name="periodo" readonly
+									th:value="${periodoActual}"
+									class="input-form input-disabled font-bold" />
+							</div>
+
+							<th:block th:if="${residencia != null and residencia.id != null}">
+								<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+									<div>
+										<label class="block text-sm font-bold text-slate-700 mb-2">
+											Fecha de inicio oficial
+										</label>
+
+										<input type="date"
+											name="fechaInicio"
+											id="fechaInicio"
+											th:value="${residencia.fechaInicio}"
+											readonly
+											class="input-form input-disabled font-bold" />
+									</div>
+
+									<div>
+										<label class="block text-sm font-bold text-slate-700 mb-2">
+											Fecha de fin
+										</label>
+
+										<input type="date"
+											name="fechaFin"
+											id="fechaFin"
+											th:value="${residencia.fechaFin}"
+											required
+											readonly
+											class="input-form input-disabled font-bold" />
+									</div>
+								</div>
+
+								<div class="rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4">
+									<p class="font-bold text-slate-700">
+										Calendario fijo de residencia
+									</p>
+									<p class="text-sm text-slate-500 mt-2">
+										Las fechas se asignan segun el calendario academico institucional. La residencia inicia con un periodo base de 4 meses y la prorroga no se captura aqui.
+									</p>
+
+									<p class="text-sm text-slate-500 mt-2">
+										Si se autoriza una prorroga, debe hacerse despues de concluir el periodo base.
+									</p>
+
+									<p class="text-xs text-slate-500 mt-3">
+										Inicio oficial:
+										<span class="font-bold text-[#002046]" th:text="${fechaInicioOficial}"></span>.
+										Fin base:
+										<span class="font-bold text-[#002046]" th:text="${fechaFinBase}"></span>.
+										Fin maximo con prorroga:
+										<span class="font-bold text-[#002046]" th:text="${fechaFinMaxima}"></span>.
+									</p>
+								</div>
+							</th:block>
+
+						</div>
+					</div>
+
+					
+					<div class="p-10 bg-slate-50/80">
+
+						<h2 class="text-2xl font-black text-[#002046] mb-2">
+							Asignación académica
+						</h2>
+
+						<p class="text-slate-500 text-sm mb-8">
+							Selecciona residente y asesores relacionados al proyecto.
+						</p>
+
+						<div class="space-y-6">
+
+							<div th:if="${modoEstudiante != true}">
+								<label class="block text-sm font-bold text-slate-700 mb-2">
+									Residente <span class="text-red-600">*</span>
+								</label>
+
+								<select id="idResidente" name="idResidente" required
+									class="input-form">
+
+									<option value="">Seleccione un residente</option>
+
+									<option th:each="residenteItem : ${residentes}"
+										th:value="${residenteItem.id}"
+										th:text="${residenteItem.matricula + ' - ' + residenteItem.nombre + ' ' + residenteItem.apellidos}"
+										th:selected="${residencia != null and residencia.residente != null and residencia.residente.id == residenteItem.id}">
+									</option>
+								</select>
+							</div>
+
+							<div th:if="${modoEstudiante == true}">
+								<label class="block text-sm font-bold text-slate-700 mb-2">
+									Residente solicitante
+								</label>
+
+								<input type="hidden" name="idResidente"
+									th:if="${residenteActual != null}"
+									th:value="${residenteActual.id}" />
+
+								<div class="input-form input-disabled flex items-center justify-between gap-3">
+									<div>
+										<div class="font-black text-[#002046]"
+											th:text="${residenteActual != null ? residenteActual.nombreCompleto : 'Sin residente'}">
+										</div>
+										<div class="text-sm text-slate-500"
+											th:text="${residenteActual != null ? residenteActual.matricula : ''}">
+										</div>
+									</div>
+
+									<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-black">
+										<span class="material-symbols-outlined text-sm">verified_user</span>
+										Solicitante
+									</span>
+								</div>
+							</div>
+
+							<div>
+								<label class="block text-sm font-bold text-slate-700 mb-2">
+									Asesor Interno <span class="text-red-600" th:if="${modoEstudiante != true}">*</span>
+								</label> <select id="idAsesorInterno" name="idAsesorInterno"
+										th:required="${residencia != null and residencia.estadoAutorizacion == 'AUTORIZADO'}"
+										th:attr="data-asesor-seleccionado=${residencia != null and residencia.asesorInterno != null ? residencia.asesorInterno.id : ''},
+												data-estado-autorizacion=${residencia != null and residencia.estadoAutorizacion != null ? residencia.estadoAutorizacion : 'PENDIENTE'}"
+										class="input-form input-disabled" disabled>
+
+										<option value="">Dictamen pendiente o no autorizado</option>
+									</select>
+
+									<p id="mensajeAsesorInterno"
+									class="mt-2 text-sm text-amber-600 font-semibold hidden">
+									El asesor interno solo puede asignarse cuando el dictamen esté autorizado.
+								</p>
+							</div>
+
+							<div>
+								<label class="block text-sm font-bold text-slate-700 mb-2">
+									Asesor Externo <span class="text-red-600" th:if="${modoEstudiante != true}">*</span>
+								</label>
+
+								<select id="idAsesorExterno" name="idAsesorExterno"
+									th:attr="required=${modoEstudiante != true} ? 'required' : null"
+									th:attrappend="data-asesor-externo-seleccionado=${residencia != null and residencia.asesorExterno != null ? residencia.asesorExterno.id : ''}"
+									class="input-form">
+
+									<option value="">Seleccione un asesor externo</option>
+
+									<option th:each="asesorExternoItem : ${asesoresExternos}"
+										th:value="${asesorExternoItem.id}"
+										th:attr="data-empresa=${asesorExternoItem.empresa}"
+										th:text="${asesorExternoItem.nombre + ' ' + asesorExternoItem.apellidos + ' - ' + asesorExternoItem.empresa}"
+										th:selected="${residencia != null and residencia.asesorExterno != null and residencia.asesorExterno.id == asesorExternoItem.id}">
+									</option>
+								</select>
+
+								<p th:if="${modoEstudiante == true}" class="mt-2 text-sm text-slate-500">
+									Si aun no conoces al asesor externo, puedes enviar la solicitud y asignarlo despues.
+								</p>
+							</div>
+
+							<div th:if="${idBancoProyecto != null}"
+								class="rounded-2xl bg-white border border-slate-200 text-slate-600 px-5 py-5 text-sm leading-relaxed shadow-sm">
+								<p class="font-black text-[#002046] mb-1">
+									Asignación desde banco
+								</p>
+								<p th:text="${modoEstudiante == true}
+									? 'Al enviar la solicitud, se registrara tu propuesta con este proyecto del banco para seguimiento institucional.'
+									: 'Al guardar, se creara la residencia con este proyecto y el proyecto del banco quedara marcado como asignado.'">
+									Al guardar, se creará la residencia con este proyecto y el proyecto del banco quedará marcado como asignado.
+								</p>
+							</div>
+
+						</div>
+					</div>
+
+				</div>
+
+				<div class="px-10 py-6 border-t border-slate-200 bg-white flex flex-col sm:flex-row justify-end gap-4">
+
+					<a th:href="${idBancoProyecto != null} ? @{/banco-proyectos/index} : @{/residencias/index}"
+						class="inline-flex justify-center items-center px-6 py-3 rounded-2xl border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 font-bold transition">
+						Cancelar
+					</a>
+
+					<button type="submit"
+						class="inline-flex justify-center items-center gap-2 px-8 py-3 rounded-2xl text-white primary-gradient font-black shadow-xl transition-all duration-200 hover:scale-[1.02]">
+
+						<span class="material-symbols-outlined text-[20px]">
+							save
+						</span>
+
+						<span th:text="${modoEstudiante == true}
+							? (${idBancoProyecto != null} ? 'Enviar solicitud' : 'Registrar propuesta')
+							: (${residencia != null and residencia.id != null} ? 'Actualizar Proyecto' : 'Guardar Proyecto')">
+						</span>
+					</button>
+
+				</div>
+
+			</form>
+
+		</div>
+
+	</div>
+
+</main>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+	const empresaSelect = document.getElementById("idEmpresa");
+	const empresaInfo = document.getElementById("empresaInfo");
+	const empresaInfoTexto = document.getElementById("empresaInfoTexto");
+	const empresaInfoIcon = document.getElementById("empresaInfoIcon");
+	const asesorExternoSelect = document.getElementById("idAsesorExterno");
+
+	function normalizarTexto(valor) {
+		return (valor || "")
+			.normalize("NFD")
+			.replace(/[\u0300-\u036f]/g, "")
+			.trim()
+			.toUpperCase();
+	}
+
+	function filtrarAsesoresExternosPorEmpresa() {
+		if (!empresaSelect || !asesorExternoSelect) {
+			return;
+		}
+
+		const opcionEmpresa = empresaSelect.options[empresaSelect.selectedIndex];
+		const empresaSeleccionada = opcionEmpresa
+			? normalizarTexto(opcionEmpresa.getAttribute("data-nombre") || opcionEmpresa.textContent.split("|")[0])
+			: "";
+		const asesorSeleccionado = asesorExternoSelect.getAttribute("data-asesor-externo-seleccionado") || "";
+		let tieneOpcionesVisibles = false;
+
+		Array.from(asesorExternoSelect.options).forEach((opcion, index) => {
+			if (index === 0) {
+				opcion.hidden = false;
+				return;
+			}
+
+			const empresaAsesor = normalizarTexto(opcion.getAttribute("data-empresa"));
+			const visible = !empresaSeleccionada || empresaAsesor === empresaSeleccionada;
+			opcion.hidden = !visible;
+
+			if (!visible && opcion.selected) {
+				opcion.selected = false;
+			}
+
+			if (visible) {
+				tieneOpcionesVisibles = true;
+			}
+		});
+
+		if (asesorSeleccionado) {
+			const opcionSeleccionada = Array.from(asesorExternoSelect.options)
+				.find(opcion => opcion.value === asesorSeleccionado && !opcion.hidden);
+			if (opcionSeleccionada) {
+				opcionSeleccionada.selected = true;
+			}
+		}
+
+		if (!tieneOpcionesVisibles) {
+			asesorExternoSelect.value = "";
+		}
+	}
+
+	function actualizarInfoEmpresa() {
+		if (!empresaSelect || !empresaInfo || !empresaInfoTexto) {
+			return;
+		}
+
+		const opcion = empresaSelect.options[empresaSelect.selectedIndex];
+
+		if (!opcion || !opcion.value) {
+			empresaInfo.classList.add("hidden");
+			return;
+		}
+
+		const convenio = opcion.getAttribute("data-convenio") || "INACTIVO";
+		const vigencia = opcion.getAttribute("data-vigencia") || "Sin vigencia";
+
+		empresaInfo.classList.remove("hidden");
+
+		if (convenio === "ACTIVO") {
+			empresaInfo.className = "mt-3 rounded-2xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700";
+			empresaInfoIcon.textContent = "verified";
+			empresaInfoTexto.textContent = "Empresa disponible. " + vigencia + ".";
+		} else if (convenio === "VENCIDO") {
+			empresaInfo.className = "mt-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700";
+			empresaInfoIcon.textContent = "schedule";
+			empresaInfoTexto.textContent = "Empresa con convenio vencido. No puede asignarse.";
+		} else {
+			empresaInfo.className = "mt-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700";
+			empresaInfoIcon.textContent = "block";
+			empresaInfoTexto.textContent = "Empresa con convenio inactivo. No puede asignarse.";
+		}
+	}
+
+	if (empresaSelect) {
+		empresaSelect.addEventListener("change", actualizarInfoEmpresa);
+		empresaSelect.addEventListener("change", filtrarAsesoresExternosPorEmpresa);
+		actualizarInfoEmpresa();
+		filtrarAsesoresExternosPorEmpresa();
+	}
+
+});
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+	const residenteSelect = document.getElementById("idResidente");
+	const asesorSelect = document.getElementById("idAsesorInterno");
+	const mensaje = document.getElementById("mensajeAsesorInterno");
+	let ultimoResidenteConsultado = null;
+	let solicitudAsesoresActiva = null;
+
+	if (!residenteSelect || !asesorSelect || !mensaje) {
+		return;
+	}
+
+	const asesorSeleccionado = asesorSelect.getAttribute("data-asesor-seleccionado");
+	const estadoAutorizacion = asesorSelect.getAttribute("data-estado-autorizacion") || "PENDIENTE";
+
+	function bloquearAsesor(texto) {
+		asesorSelect.disabled = true;
+		asesorSelect.required = false;
+		asesorSelect.innerHTML = `<option value="">${texto}</option>`;
+		asesorSelect.className = "input-form input-disabled";
+	}
+
+	function habilitarAsesor() {
+		asesorSelect.disabled = false;
+		asesorSelect.required = true;
+		asesorSelect.className = "input-form";
+	}
+
+	function cargarAsesoresAfines(idResidente) {
+		mensaje.classList.add("hidden");
+
+		if (estadoAutorizacion !== "AUTORIZADO") {
+			ultimoResidenteConsultado = null;
+			bloquearAsesor("Dictamen pendiente o no autorizado");
+			mensaje.textContent = "El asesor interno solo puede asignarse cuando el dictamen esté AUTORIZADO.";
+			mensaje.classList.remove("hidden");
+			return;
+		}
+
+		if (!idResidente) {
+			ultimoResidenteConsultado = null;
+			bloquearAsesor("Primero seleccione un residente");
+			return;
+		}
+
+		if (ultimoResidenteConsultado === idResidente) {
+			return;
+		}
+
+		ultimoResidenteConsultado = idResidente;
+
+		if (solicitudAsesoresActiva) {
+			solicitudAsesoresActiva.abort();
+		}
+
+		solicitudAsesoresActiva = new AbortController();
+
+		bloquearAsesor("Cargando asesores afines...");
+
+		fetch(`/residencias/asesores-afines/${idResidente}`, {
+			signal: solicitudAsesoresActiva.signal
+		})
+			.then(response => {
+				if (!response.ok) {
+					throw new Error("No se pudo consultar la información del residente.");
+				}
+
+				return response.json();
+			})
+			.then(data => {
+				if (!data.dictamenAutorizado) {
+					bloquearAsesor("Dictamen pendiente o no autorizado");
+					mensaje.textContent = data.mensaje || "El asesor interno solo puede asignarse cuando el dictamen esté autorizado.";
+					mensaje.classList.remove("hidden");
+					return;
+				}
+
+				if (!data.asesores || data.asesores.length === 0) {
+					bloquearAsesor("No hay asesores internos afines a la carrera del alumno");
+					mensaje.textContent = "No hay asesores internos habilitados para la carrera del residente.";
+					mensaje.classList.remove("hidden");
+					return;
+				}
+
+				habilitarAsesor();
+
+				asesorSelect.innerHTML = '<option value="">Seleccione un asesor interno</option>';
+
+				data.asesores.forEach(asesor => {
+					const option = document.createElement("option");
+
+					option.value = asesor.id;
+					option.textContent = asesor.noEmpleado + " - " + asesor.nombre + " " + asesor.apellidos;
+
+					if (asesorSeleccionado && asesorSeleccionado == asesor.id) {
+						option.selected = true;
+					}
+
+					asesorSelect.appendChild(option);
+				});
+
+				solicitudAsesoresActiva = null;
+			})
+			.catch(error => {
+				if (error.name === "AbortError") {
+					return;
+				}
+
+				console.error(error);
+				solicitudAsesoresActiva = null;
+				ultimoResidenteConsultado = null;
+
+				bloquearAsesor("Error al cargar asesores");
+
+				mensaje.textContent = "Ocurrió un error al cargar los asesores internos.";
+				mensaje.classList.remove("hidden");
+			});
+	}
+
+	residenteSelect.addEventListener("change", function () {
+		cargarAsesoresAfines(this.value);
+	});
+
+	if (residenteSelect.value) {
+		cargarAsesoresAfines(residenteSelect.value);
+	} else {
+		bloquearAsesor("Primero seleccione un residente");
+	}
+
+});
+</script>
+
+</body>
+</html>

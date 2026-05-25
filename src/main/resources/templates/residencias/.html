@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Cierre de Expediente</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<style>
+body { font-family:'Inter', sans-serif; background:#f7f9fb; }
+h1,h2,h3 { font-family:'Manrope', sans-serif; }
+.primary-gradient { background: linear-gradient(135deg, #002046 0%, #1B365D 100%); }
+.material-symbols-outlined { font-variation-settings: 'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; }
+</style>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+<aside class="fixed left-0 top-0 h-full flex flex-col py-6 border-r border-slate-200 bg-slate-100 w-64 z-40">
+	<div class="px-6 mb-8 flex items-center gap-4">
+		<div class="w-16 h-16 flex items-center justify-center shrink-0 rounded-full bg-white shadow-sm border border-slate-200">
+			<img th:src="@{/img/logo-tecnm.png}" alt="Logo TecNM" class="w-14 h-14 object-contain">
+		</div>
+		<div>
+			<h2 class="text-lg font-black text-[#002046] leading-none">Portal de Residencia</h2>
+			<p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mt-1">Gestión Académica</p>
+		</div>
+	</div>
+
+	<nav class="flex-1 space-y-1">
+		<a th:href="@{/residencias/index}" class="bg-white text-[#002046] shadow-sm rounded-r-lg py-3 px-6 flex items-center gap-3 text-sm font-semibold translate-x-1">
+			<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">folder_managed</span>
+			<span>Proyectos</span>
+		</a>
+	</nav>
+</aside>
+
+<main class="ml-64 min-h-screen">
+	<header class="flex justify-between items-center w-full px-8 py-3 sticky top-0 z-30 bg-slate-50 border-b border-slate-200">
+		<a th:href="@{/dashboard}" class="text-xl font-bold text-[#002046] tracking-tight">TecNM Campus Chilpancingo</a>
+		<a th:href="@{/residencias/index}" class="text-slate-600 hover:text-[#1B365D] font-semibold">Volver</a>
+	</header>
+
+	<div class="max-w-7xl mx-auto p-8">
+		<div class="mb-8">
+			<h1 class="text-3xl font-extrabold text-[#002046] mb-2">Cierre del Expediente</h1>
+			<p class="text-slate-500"
+			   th:text="${residencia != null ? residencia.nombreProyecto + ' - ' + residencia.periodo : 'Residencia'}"></p>
+		</div>
+
+		<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+			<div class="bg-white rounded-xl shadow-xl p-5">
+				<p class="text-sm text-slate-500 mb-2">Promedio final</p>
+				<p class="text-2xl font-extrabold text-[#002046]"
+				   th:text="${promedioFinal != null ? #numbers.formatDecimal(promedioFinal,1,2) : 'N/D'}"></p>
+			</div>
+			<div class="bg-white rounded-xl shadow-xl p-5">
+				<p class="text-sm text-slate-500 mb-2">Faltantes</p>
+				<p class="text-2xl font-extrabold text-amber-700" th:text="${faltantes}"></p>
+			</div>
+			<div class="bg-white rounded-xl shadow-xl p-5">
+				<p class="text-sm text-slate-500 mb-2">No aprobados</p>
+				<p class="text-2xl font-extrabold text-red-700" th:text="${noAprobados}"></p>
+			</div>
+			<div class="bg-white rounded-xl shadow-xl p-5">
+				<p class="text-sm text-slate-500 mb-2">Estatus proceso</p>
+				<p class="text-xl font-extrabold"
+				   th:classappend="${residencia.estatusProceso == 'CERRADO'} ? ' text-emerald-700' : ' text-blue-700'"
+				   th:text="${residencia.estatusProceso}"></p>
+			</div>
+		</div>
+
+		<div class="bg-white rounded-xl shadow-xl overflow-hidden mb-8">
+			<div class="overflow-x-auto">
+				<table class="w-full text-left border-collapse">
+					<thead>
+						<tr class="bg-slate-100">
+							<th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500">Documento obligatorio</th>
+							<th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500">Archivo</th>
+							<th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500">Estatus</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="entry : ${mapaDocumentos}" class="border-t border-slate-100 hover:bg-slate-50">
+							<td class="px-6 py-4 font-semibold text-[#002046]" th:text="${entry.key}"></td>
+
+							<td class="px-6 py-4">
+								<a th:if="${entry.value != null and entry.value.rutaArchivo != null}"
+								   th:href="@{'/proyectos-archivos/' + ${entry.value.rutaArchivo}}"
+								   target="_blank"
+								   class="text-[#355f9b] font-semibold hover:underline"
+								   th:text="${entry.value.nombreArchivo}">
+								</a>
+								<span th:if="${entry.value == null or entry.value.rutaArchivo == null}" class="text-slate-400">
+									No cargado
+								</span>
+							</td>
+
+							<td class="px-6 py-4">
+								<span th:if="${entry.value == null}" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-700">
+									FALTANTE
+								</span>
+								<span th:if="${entry.value != null}"
+									  class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold"
+									  th:classappend="${entry.value.estatus.name() == 'APROBADO'} ? ' bg-emerald-100 text-emerald-700' :
+									                   (${entry.value.estatus.name() == 'RECHAZADO'} ? ' bg-red-100 text-red-700' :
+									                   (${entry.value.estatus.name() == 'EN_REVISION'} ? ' bg-blue-100 text-blue-700' :
+									                   ' bg-amber-100 text-amber-700'))"
+									  th:text="${entry.value.estatus}">
+								</span>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<div class="bg-white rounded-xl shadow-xl p-8">
+			<h2 class="text-xl font-bold text-[#002046] mb-4">Acciones de cierre</h2>
+
+			<div class="space-y-4 text-sm text-slate-600 mb-6">
+				<p>Para cerrar el expediente deben cumplirse estas condiciones:</p>
+				<p>- No debe haber documentos faltantes.</p>
+				<p>- Todos los documentos obligatorios deben estar aprobados.</p>
+				<p>- El promedio final debe ser aprobatorio (mínimo 70).</p>
+			</div>
+
+			<div class="flex flex-wrap gap-4">
+				<a th:if="${puedeCerrar and residencia.estatusProceso != 'CERRADO'}"
+				   th:href="@{/cierre-expediente/cerrar/{id}(id=${residencia.id})}"
+				   onclick="return confirm('¿Deseas cerrar este expediente?');"
+				   class="px-6 py-3 rounded-lg font-bold text-white primary-gradient shadow-lg">
+					Cerrar expediente
+				</a>
+
+				<a th:if="${residencia.estatusProceso == 'CERRADO'}"
+				   th:href="@{/cierre-expediente/reabrir/{id}(id=${residencia.id})}"
+				   onclick="return confirm('¿Deseas reabrir este expediente?');"
+				   class="px-6 py-3 rounded-lg font-bold bg-red-100 text-red-700">
+					Reabrir expediente
+				</a>
+
+				<a  sec:authorize="hasAnyRole(
+					'ADMINISTRADOR',
+					'DIVISION_ESTUDIOS',
+					'ASESOR_INTERNO',
+					'ASESOR_EXTERNO',
+					'SERVICIOS_ESCOLARES'
+					)"
+					th:href="@{/documentos-residencia/{id}(id=${residencia.id})}"
+		 		    class="px-6 py-3 rounded-lg font-bold bg-slate-200 text-slate-700">
+					Ver documentos
+				</a>
+				
+				<a  sec:authorize="hasAnyRole('ADMINISTRADOR','JEFE_DEPARTAMENTO')"
+					th:if="${residencia.estadoAutorizacion == null 
+        			or residencia.estadoAutorizacion == 'PENDIENTE'}"
+   					th:href="@{/residencias/dictamen/{id}(id=${residencia.id})}"
+   					class="inline-flex items-center gap-1 bg-amber-100 hover:bg-amber-200 text-amber-700 px-2 py-1.5 rounded-lg font-bold text-[11px] transition">
+    				<span class="material-symbols-outlined text-sm">gavel</span>
+ 					Dictaminar
+				</a>
+
+				<a th:href="@{/evaluaciones-residencia/{id}(id=${residencia.id})}"
+				   class="px-6 py-3 rounded-lg font-bold bg-amber-100 text-amber-700">
+					Ver evaluaciones
+				</a>
+			</div>
+
+			<div class="mt-6 rounded-lg px-4 py-3 text-sm font-semibold"
+			     th:classappend="${puedeCerrar} ? ' bg-emerald-100 text-emerald-700' : ' bg-amber-100 text-amber-700'">
+				<span th:if="${puedeCerrar}">El expediente cumple con las condiciones para cerrarse.</span>
+				<span th:if="${!puedeCerrar}">El expediente aún no cumple con las condiciones de cierre.</span>
+			</div>
+		</div>
+	</div>
+</main>
+</body>
+</html>

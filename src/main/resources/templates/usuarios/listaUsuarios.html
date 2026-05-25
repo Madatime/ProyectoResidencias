@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Usuarios | TecNM Campus Chilpancingo</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+
+<link
+	href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Manrope:wght@500;600;700;800&family=Material+Symbols+Outlined"
+	rel="stylesheet">
+
+<style>
+body {
+	font-family: 'Inter', sans-serif;
+	background: #f4f7fb;
+}
+
+h1, h2, h3, h4 {
+	font-family: 'Manrope', sans-serif;
+}
+
+.glass {
+	background: rgba(255,255,255,0.75);
+	backdrop-filter: blur(12px);
+}
+
+.grid-bg {
+	background-image:
+		linear-gradient(rgba(15,23,42,0.04) 1px, transparent 1px),
+		linear-gradient(90deg, rgba(15,23,42,0.04) 1px, transparent 1px);
+	background-size: 38px 38px;
+}
+
+.sidebar-gradient {
+	background: linear-gradient(180deg, #082f6d 0%, #041c44 100%);
+}
+
+.card-shadow {
+	box-shadow: 0 10px 35px rgba(15,23,42,0.08);
+}
+
+.table-hover:hover {
+	background: #f8fafc;
+}
+
+.badge-activo {
+	background: #dcfce7;
+	color: #166534;
+}
+
+.badge-inactivo {
+	background: #fee2e2;
+	color: #991b1b;
+}
+
+.badge-admin {
+	background: #dbeafe;
+	color: #1d4ed8;
+}
+
+.badge-jefe {
+	background: #ede9fe;
+	color: #6d28d9;
+}
+
+.badge-docente {
+	background: #fef3c7;
+	color: #b45309;
+}
+
+.badge-residente {
+	background: #cffafe;
+	color: #155e75;
+}
+
+.btn-primary {
+	background: linear-gradient(135deg,#0f3d91 0%,#1d4ed8 100%);
+}
+
+.btn-primary:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 10px 20px rgba(29,78,216,.25);
+}
+</style>
+</head>
+
+<body class="text-slate-800">
+
+<div class="flex min-h-screen">
+
+	
+	<div th:replace="~{fragments/sidebar :: sidebar('usuarios')}"></div>
+
+	
+	<main class="flex-1 ml-64">
+
+		
+			<header th:replace="~{fragments/ui :: topbar(@{/dashboard}, 'Dashboard')}"></header>
+
+		
+		<section class="p-10 grid-bg min-h-screen">
+
+			
+			<div
+				class="relative overflow-hidden rounded-[32px] p-10 text-white card-shadow"
+				style="background: linear-gradient(135deg,#082f6d 0%,#0f3d91 50%,#2563eb 100%);">
+
+				<div
+					class="absolute -top-20 -right-20 w-72 h-72 bg-white/10 rounded-full"></div>
+
+				<div
+					class="absolute bottom-0 right-32 w-52 h-52 bg-white/5 rounded-full"></div>
+
+				<div class="relative z-10">
+
+					<div
+						class="flex items-center gap-2 text-sm font-semibold text-blue-100 mb-4">
+
+						<span class="material-symbols-outlined text-[18px]">
+							admin_panel_settings
+						</span>
+
+						<span>Panel de Control</span>
+
+						<span class="text-blue-200">›</span>
+
+						<span>Usuarios</span>
+
+					</div>
+
+					<h2 class="text-5xl font-extrabold tracking-tight mb-5">
+						Gestión de Usuarios
+					</h2>
+
+					<p class="max-w-4xl text-lg leading-relaxed text-blue-100">
+						Administra cuentas de acceso, perfiles, permisos y estado
+						de usuarios del sistema integral de residencias profesionales.
+					</p>
+
+				</div>
+
+			</div>
+
+			
+			<div
+				class="mt-10 rounded-[30px] bg-white/85 glass border border-white/60 overflow-hidden card-shadow">
+
+				
+				<div
+					class="px-8 py-7 border-b border-slate-200 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-6">
+
+					<div>
+						<h3 class="text-3xl font-extrabold text-slate-800">
+							Lista de Usuarios
+						</h3>
+
+						<p class="text-slate-500 mt-2">
+							Administración de accesos y perfiles del sistema.
+						</p>
+					</div>
+
+					<div class="flex flex-wrap items-center gap-4">
+
+						<form method="get"
+							th:action="@{/usuarios/index}"
+							class="flex flex-wrap gap-3 items-center">
+
+							<div class="relative">
+
+								<span
+									class="material-symbols-outlined absolute left-4 top-3 text-slate-400">
+									search
+								</span>
+
+								<input
+									type="text"
+									name="texto"
+									th:value="${texto}"
+									placeholder="Buscar usuario..."
+									class="pl-12 pr-5 py-3 rounded-2xl border border-slate-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 w-80 bg-white">
+
+							</div>
+
+							<select
+								name="perfil"
+								class="rounded-2xl border border-slate-300 px-4 py-3 bg-white">
+
+								<option value="" th:selected="${perfil == null or perfil == ''}">
+									Todos los perfiles
+								</option>
+
+								<option value="ADMINISTRADOR" th:selected="${perfil == 'ADMINISTRADOR'}">
+									Administrador
+								</option>
+
+								<option value="JEFE_DEPARTAMENTO" th:selected="${perfil == 'JEFE_DEPARTAMENTO'}">
+									Jefe Departamento
+								</option>
+
+								<option value="ASESOR_INTERNO" th:selected="${perfil == 'ASESOR_INTERNO'}">
+									Asesor Interno
+								</option>
+
+								<option value="ESTUDIANTE" th:selected="${perfil == 'ESTUDIANTE'}">
+									Estudiante
+								</option>
+
+								<option value="ASESOR_EXTERNO" th:selected="${perfil == 'ASESOR_EXTERNO'}">
+									Asesor Externo
+								</option>
+
+								<option value="RESIDENTE" th:selected="${perfil == 'RESIDENTE'}">
+									Residente
+								</option>
+
+							</select>
+
+							<button
+								type="submit"
+								class="btn-primary text-white px-6 py-3 rounded-2xl font-semibold transition-all duration-200">
+								Buscar
+							</button>
+
+						</form>
+
+						<a
+							th:href="@{/usuarios/create}"
+							class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-2xl font-semibold flex items-center gap-2 transition">
+
+							<span class="material-symbols-outlined">
+								person_add
+							</span>
+
+							Nuevo Usuario
+
+						</a>
+						
+						<a th:href="@{/usuarios/inactivos}"
+							class="bg-slate-700 hover:bg-slate-800 text-white px-6 py-3 rounded-2xl font-semibold flex items-center gap-2 transition">
+							<span class="material-symbols-outlined">restore</span>
+							Recuperar Usuario
+						</a>
+
+					</div>
+
+				</div>
+
+				
+				<div
+					class="px-8 py-6 flex flex-wrap gap-5 border-b border-slate-200 bg-slate-50/70">
+
+					<div
+						class="bg-white rounded-3xl px-6 py-5 border border-slate-200 min-w-[210px]">
+
+						<p class="text-xs uppercase tracking-[0.2em] text-slate-400 font-bold">
+							Usuarios Activos
+						</p>
+
+						<div class="mt-2 flex items-center justify-between">
+
+							<h4 class="text-4xl font-extrabold text-slate-800"
+								th:text="${totalUsuarios}">
+								0
+							</h4>
+
+							<div
+								class="w-12 h-12 rounded-2xl bg-blue-100 text-blue-700 flex items-center justify-center">
+
+								<span class="material-symbols-outlined">
+									group
+								</span>
+
+							</div>
+
+						</div>
+
+					</div>
+
+					<div
+						class="bg-white rounded-3xl px-6 py-5 border border-slate-200 min-w-[210px]">
+
+						<p class="text-xs uppercase tracking-[0.2em] text-slate-400 font-bold">
+							Administradores
+						</p>
+
+						<div class="mt-2 flex items-center justify-between">
+
+							<h4 class="text-4xl font-extrabold text-slate-800"
+								th:text="${totalAdmins}">
+								0
+							</h4>
+
+							<div
+								class="w-12 h-12 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center">
+
+								<span class="material-symbols-outlined">
+									admin_panel_settings
+								</span>
+
+							</div>
+
+						</div>
+
+					</div>
+
+				</div>
+
+				
+				<div class="overflow-x-auto">
+
+					<table class="w-full min-w-[1400px]">
+
+						<thead
+							class="bg-gradient-to-r from-slate-100 to-slate-50 text-slate-700">
+
+							<tr class="text-sm uppercase">
+
+								<th class="px-6 py-5 text-left font-extrabold">
+									ID
+								</th>
+
+								<th class="px-6 py-5 text-left font-extrabold">
+									Usuario
+								</th>
+
+								<th class="px-6 py-5 text-left font-extrabold">
+									Nombre Completo
+								</th>
+
+								<th class="px-6 py-5 text-left font-extrabold">
+									Perfil
+								</th>
+
+								<th class="px-6 py-5 text-left font-extrabold">
+									Estatus
+								</th>
+
+								<th class="px-6 py-5 text-center font-extrabold">
+									Acciones
+								</th>
+
+							</tr>
+
+						</thead>
+
+						<tbody class="divide-y divide-slate-200">
+
+							<tr
+								th:each="usuario : ${usuarios}"
+								class="table-hover transition-all duration-200">
+
+								<td class="px-6 py-5 font-bold text-slate-700"
+									th:text="${usuario.id}">
+									1
+								</td>
+
+								<td class="px-6 py-5">
+
+									<div class="font-semibold text-slate-800"
+										th:text="${usuario.username}">
+										admin
+									</div>
+
+								</td>
+
+								<td class="px-6 py-5">
+
+									<div class="font-semibold text-slate-800"
+										th:text="${usuario.nombreCompleto}">
+										Administrador General
+									</div>
+
+								</td>
+
+								<td class="px-6 py-5">
+
+									<span
+										th:if="${usuario.perfilNombre == 'ADMINISTRADOR'}"
+										class="badge-admin px-4 py-2 rounded-full text-xs font-bold">
+										ADMINISTRADOR
+									</span>
+
+									<span
+										th:if="${usuario.perfilNombre == 'JEFE_DEPARTAMENTO'}"
+										class="badge-jefe px-4 py-2 rounded-full text-xs font-bold">
+										JEFE DEPARTAMENTO
+									</span>
+
+									<span
+										th:if="${usuario.perfilNombre == 'ASESOR_INTERNO'}"
+										class="badge-docente px-4 py-2 rounded-full text-xs font-bold">
+										ASESOR INTERNO
+									</span>
+
+									<span
+										th:if="${usuario.perfilNombre == 'ASESOR_EXTERNO'}"
+										class="badge-residente px-4 py-2 rounded-full text-xs font-bold">
+										ASESOR EXTERNO
+									</span>
+
+									<span
+										th:if="${usuario.perfilNombre == 'DIVISION_ESTUDIOS'}"
+										class="badge-admin px-4 py-2 rounded-full text-xs font-bold">
+										DIVISION ESTUDIOS
+									</span>
+
+									<span
+										th:if="${usuario.perfilNombre == 'SERVICIOS_ESCOLARES'}"
+										class="badge-jefe px-4 py-2 rounded-full text-xs font-bold">
+										SERVICIOS ESCOLARES
+									</span>
+
+									<span
+										th:if="${usuario.perfilNombre == 'VINCULACION'}"
+										class="badge-docente px-4 py-2 rounded-full text-xs font-bold">
+										VINCULACION
+									</span>
+
+									<span
+										th:if="${usuario.perfilNombre == 'RESIDENTE' or usuario.perfilNombre == 'ESTUDIANTE'}"
+										class="badge-residente px-4 py-2 rounded-full text-xs font-bold">
+										ALUMNO
+									</span>
+
+									<span
+										th:if="${usuario.perfilNombre != null
+											and usuario.perfilNombre != 'ADMINISTRADOR'
+											and usuario.perfilNombre != 'JEFE_DEPARTAMENTO'
+											and usuario.perfilNombre != 'ASESOR_INTERNO'
+											and usuario.perfilNombre != 'ASESOR_EXTERNO'
+											and usuario.perfilNombre != 'DIVISION_ESTUDIOS'
+											and usuario.perfilNombre != 'SERVICIOS_ESCOLARES'
+											and usuario.perfilNombre != 'VINCULACION'
+											and usuario.perfilNombre != 'RESIDENTE'
+											and usuario.perfilNombre != 'ESTUDIANTE'}"
+										class="bg-slate-100 text-slate-700 px-4 py-2 rounded-full text-xs font-bold"
+										th:text="${#strings.replace(usuario.perfilNombre, '_', ' ')}">
+										PERFIL
+									</span>
+
+								</td>
+
+								<td class="px-6 py-5">
+
+									<span
+										th:if="${usuario.estatus == 1}"
+										class="badge-activo px-4 py-2 rounded-full text-xs font-bold">
+										ACTIVO
+									</span>
+
+									<span
+										th:if="${usuario.estatus != 1}"
+										class="badge-inactivo px-4 py-2 rounded-full text-xs font-bold">
+										INACTIVO
+									</span>
+
+								</td>
+
+								<td class="px-6 py-5">
+
+									<div class="flex items-center justify-center gap-3">
+
+										<a
+											th:href="@{/usuarios/edit/{id}(id=${usuario.id})}"
+											class="w-11 h-11 rounded-2xl bg-amber-100 hover:bg-amber-200 text-amber-700 flex items-center justify-center transition">
+
+											<span class="material-symbols-outlined">
+												edit
+											</span>
+
+										</a>
+										
+										<a th:if="${usuario.estatus != 1}"
+											th:href="@{/usuarios/recuperar/{id}(id=${usuario.id})}"
+											class="w-11 h-11 rounded-2xl bg-green-100 hover:bg-green-200 text-green-700 flex items-center justify-center transition">
+											<span class="material-symbols-outlined">restore</span>
+										</a>
+
+										<a
+											th:href="@{/usuarios/delete/{id}(id=${usuario.id})}"
+											class="w-11 h-11 rounded-2xl bg-red-100 hover:bg-red-200 text-red-700 flex items-center justify-center transition">
+
+											<span class="material-symbols-outlined">
+												delete
+											</span>
+
+										</a>
+
+									</div>
+
+								</td>
+
+							</tr>
+
+							<tr th:if="${#lists.isEmpty(usuarios)}">
+
+								<td colspan="6" class="py-20 text-center">
+
+									<div
+										class="flex flex-col items-center justify-center text-slate-400">
+
+										<div
+											class="w-24 h-24 rounded-full bg-slate-100 flex items-center justify-center mb-5">
+
+											<span class="material-symbols-outlined text-5xl">
+												group_off
+											</span>
+
+										</div>
+
+										<h3 class="text-2xl font-bold text-slate-500">
+											No se encontraron usuarios
+										</h3>
+
+										<p class="mt-2 text-slate-400">
+											Intenta realizar otra búsqueda.
+										</p>
+
+									</div>
+
+								</td>
+
+							</tr>
+
+						</tbody>
+
+					</table>
+
+				</div>
+
+			</div>
+
+		</section>
+
+	</main>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+<meta charset="utf-8" />
+<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+<title>Lista de Proyectos de Residencia | TecNM Campus Chilpancingo</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<link
+	href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+	rel="stylesheet" />
+
+<style>
+.material-symbols-outlined {
+	font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+body {
+	font-family: 'Inter', sans-serif;
+	background:
+		radial-gradient(circle at top left, rgba(0, 59, 143, 0.10), transparent 28%),
+		linear-gradient(135deg, #f7f9fb 0%, #eef4fb 45%, #f8fafc 100%);
+	min-height: 100vh;
+	overflow-x: hidden;
+}
+
+h1, h2, h3 {
+	font-family: 'Manrope', sans-serif;
+}
+
+.primary-gradient {
+	background: linear-gradient(135deg, #002046 0%, #003B8F 100%);
+}
+
+.grid-pattern {
+	position: fixed;
+	inset: 0;
+	z-index: 0;
+	opacity: 0.035;
+	background-image:
+		linear-gradient(#002046 1px, transparent 1px),
+		linear-gradient(90deg, #002046 1px, transparent 1px);
+	background-size: 42px 42px;
+	pointer-events: none;
+}
+
+.float-shape {
+	position: fixed;
+	border-radius: 9999px;
+	background: rgba(0, 59, 143, 0.08);
+	filter: blur(1px);
+	z-index: 0;
+	animation: float 8s ease-in-out infinite;
+	pointer-events: none;
+}
+
+.fade-in {
+	animation: fadeUp 0.7s ease-out both;
+}
+
+.tabla-ajustable {
+	transform-origin: top left;
+	transition: all 0.3s ease;
+}
+
+.tabla-ajustable.tabla-reducida {
+	transform: scale(0.85);
+	width: 118%;
+}
+
+@keyframes fadeUp {
+	from {
+		opacity: 0;
+		transform: translateY(24px) scale(0.98);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
+}
+
+@keyframes float {
+	0%, 100% {
+		transform: translateY(0) translateX(0);
+	}
+	50% {
+		transform: translateY(-18px) translateX(10px);
+	}
+}
+</style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+<div class="grid-pattern"></div>
+<div class="float-shape w-72 h-72 top-[-80px] left-[250px]"></div>
+<div class="float-shape w-52 h-52 bottom-[-70px] right-[6%]"></div>
+<div class="float-shape w-40 h-40 top-[22%] right-[12%]"></div>
+
+<div th:replace="~{fragments/sidebar :: sidebar('residencias')}"></div>
+
+<main class="ml-64 min-h-screen relative z-10">
+
+	<header th:replace="~{fragments/ui :: topbar(@{/dashboard}, 'Dashboard')}"></header>
+
+	<div class="max-w-7xl mx-auto p-8 fade-in">
+
+		<div class="relative overflow-hidden rounded-3xl primary-gradient text-white p-8 shadow-2xl border border-white/10 mb-8">
+
+			<div class="absolute inset-0 opacity-20 pointer-events-none"
+				style="background:
+					radial-gradient(circle at top left, #ffffff 0, transparent 28%),
+					radial-gradient(circle at bottom right, #60a5fa 0, transparent 30%);">
+			</div>
+
+			<div class="absolute -bottom-16 -right-16 w-72 h-72 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
+
+			<div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+
+				<div class="max-w-4xl">
+					<p class="text-sm text-blue-100 font-semibold mb-2 flex items-center gap-2">
+						<span>Panel de Control</span>
+						<span class="text-blue-300">›</span>
+						<span class="text-white">Proyectos</span>
+					</p>
+
+					<h1 class="text-4xl md:text-5xl font-black tracking-tight mb-4">
+						Lista de Proyectos de Residencia
+					</h1>
+
+					<p class="text-blue-100 text-base max-w-3xl leading-relaxed">
+						Administra proyectos, residentes, empresas, asesores, dictamen académico y avance del expediente de residencia profesional.
+					</p>
+				</div>
+
+				<div class="relative z-20 flex flex-col gap-3 min-w-[250px]">
+					<a sec:authorize="hasRole('ADMINISTRADOR')"
+						th:href="@{/residencias/inactivos}"
+						class="relative z-20 inline-flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-6 py-3 rounded-2xl font-bold text-sm shadow-xl transition-all duration-200 hover:scale-[1.02]">
+						<span class="material-symbols-outlined text-base">restore</span>
+						Recuperar eliminados
+					</a>
+
+					<a sec:authorize="hasAnyRole('ADMINISTRADOR','DIVISION_ESTUDIOS')"
+						th:href="@{/residencias/create}"
+						class="relative z-20 inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-2xl font-bold text-sm shadow-xl transition-all duration-200 hover:scale-[1.02]">
+						<span class="material-symbols-outlined text-base">add</span>
+						Agregar Proyecto
+					</a>
+
+					<a sec:authorize="hasRole('ESTUDIANTE')"
+						th:href="@{/residencias/create}"
+						class="relative z-20 inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-2xl font-bold text-sm shadow-xl transition-all duration-200 hover:scale-[1.02]">
+						<span class="material-symbols-outlined text-base">edit_note</span>
+						Crear proyecto propio
+					</a>
+
+					<a sec:authorize="hasRole('ESTUDIANTE')"
+						th:href="@{/banco-proyectos/index}"
+						class="relative z-20 inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-2xl font-bold text-sm border border-white/20 shadow-xl transition-all duration-200 hover:scale-[1.02]">
+						<span class="material-symbols-outlined text-base">inventory_2</span>
+						Solicitar desde banco
+					</a>
+				</div>
+
+			</div>
+		</div>
+
+		<th:block th:replace="~{fragments/ui :: flashMessages(${msgSuccess}, ${msgError})}"></th:block>
+
+		
+		<div class="tabla-card bg-white/95 backdrop-blur rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
+
+			<div class="px-8 py-6 border-b border-slate-200 flex flex-col xl:flex-row xl:items-center justify-between gap-5">
+
+				<div>
+					<h2 class="text-2xl font-black text-[#002046]">
+						Dictamen de proyectos
+					</h2>
+					<p class="text-slate-500">
+						Información general de residencias profesionales activas.
+					</p>
+				</div>
+
+				<div class="flex flex-wrap items-center gap-3">
+
+					<form th:action="@{/residencias/searchPeriodoTexto}" method="get"
+						class="flex flex-wrap items-center gap-3">
+
+						<div class="relative">
+							<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+								search
+							</span>
+
+							<input id="buscadorTabla"
+								type="text"
+								name="texto"
+								th:value="${textoBusqueda}"
+								placeholder="Buscar por proyecto, alumno, matricula, empresa o asesor..."
+								class="w-72 rounded-2xl border border-slate-200 bg-white pl-12 pr-4 py-3 shadow-sm focus:ring-[#003B8F] focus:border-[#003B8F]">
+						</div>
+
+						<select name="idCarrera"
+							class="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-700 shadow-sm focus:border-[#003B8F] focus:ring-[#003B8F]">
+
+							<option value="">Todas las carreras</option>
+
+							<option th:each="carrera : ${carreras}"
+								th:value="${carrera.id}"
+								th:text="${carrera.nombre}"
+								th:selected="${idCarrera != null and idCarrera == carrera.id}">
+							</option>
+						</select>
+
+						<select name="periodo"
+							class="rounded-2xl border border-slate-200 bg-white px-4 py-3 min-w-[190px] shadow-sm focus:ring-[#003B8F] focus:border-[#003B8F]">
+							<option value="">Todos los periodos</option>
+							<option value="ENE-JUN 2026" th:selected="${periodoBusqueda == 'ENE-JUN 2026'}">ENE-JUN 2026</option>
+							<option value="AGO-DIC 2026" th:selected="${periodoBusqueda == 'AGO-DIC 2026'}">AGO-DIC 2026</option>
+							<option value="ENE-JUN 2025" th:selected="${periodoBusqueda == 'ENE-JUN 2025'}">ENE-JUN 2025</option>
+							<option value="AGO-DIC 2025" th:selected="${periodoBusqueda == 'AGO-DIC 2025'}">AGO-DIC 2025</option>
+							<option value="AGO-DIC 2024" th:selected="${periodoBusqueda == 'AGO-DIC 2024'}">AGO-DIC 2024</option>
+						</select>
+
+						<button type="submit"
+							class="bg-slate-800 hover:bg-slate-900 text-white px-5 py-3 rounded-xl font-bold text-sm transition shadow-sm">
+							Buscar
+						</button>
+
+						<a th:href="@{/residencias/index}"
+							class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-3 rounded-xl font-bold text-sm transition">
+							Limpiar
+						</a>
+
+					</form>
+
+					<th:block th:replace="~{fragments/ui :: tableZoomButton()}"></th:block>
+
+					<a sec:authorize="hasAnyRole('ADMINISTRADOR','DIVISION_ESTUDIOS','JEFE_DEPARTAMENTO')"
+						th:href="@{/residencias/dictamen/pdf(texto=${textoBusqueda},periodo=${periodoBusqueda})}"
+						class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-5 py-3 rounded-xl font-bold text-sm transition shadow-lg">
+						<span class="material-symbols-outlined text-base">picture_as_pdf</span>
+						Dictamen PDF
+					</a>
+
+					<div class="rounded-2xl border border-slate-200 bg-white px-5 py-3 shadow-sm min-w-[180px]">
+						<p class="text-xs uppercase tracking-widest text-slate-500 font-black">
+							Proyectos activos
+						</p>
+
+						<div class="flex items-center gap-3 mt-1">
+							<h2 class="text-3xl font-black text-[#002046]"
+								th:text="${residencias != null ? #lists.size(residencias) : 0}">
+								0
+							</h2>
+
+							<span class="inline-flex items-center gap-1 bg-green-100 text-green-700 px-3 py-1 rounded-full text-[11px] font-black">
+								<span class="material-symbols-outlined text-sm">check_circle</span>
+								Activo
+							</span>
+						</div>
+					</div>
+
+				</div>
+			</div>
+
+			<div class="overflow-x-auto">
+				<div id="contenedorTablaProyectos"
+					class="tabla-ajustable">
+
+					<table class="min-w-[1500px] w-full text-[12px] text-center border-collapse">
+
+						<thead class="bg-slate-100 text-[#002046]">
+							<tr>
+								<th class="px-2 py-3 border border-slate-300 text-[11px] font-black uppercase tracking-wide">
+									No.
+								</th>
+								<th class="px-2 py-3 border border-slate-300 text-[11px] font-black uppercase tracking-wide">
+									No. Control
+								</th>
+								<th class="px-2 py-3 border border-slate-300 text-[11px] font-black uppercase tracking-wide">
+									Estudiante
+								</th>
+								<th class="px-2 py-3 border border-slate-300 text-[11px] font-black uppercase tracking-wide">
+									Sexo
+								</th>
+								<th class="px-2 py-3 border border-slate-300 text-[11px] font-black uppercase tracking-wide">
+									Proyecto
+								</th>
+								<th class="px-2 py-3 border border-slate-300 text-[11px] font-black uppercase tracking-wide">
+									Empresa
+								</th>
+								<th class="px-2 py-3 border border-slate-300 text-[11px] font-black uppercase tracking-wide">
+									Asesor Interno
+								</th>
+								<th class="px-2 py-3 border border-slate-300 text-[11px] font-black uppercase tracking-wide">
+									Asesor Externo
+								</th>
+								<th class="px-2 py-3 border border-slate-300 text-[11px] font-black uppercase tracking-wide">
+									Autorización
+								</th>
+								<th class="px-2 py-3 border border-slate-300 text-[11px] font-black uppercase tracking-wide">
+									Fecha
+								</th>
+								<th class="px-2 py-3 border border-slate-300 text-[11px] font-black uppercase tracking-wide">
+									Acciones
+								</th>
+							</tr>
+						</thead>
+
+						<tbody id="tablaResidencias" class="divide-y divide-slate-200">
+
+							<tr th:if="${residenciasAgrupadas == null or #maps.isEmpty(residenciasAgrupadas)}">
+								<td colspan="12" class="px-4 py-14 text-slate-500">
+									<div class="flex flex-col items-center gap-3">
+										<span class="material-symbols-outlined text-6xl text-slate-300">
+											folder_off
+										</span>
+										<span class="font-semibold">
+											No se encontraron proyectos activos.
+										</span>
+									</div>
+								</td>
+							</tr>
+
+							<th:block th:each="grupo : ${residenciasAgrupadas}">
+								<tr>
+									<td colspan="11" class="px-4 py-3 border border-slate-200 bg-slate-100/90 text-left">
+										<div class="flex items-center justify-between gap-3">
+											<div class="font-black text-[#002046] uppercase tracking-wide"
+												th:text="${grupo.key}">
+											</div>
+											<div class="text-[11px] text-slate-500 font-bold"
+												th:text="${#lists.size(grupo.value) + ' dictamenes'}">
+											</div>
+										</div>
+									</td>
+								</tr>
+
+								<tr th:each="residencia, fila : ${grupo.value}"
+									class="hover:bg-blue-50/40 transition">
+
+								<td class="px-2 py-3 border border-slate-200 font-black text-[#002046]"
+									th:text="${fila.count}">
+								</td>
+
+								<td class="px-2 py-3 border border-slate-200 font-semibold"
+									th:text="${residencia.residente != null ? residencia.residente.matricula : ''}">
+								</td>
+
+								<td class="px-2 py-3 border border-slate-200">
+									<div class="font-black text-[#002046]"
+										th:text="${residencia.residente != null ? residencia.residente.nombreCompleto : ''}">
+									</div>
+									<div class="text-[11px] text-slate-400"
+										th:text="${residencia.residente != null 
+											&& residencia.residente.estudiante != null 
+											&& residencia.residente.estudiante.carrera != null 
+											? residencia.residente.estudiante.carrera.nombre 
+											: ''}">
+									</div>
+								</td>
+
+								<td class="px-2 py-3 border border-slate-200"
+									th:text="${residencia.residente != null ? residencia.residente.sexo : ''}">
+								</td>
+
+								<td class="px-2 py-3 border border-slate-200 text-left">
+									<div class="font-bold text-slate-800 leading-tight"
+										th:text="${residencia.nombreProyecto}">
+									</div>
+									<div class="text-[11px] text-slate-400 mt-1"
+										th:text="${residencia.periodo}">
+									</div>
+								</td>
+
+								<td class="px-2 py-3 border border-slate-200 font-semibold">
+									<div th:text="${residencia.empresa != null ? residencia.empresa.nombre : ''}">
+									</div>
+
+									<div th:if="${residencia.empresa != null}"
+										class="text-[10px] text-slate-400 mt-1"
+										th:text="${residencia.empresa.anioConvenio != null and residencia.empresa.anioFinConvenio != null
+											? 'Convenio: ' + residencia.empresa.anioConvenio + ' - ' + residencia.empresa.anioFinConvenio
+											: 'Sin vigencia'}">
+									</div>
+								</td>
+
+								<td class="px-2 py-3 border border-slate-200"
+									th:text="${residencia.asesorInterno != null ? residencia.asesorInterno.nombreCompleto : ''}">
+								</td>
+
+								<td class="px-2 py-3 border border-slate-200"
+									th:text="${residencia.asesorExterno != null ? residencia.asesorExterno.nombreCompleto : ''}">
+								</td>
+
+								<td class="px-2 py-3 border border-slate-200">
+
+									<span th:if="${residencia.estadoAutorizacion == 'AUTORIZADO'}"
+										class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-green-100 text-green-700 text-[11px] font-black">
+										<span class="material-symbols-outlined text-sm">check_circle</span>
+										AUTORIZADO
+									</span>
+
+									<span th:if="${residencia.estadoAutorizacion == 'AUTORIZADO_CON_OBSERVACIONES'}"
+										class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-amber-100 text-amber-700 text-[11px] font-black">
+										<span class="material-symbols-outlined text-sm">warning</span>
+										CON OBS.
+									</span>
+
+									<span th:if="${residencia.estadoAutorizacion == 'RECHAZADO'}"
+										class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-red-100 text-red-700 text-[11px] font-black">
+										<span class="material-symbols-outlined text-sm">cancel</span>
+										RECHAZADO
+									</span>
+
+									<span th:if="${residencia.estadoAutorizacion == null or residencia.estadoAutorizacion == 'PENDIENTE'}"
+										class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-slate-100 text-slate-600 text-[11px] font-black">
+										<span class="material-symbols-outlined text-sm">schedule</span>
+										PENDIENTE
+									</span>
+
+									<span th:if="${residencia.estadoAutorizacion == 'RECHAZADO'
+										and residencia.totalRechazos != null
+										and residencia.totalRechazos >= 2}"
+										class="mt-1 inline-flex items-center gap-1 px-2 py-1 rounded-full bg-red-200 text-red-800 text-[10px] font-black">
+										<span class="material-symbols-outlined text-sm">block</span>
+										DEFINITIVO
+									</span>
+
+								</td>
+
+								<td class="px-2 py-3 border border-slate-200"
+									th:text="${residencia.fechaAutorizacion != null ? residencia.fechaAutorizacion : '—'}">
+								</td>
+
+								<td class="px-2 py-3 border border-slate-200">
+	<div class="flex flex-wrap justify-center gap-1">
+
+		<a sec:authorize="hasAnyRole('ADMINISTRADOR','DIVISION_ESTUDIOS')"
+			th:href="@{/residencias/edit/{id}(id=${residencia.id})}"
+			class="inline-flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white px-2 py-1.5 rounded-lg font-bold text-[11px] transition">
+			<span class="material-symbols-outlined text-sm">edit</span>
+			Editar
+		</a>
+
+		<a th:href="@{/documentos-residencia/{id}(id=${residencia.id})}"
+			class="inline-flex items-center gap-1 bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-1.5 rounded-lg font-bold text-[11px] transition">
+			<span class="material-symbols-outlined text-sm">description</span>
+			Documentos
+		</a> 
+		
+		<a sec:authorize="hasAnyRole('ADMINISTRADOR','DIVISION_ESTUDIOS','SERVICIOS_ESCOLARES')"
+			th:href="@{/cierre-expediente/{id}(id=${residencia.id})}"
+			class="inline-flex items-center gap-1 bg-green-100 hover:bg-green-200 text-green-700 px-2 py-1.5 rounded-lg font-bold text-[11px] transition">
+			<span class="material-symbols-outlined text-sm">task_alt</span>
+			Revisión final
+		</a> 
+		
+		<a sec:authorize="hasAnyRole('ADMINISTRADOR','DIVISION_ESTUDIOS','JEFE_DEPARTAMENTO')"
+			th:if="${residencia.estadoAutorizacion == null 
+				or residencia.estadoAutorizacion == 'PENDIENTE'
+				or residencia.estadoAutorizacion == 'AUTORIZADO_CON_OBSERVACIONES'
+				or (residencia.estadoAutorizacion == 'RECHAZADO'
+					and (residencia.totalRechazos == null
+					or residencia.totalRechazos < 2))}"
+			th:href="@{/residencias/dictamen/{id}(id=${residencia.id})}"
+			class="inline-flex items-center gap-1 bg-amber-100 hover:bg-amber-200 text-amber-700 px-2 py-1.5 rounded-lg font-bold text-[11px] transition">
+
+			<span class="material-symbols-outlined text-sm">gavel</span>
+
+			<span th:text="${residencia.estadoAutorizacion == 'RECHAZADO'
+					or residencia.estadoAutorizacion == 'AUTORIZADO_CON_OBSERVACIONES'}
+					? 'Volver a dictaminar'
+					: 'Dictaminar'">
+			</span>
+		</a>
+
+		<a sec:authorize="hasRole('ADMINISTRADOR')"
+			th:href="@{/residencias/delete/{id}(id=${residencia.id})}"
+			th:attr="onclick=|confirmarEliminacion(event, this, '${residencia.nombreProyecto}')|"
+			class="inline-flex items-center gap-1 bg-red-600 hover:bg-red-700 text-white px-2 py-1.5 rounded-lg font-bold text-[11px] transition">
+			<span class="material-symbols-outlined text-sm">delete</span>
+			Eliminar
+		</a>
+
+	</div>
+</td>
+								</tr>
+							</th:block>
+						</tbody>
+					</table>
+
+				</div>
+			</div>
+
+			<div class="bg-slate-50 px-8 py-5 border-t border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-3">
+				<span class="text-xs text-slate-500">
+					Mostrando
+					<span class="font-black text-[#002046]"
+						th:text="${residencias != null ? #lists.size(residencias) : 0}">
+					</span>
+					proyectos activos
+				</span>
+
+				<span class="text-xs text-slate-400">
+					Usa “Ajustar tabla” para reducir o restaurar el tamaño visual.
+				</span>
+			</div>
+
+		</div>
+
+	</div>
+</main>
+
+<th:block th:replace="~{fragments/ui :: tableZoomScript()}"></th:block>
+
+<script>
+function confirmarEliminacion(event, elemento, nombre) {
+	event.preventDefault();
+
+	Swal.fire({
+		title: '¿Eliminar residencia?',
+		text: 'Se desactivará el proyecto: ' + nombre,
+		icon: 'warning',
+		showCancelButton: true,
+		confirmButtonColor: '#dc2626',
+		cancelButtonColor: '#2563eb',
+		confirmButtonText: 'Sí, eliminar',
+		cancelButtonText: 'Cancelar',
+		reverseButtons: true
+	}).then((result) => {
+		if (result.isConfirmed) {
+			Swal.fire({
+				title: 'Eliminado',
+				text: 'La residencia fue desactivada correctamente.',
+				icon: 'success',
+				timer: 1400,
+				showConfirmButton: false
+			}).then(() => {
+				window.location.href = elemento.href;
+			});
+		}
+	});
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+	const buscador = document.getElementById("buscadorTabla");
+
+	if (!buscador) {
+		return;
+	}
+
+	buscador.addEventListener("keyup", function () {
+		const texto = this.value.toLowerCase();
+		const filas = document.querySelectorAll("#tablaResidencias tr");
+
+		filas.forEach(fila => {
+			const contenido = fila.textContent.toLowerCase();
+			fila.style.display = contenido.includes(texto) ? "" : "none";
+		});
+	});
+});
+</script>
+
+</body>
+</html>

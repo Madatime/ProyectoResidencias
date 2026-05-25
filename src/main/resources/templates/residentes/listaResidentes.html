@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+<meta charset="utf-8" />
+<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+
+<title>Residentes | TecNM Campus Chilpancingo</title>
+
+<script
+	src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<link
+	href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+	rel="stylesheet" />
+
+<style>
+.material-symbols-outlined {
+	font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+body {
+	font-family: 'Inter', sans-serif;
+	background:
+		radial-gradient(circle at top left, rgba(0, 59, 143, 0.10),
+		transparent 28%),
+		linear-gradient(135deg, #f7f9fb 0%, #eef4fb 45%, #f8fafc 100%);
+	min-height: 100vh;
+	overflow-x: hidden;
+}
+
+h1, h2, h3 {
+	font-family: 'Manrope', sans-serif;
+}
+
+.grid-pattern {
+	position: fixed;
+	inset: 0;
+	z-index: 0;
+	opacity: 0.035;
+	background-image:
+		linear-gradient(#002046 1px, transparent 1px),
+		linear-gradient(90deg, #002046 1px, transparent 1px);
+	background-size: 42px 42px;
+	pointer-events: none;
+}
+
+.float-shape {
+	position: fixed;
+	border-radius: 9999px;
+	background: rgba(0, 59, 143, 0.08);
+	filter: blur(1px);
+	z-index: 0;
+	animation: float 8s ease-in-out infinite;
+}
+
+.float-shape:nth-child(2) {
+	animation-delay: 2s;
+}
+
+.float-shape:nth-child(3) {
+	animation-delay: 4s;
+}
+
+.page-enter {
+	animation: fadeUp 0.8s ease-out both;
+}
+
+.card-animate {
+	animation: fadeUp 0.8s ease-out both;
+	transition: all 0.25s ease;
+}
+
+.card-animate:hover {
+	transform: translateY(-5px);
+	box-shadow: 0 20px 40px -18px rgba(0, 32, 70, 0.22);
+}
+
+.panel-animate {
+	animation: fadeUp 0.85s ease-out both;
+}
+
+.tabla-ajustable {
+	transform-origin: top left;
+	transition: all 0.3s ease;
+}
+
+.tabla-ajustable.tabla-reducida {
+	transform: scale(0.85);
+	width: 118%;
+}
+
+@keyframes fadeUp {
+	from {
+		opacity: 0;
+		transform: translateY(25px);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes float {
+	0%, 100% {
+		transform: translateY(0) translateX(0);
+	}
+
+	50% {
+		transform: translateY(-18px) translateX(10px);
+	}
+}
+</style>
+
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+	<div class="grid-pattern"></div>
+
+	<div class="float-shape w-72 h-72 top-[-80px] left-[250px]"></div>
+	<div class="float-shape w-52 h-52 bottom-[-70px] right-[6%]"></div>
+	<div class="float-shape w-40 h-40 top-[22%] right-[12%]"></div>
+
+	<div th:replace="~{fragments/sidebar :: sidebar('residentes')}"></div>
+
+	<main class="ml-64 min-h-screen relative z-10">
+
+		<header th:replace="~{fragments/ui :: topbar(@{/dashboard}, 'Dashboard')}"></header>
+
+		<div class="max-w-7xl mx-auto p-8 page-enter">
+
+			
+			<div
+				class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#00152f] via-[#002046] to-[#003B8F] text-white p-8 shadow-2xl border border-white/10 mb-8">
+
+				<div class="absolute inset-0 opacity-20"
+					style="background:
+					radial-gradient(circle at top left, #ffffff 0, transparent 28%),
+					radial-gradient(circle at bottom right, #60a5fa 0, transparent 30%);">
+				</div>
+
+				<div
+					class="relative flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+
+					<div>
+
+						<p
+							class="text-sm text-blue-100 font-semibold mb-2 flex items-center gap-2">
+
+							<span>Panel de Control</span>
+
+							<span class="text-blue-300">›</span>
+
+							<span class="text-white">Residentes</span>
+
+						</p>
+
+						<h1
+							class="text-5xl font-black tracking-tight mb-3 drop-shadow-lg">
+
+							Estudiantes para Residencia
+
+						</h1>
+
+						<p class="text-slate-100 text-base max-w-3xl leading-relaxed">
+
+							Gestiona estudiantes disponibles, controla su estado de
+							residencia y administra el proceso institucional de residencias
+							profesionales.
+
+						</p>
+
+					</div>
+
+					<div class="relative z-20 flex flex-col gap-3 min-w-[260px]">
+
+						<a sec:authorize="hasRole('ADMINISTRADOR')"
+							th:href="@{/residentes/inactivos}"
+							class="relative z-20 inline-flex items-center justify-center gap-2
+							bg-amber-500 hover:bg-amber-600
+							text-white px-6 py-3 rounded-2xl
+							font-bold text-sm shadow-xl transition-all duration-200 hover:scale-[1.02]">
+
+							<span class="material-symbols-outlined text-base">
+								restore
+							</span>
+
+							Recuperar eliminados
+
+						</a>
+
+						<a
+							sec:authorize="hasAnyRole('ADMINISTRADOR','DIVISION_ESTUDIOS')"
+							th:href="@{/residentes/create}"
+							class="relative z-20 inline-flex items-center justify-center gap-2
+							bg-emerald-600 hover:bg-emerald-700
+							text-white px-6 py-3 rounded-2xl
+							font-bold text-sm shadow-xl transition-all duration-200 hover:scale-[1.02]">
+
+							<span class="material-symbols-outlined text-base">
+								add
+							</span>
+
+							Agregar residente
+
+						</a>
+
+					</div>
+
+				</div>
+
+				<div
+					class="absolute -bottom-16 -right-16 w-72 h-72 bg-white/10 rounded-full blur-3xl">
+				</div>
+
+			</div>
+
+			
+			<th:block th:replace="~{fragments/ui :: flashMessages(${msgSuccess}, ${msgError})}"></th:block>
+
+			
+			<form method="get" th:action="@{/residentes/search}"
+				class="card-animate bg-white/90 backdrop-blur rounded-3xl shadow-lg border border-slate-200 p-6 mb-8">
+
+				<div class="flex flex-col md:flex-row gap-3">
+
+					<div class="relative flex-1">
+
+						<span
+							class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+
+							search
+
+						</span>
+
+						<input type="text" name="texto"
+							th:value="${textoBusqueda}" placeholder="Buscar estudiante..."
+							class="w-full rounded-2xl border-slate-200 pl-12 pr-4 py-3 bg-slate-50 focus:ring-[#003B8F] focus:border-[#003B8F] shadow-sm">
+
+					</div>
+
+					<select name="filtroProyectoResidencia"
+						class="bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-sm min-w-[220px] focus:ring-[#003B8F] focus:border-[#003B8F] shadow-sm">
+
+						<option value=""
+							th:selected="${filtroProyectoResidencia == null or filtroProyectoResidencia == ''}">
+							Todos
+						</option>
+
+						<option value="con"
+							th:selected="${filtroProyectoResidencia == 'con'}">
+							Con proyecto de residencia
+						</option>
+
+						<option value="sin"
+							th:selected="${filtroProyectoResidencia == 'sin'}">
+							Sin proyecto de residencia
+						</option>
+
+					</select>
+
+					<button type="submit"
+						class="bg-[#002046] hover:bg-[#00152f] text-white px-7 py-3 rounded-2xl font-bold flex items-center justify-center gap-2 transition shadow-lg hover:scale-[1.02]">
+
+						<span class="material-symbols-outlined text-base">
+							search
+						</span>
+
+						Buscar
+
+					</button>
+
+					<a th:href="@{/residentes/index}"
+						class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-7 py-3 rounded-2xl font-bold flex items-center justify-center gap-2 transition">
+
+						<span class="material-symbols-outlined text-base">
+							mop
+						</span>
+
+						Limpiar
+
+					</a>
+
+				</div>
+
+			</form>
+
+			
+			<div
+				class="tabla-card card-animate bg-white/95 backdrop-blur rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
+
+				<div
+					class="px-6 py-5 border-b border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-3">
+
+					<div>
+
+						<h2 class="text-xl font-black text-[#002046]">
+							Listado de estudiantes
+						</h2>
+
+						<p class="text-sm text-slate-500">
+							Estudiantes registrados para el proceso de residencia.
+						</p>
+
+					</div>
+
+					<div class="flex flex-wrap items-center gap-3">
+
+						<div class="flex items-center gap-2 text-sm text-slate-500">
+
+							<span class="material-symbols-outlined text-base">
+								database
+							</span>
+
+							<span>
+								Total:
+								<b class="text-[#002046]"
+									th:text="${estudiantes != null ? #lists.size(estudiantes) : 0}">
+								</b>
+							</span>
+
+						</div>
+
+						<th:block th:replace="~{fragments/ui :: tableZoomButton()}"></th:block>
+
+					</div>
+
+				</div>
+
+				<div class="overflow-x-auto">
+
+					<div class="tabla-ajustable">
+
+						<table
+							class="min-w-[1350px] w-full text-sm text-center border-collapse">
+
+							<thead
+								class="bg-gradient-to-r from-slate-100 to-slate-50 text-[#002046]">
+
+								<tr>
+
+									<th
+										class="px-4 py-4 border border-slate-300 text-xs font-black uppercase tracking-wide">
+										Foto
+									</th>
+
+									<th
+										class="px-4 py-4 border border-slate-300 text-xs font-black uppercase tracking-wide">
+										Matrícula
+									</th>
+
+									<th
+										class="px-4 py-4 border border-slate-300 text-xs font-black uppercase tracking-wide">
+										Nombre completo
+									</th>
+
+									<th
+										class="px-4 py-4 border border-slate-300 text-xs font-black uppercase tracking-wide">
+										Carrera
+									</th>
+
+									<th
+										class="px-4 py-4 border border-slate-300 text-xs font-black uppercase tracking-wide">
+										Semestre
+									</th>
+
+									<th
+										class="px-4 py-4 border border-slate-300 text-xs font-black uppercase tracking-wide">
+										Correo
+									</th>
+
+									<th
+										class="px-4 py-4 border border-slate-300 text-xs font-black uppercase tracking-wide">
+										Proyecto de residencia
+									</th>
+
+									<th
+										class="px-4 py-4 border border-slate-300 text-xs font-black uppercase tracking-wide">
+										Acciones
+									</th>
+
+								</tr>
+
+							</thead>
+
+							<tbody class="divide-y divide-slate-200 bg-white">
+
+								<tr
+									th:if="${estudiantes == null or #lists.isEmpty(estudiantes)}">
+
+									<td colspan="8"
+										class="px-4 py-12 text-slate-500">
+
+										<div class="flex flex-col items-center gap-2">
+
+											<span
+												class="material-symbols-outlined text-5xl text-slate-300">
+												school
+											</span>
+
+											<span>
+												No hay estudiantes registrados.
+											</span>
+
+										</div>
+
+									</td>
+
+								</tr>
+
+								<tr th:each="estudiante : ${estudiantes}"
+									class="hover:bg-blue-50/40 transition duration-200">
+
+									<td class="px-4 py-4 border border-slate-200">
+
+										<div class="flex items-center justify-center">
+
+											<img
+												th:if="${mapaResidencias[estudiante.id] != null and mapaResidencias[estudiante.id].fotoPath != null and !#strings.isEmpty(mapaResidencias[estudiante.id].fotoPath)}"
+												th:src="@{/residentes-archivos/{foto}(foto=${mapaResidencias[estudiante.id].fotoPath})}"
+												alt="Fotografía"
+												class="w-14 h-14 rounded-full object-cover border border-slate-200 shadow-md" />
+
+											<img
+												th:if="${mapaResidencias[estudiante.id] == null or mapaResidencias[estudiante.id].fotoPath == null or #strings.isEmpty(mapaResidencias[estudiante.id].fotoPath)}"
+												th:src="@{/img/user-default.png}"
+												alt="Sin fotografía"
+												class="w-14 h-14 rounded-full object-cover border border-slate-200 shadow-md" />
+
+										</div>
+
+									</td>
+
+									<td class="px-4 py-4 border border-slate-200">
+
+										<span
+											class="font-mono text-sm font-black text-[#003B8F] bg-blue-50 px-3 py-1 rounded-lg"
+											th:text="${estudiante.matricula}">
+										</span>
+
+									</td>
+
+									<td class="px-4 py-4 border border-slate-200">
+
+										<div class="font-black text-[#002046]"
+											th:text="${estudiante.nombre + ' ' + estudiante.apellidos}">
+										</div>
+
+									</td>
+
+									<td class="px-4 py-4 border border-slate-200"
+										th:text="${estudiante.carrera != null ? estudiante.carrera.nombre : 'Sin carrera'}">
+									</td>
+
+									<td class="px-4 py-4 border border-slate-200">
+
+										<span
+											class="inline-flex items-center justify-center px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-black"
+											th:text="${estudiante.semestre}">
+										</span>
+
+									</td>
+
+									<td class="px-4 py-4 border border-slate-200">
+
+										<span class="text-[#003B8F] font-semibold"
+											th:text="${estudiante.correo}">
+										</span>
+
+									</td>
+
+									<td class="px-4 py-4 border border-slate-200">
+
+										<span
+											th:if="${mapaResidencias[estudiante.id] != null}"
+											class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-black">
+
+											<span
+												class="material-symbols-outlined text-sm">
+												check_circle
+											</span>
+
+											Con proyecto
+
+										</span>
+
+										<span
+											th:if="${mapaResidencias[estudiante.id] == null}"
+											class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-100 text-amber-700 text-xs font-black">
+
+											<span
+												class="material-symbols-outlined text-sm">
+												schedule
+											</span>
+
+											Sin proyecto
+
+										</span>
+
+									</td>
+
+									<td class="px-4 py-4 border border-slate-200">
+
+										<div
+											th:if="${mapaResidencias[estudiante.id] != null}"
+											class="flex justify-center gap-2">
+
+											<a
+												sec:authorize="hasAnyRole('ADMINISTRADOR','DIVISION_ESTUDIOS')"
+												th:href="@{/residentes/edit/{id}(id=${mapaResidencias[estudiante.id].id})}"
+												class="inline-flex items-center gap-1 bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-2 rounded-xl font-bold text-xs transition">
+
+												<span
+													class="material-symbols-outlined text-sm">
+													edit
+												</span>
+
+												Modificar
+
+											</a>
+
+											<a sec:authorize="hasRole('ADMINISTRADOR')"
+												th:href="@{/residentes/delete/{id}(id=${mapaResidencias[estudiante.id].id})}"
+												th:attr="onclick=|confirmarAccion(event, this, '${estudiante.nombre} ${estudiante.apellidos}', 'eliminar')|"
+												class="inline-flex items-center gap-1 bg-red-100 hover:bg-red-200 text-red-700 px-3 py-2 rounded-xl font-bold text-xs transition">
+
+												<span
+													class="material-symbols-outlined text-sm">
+													delete
+												</span>
+
+												Eliminar
+
+											</a>
+
+										</div>
+
+										<div
+											th:if="${mapaResidencias[estudiante.id] == null}"
+											class="text-xs text-slate-400 font-semibold">
+
+											Sin acciones
+
+										</div>
+
+									</td>
+
+								</tr>
+
+							</tbody>
+
+						</table>
+
+						<div
+							class="bg-slate-50 px-8 py-4 border-t border-slate-200 flex justify-between items-center">
+
+							<span class="text-xs text-slate-500">
+
+								Mostrando
+
+								<span
+									class="font-black text-[#002046]"
+									th:text="${estudiantes != null ? #lists.size(estudiantes) : 0}">
+								</span>
+
+								registros
+
+							</span>
+
+							<span class="text-xs text-slate-400">
+
+								Puedes usar el botón “Ajustar tabla” para reducir o restaurar el tamaño.
+
+							</span>
+
+						</div>
+
+					</div>
+
+				</div>
+
+			</div>
+
+		</div>
+
+	</main>
+
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+	<script th:if="${usuarioGenerado != null}">
+document.addEventListener('DOMContentLoaded', function () {
+	Swal.fire({
+		title: 'Usuario generado correctamente',
+		html: `
+			<div style="text-align:left; font-size:15px; margin-top:10px;">
+				<p style="margin-bottom:10px;">
+					<b>Usuario:</b><br>
+					<span style="color:#003B8F; font-weight:700;">
+						[[${usuarioGenerado}]]
+					</span>
+				</p>
+				<p>
+					<b>Contrasena temporal:</b><br>
+					<span style="color:#d97706; font-weight:700;">
+						[[${passwordGenerado}]]
+					</span>
+				</p>
+			</div>
+		`,
+		icon: 'success',
+		confirmButtonColor: '#003B8F',
+		confirmButtonText: 'Aceptar',
+		background: '#ffffff'
+	});
+});
+	</script>
+
+	<th:block th:replace="~{fragments/ui :: tableZoomScript()}"></th:block>
+
+	<script>
+
+function confirmarAccion(event, elemento, nombre, tipo) {
+
+	event.preventDefault();
+
+	let titulo = tipo === 'eliminar'
+		? '¿Eliminar registro?'
+		: '¿Recuperar registro?';
+
+	let texto = tipo === 'eliminar'
+		? 'Se eliminará a: ' + nombre
+		: 'Se recuperará a: ' + nombre;
+
+	let icono = tipo === 'eliminar'
+		? 'warning'
+		: 'question';
+
+	let color = tipo === 'eliminar'
+		? '#d33'
+		: '#3085d6';
+
+	Swal.fire({
+		title: titulo,
+		text: texto,
+		icon: icono,
+		showCancelButton: true,
+		confirmButtonColor: color,
+		cancelButtonColor: '#6b7280',
+		confirmButtonText: 'Confirmar',
+		cancelButtonText: 'Cancelar',
+		reverseButtons: true
+	}).then((result) => {
+
+		if (result.isConfirmed) {
+
+			Swal.fire({
+				title: tipo === 'eliminar'
+					? 'Eliminado'
+					: 'Recuperado',
+
+				text: tipo === 'eliminar'
+					? 'El registro ha sido eliminado correctamente'
+					: 'El registro ha sido recuperado correctamente',
+
+				icon: 'success',
+				timer: 1400,
+				showConfirmButton: false
+
+			}).then(() => {
+
+				window.location.href = elemento.href;
+
+			});
+		}
+	});
+}
+</script>
+
+</body>
+</html>

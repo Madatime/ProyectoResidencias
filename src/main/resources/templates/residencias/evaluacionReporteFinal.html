@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+<title>Evaluación Final | TecNM Campus Chilpancingo</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link
+	href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+	rel="stylesheet" />
+<style>
+.material-symbols-outlined {
+	font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+body {
+	font-family: 'Inter', sans-serif;
+	background:
+		radial-gradient(circle at top left, rgba(0, 59, 143, 0.10), transparent 28%),
+		linear-gradient(135deg, #f7f9fb 0%, #eef4fb 45%, #f8fafc 100%);
+	min-height: 100vh;
+	overflow-x: hidden;
+}
+
+h1, h2, h3 {
+	font-family: 'Manrope', sans-serif;
+}
+
+.primary-gradient {
+	background: linear-gradient(135deg, #002046 0%, #003B8F 100%);
+}
+
+.grid-pattern {
+	position: fixed;
+	inset: 0;
+	z-index: 0;
+	opacity: 0.035;
+	background-image:
+		linear-gradient(#002046 1px, transparent 1px),
+		linear-gradient(90deg, #002046 1px, transparent 1px);
+	background-size: 42px 42px;
+	pointer-events: none;
+}
+
+.float-shape {
+	position: fixed;
+	border-radius: 9999px;
+	background: rgba(0, 59, 143, 0.08);
+	filter: blur(1px);
+	z-index: 0;
+	animation: float 8s ease-in-out infinite;
+}
+
+.float-shape:nth-child(2) {
+	animation-delay: 2s;
+}
+
+.float-shape:nth-child(3) {
+	animation-delay: 4s;
+}
+
+.page-enter {
+	animation: fadeUp 0.75s ease-out both;
+}
+
+@keyframes fadeUp {
+	from {
+		opacity: 0;
+		transform: translateY(24px) scale(0.98);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
+}
+
+@keyframes float {
+	0%, 100% {
+		transform: translateY(0) translateX(0);
+	}
+	50% {
+		transform: translateY(-18px) translateX(10px);
+	}
+}
+</style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+<div class="grid-pattern"></div>
+<div class="float-shape w-72 h-72 top-[-80px] left-[250px]"></div>
+<div class="float-shape w-52 h-52 bottom-[-70px] right-[6%]"></div>
+<div class="float-shape w-40 h-40 top-[22%] right-[12%]"></div>
+
+<div th:replace="~{fragments/sidebar :: sidebar('residencias')}"></div>
+
+<main class="ml-64 min-h-screen relative z-10">
+		<header th:replace="~{fragments/ui :: topbar(@{/documentos-residencia/{id}(id=${residencia.id})}, 'Volver')}"></header>
+
+	<div class="max-w-7xl mx-auto p-8 page-enter">
+		<div class="relative overflow-hidden rounded-3xl primary-gradient text-white p-8 shadow-2xl border border-white/10 mb-8">
+			<div class="absolute inset-0 opacity-20"
+				style="background:
+					radial-gradient(circle at top left, #ffffff 0, transparent 28%),
+					radial-gradient(circle at bottom right, #60a5fa 0, transparent 30%);">
+			</div>
+
+			<div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+				<div class="max-w-4xl">
+					<p class="text-sm text-blue-100 font-semibold mb-2 flex items-center gap-2">
+						<span>Evaluaciones</span>
+						<span class="text-blue-300">›</span>
+						<span class="text-white">Reporte final</span>
+					</p>
+
+					<h1 class="text-4xl md:text-5xl font-black tracking-tight mb-4"
+						th:text="${tituloEvaluacion}">
+						EVALUACIÓN FINAL
+					</h1>
+
+					<p class="text-blue-100 text-base max-w-3xl leading-relaxed"
+						th:text="${residencia != null ? residencia.nombreProyecto + ' · ' + residencia.periodo : 'Captura de evaluación final'}">
+						Captura de evaluación final
+					</p>
+				</div>
+
+				<div class="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl px-6 py-5 shadow-2xl min-w-[250px]">
+					<p class="text-xs font-bold text-blue-100 uppercase tracking-[0.15em] mb-2">
+						Tipo de evaluación
+					</p>
+					<p class="text-2xl font-black text-white" th:text="${tipoEvaluacion}">
+						REPORTE_FINAL_INTERNO
+					</p>
+				</div>
+			</div>
+
+			<div class="absolute -bottom-16 -right-16 w-72 h-72 bg-white/10 rounded-full blur-3xl"></div>
+		</div>
+
+		<form th:action="@{/evaluaciones-residencia/guardar-criterios}" method="post"
+			class="bg-white/95 backdrop-blur rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
+
+			<input type="hidden" name="idResidencia" th:value="${residencia.id}">
+			<input type="hidden" name="tipoEvaluacion" th:value="${tipoEvaluacion}">
+
+			<div class="px-8 py-6 border-b border-slate-200">
+				<h2 class="text-2xl font-black text-[#002046]">Criterios del reporte final</h2>
+				<p class="text-slate-500 mt-1">
+					Evalúa cada apartado del documento final con base en su valor máximo.
+				</p>
+			</div>
+
+			<div class="p-8 overflow-x-auto">
+				<table class="min-w-[900px] w-full text-sm border-collapse">
+					<thead class="bg-slate-100 text-[#002046]">
+						<tr>
+							<th class="border border-slate-200 px-4 py-4 text-left text-xs font-black uppercase tracking-wide">Criterio</th>
+							<th class="border border-slate-200 px-4 py-4 text-center text-xs font-black uppercase tracking-wide">Valor</th>
+							<th class="border border-slate-200 px-4 py-4 text-center text-xs font-black uppercase tracking-wide">Evaluación</th>
+						</tr>
+					</thead>
+
+					<tbody class="divide-y divide-slate-200">
+						<tr th:each="item, iterStat : ${criterios}" class="hover:bg-blue-50/40 transition">
+							<td class="border border-slate-200 px-4 py-4 text-slate-700" th:text="${item.descripcion}"></td>
+							<td class="border border-slate-200 px-4 py-4 text-center font-black text-[#002046]" th:text="${item.valor}"></td>
+							<td class="border border-slate-200 px-4 py-4 text-center">
+								<input type="number"
+									class="criterio w-28 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-center font-semibold focus:ring-[#003B8F] focus:border-[#003B8F]"
+									min="0"
+									step="0.01"
+									th:max="${item.valor}"
+									th:name="'criterio' + ${iterStat.index + 1}"
+									th:value="${evaluacionExistente != null ? 
+										(iterStat.index == 0 ? evaluacionExistente.criterio1 :
+										(iterStat.index == 1 ? evaluacionExistente.criterio2 :
+										(iterStat.index == 2 ? evaluacionExistente.criterio3 :
+										(iterStat.index == 3 ? evaluacionExistente.criterio4 :
+										(iterStat.index == 4 ? evaluacionExistente.criterio5 :
+										(iterStat.index == 5 ? evaluacionExistente.criterio6 :
+										(iterStat.index == 6 ? evaluacionExistente.criterio7 :
+										(iterStat.index == 7 ? evaluacionExistente.criterio8 :
+										(iterStat.index == 8 ? evaluacionExistente.criterio9 :
+										(iterStat.index == 9 ? evaluacionExistente.criterio10 :
+										(iterStat.index == 10 ? evaluacionExistente.criterio11 :
+										(iterStat.index == 11 ? evaluacionExistente.criterio12 :
+										(iterStat.index == 12 ? evaluacionExistente.criterio13 : '')))))))))))))
+										: ''}"
+									required>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+			<div class="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6 px-8 pb-8">
+				<div class="rounded-2xl bg-slate-50 border border-slate-200 p-6">
+					<label class="block text-sm font-black text-slate-600 mb-2">Total</label>
+					<input type="number"
+						name="calificacion"
+						class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-center text-2xl font-black text-[#002046]"
+						readonly
+						required>
+				</div>
+
+				<div class="rounded-2xl bg-slate-50 border border-slate-200 p-6">
+					<label class="block text-sm font-black text-slate-600 mb-2">Observaciones</label>
+					<textarea name="observaciones" rows="4"
+						class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 focus:ring-[#003B8F] focus:border-[#003B8F]"
+						th:text="${evaluacionExistente != null ? evaluacionExistente.observaciones : ''}"></textarea>
+				</div>
+			</div>
+
+			<div class="px-8 py-6 border-t border-slate-200 bg-white flex flex-wrap justify-end gap-4">
+				<a th:href="@{/documentos-residencia/{id}(id=${residencia.id})}"
+					class="px-8 py-3 rounded-xl font-bold text-slate-600 hover:bg-slate-100 transition">
+					Cancelar
+				</a>
+
+				<button type="submit"
+					class="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-xl font-bold text-white primary-gradient shadow-lg hover:scale-[1.02] transition">
+					<span class="material-symbols-outlined text-base">save</span>
+					Guardar evaluación
+				</button>
+			</div>
+		</form>
+	</div>
+</main>
+
+<script>
+const inputs = document.querySelectorAll('.criterio');
+const totalInput = document.querySelector('input[name="calificacion"]');
+
+function calcularTotal() {
+	let total = 0;
+
+	inputs.forEach(input => {
+		const max = Number(input.getAttribute('max'));
+		let valor = Number(input.value) || 0;
+
+		if (valor > max) {
+			valor = max;
+			input.value = max;
+		}
+
+		if (valor < 0) {
+			valor = 0;
+			input.value = 0;
+		}
+
+		total += valor;
+	});
+
+	totalInput.value = total.toFixed(2);
+}
+
+inputs.forEach(input => {
+	input.addEventListener('input', calcularTotal);
+});
+
+calcularTotal();
+</script>
+
+</body>
+</html>

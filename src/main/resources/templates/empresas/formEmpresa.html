@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<title>Empresa | TecNM Campus Chilpancingo</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<link
+	href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+	rel="stylesheet" />
+
+<style>
+.material-symbols-outlined {
+	font-variation-settings:
+	'FILL' 0,
+	'wght' 400,
+	'GRAD' 0,
+	'opsz' 24;
+}
+
+body {
+	font-family: 'Inter', sans-serif;
+	background:
+		radial-gradient(circle at top left, rgba(0, 59, 143, 0.10), transparent 28%),
+		linear-gradient(135deg, #f7f9fb 0%, #eef4fb 45%, #f8fafc 100%);
+	min-height: 100vh;
+	overflow-x: hidden;
+}
+
+h1, h2, h3 {
+	font-family: 'Manrope', sans-serif;
+}
+
+.primary-gradient {
+	background: linear-gradient(135deg, #002046 0%, #003B8F 100%);
+}
+
+.grid-pattern {
+	position: fixed;
+	inset: 0;
+	z-index: 0;
+	opacity: 0.035;
+	background-image:
+		linear-gradient(#002046 1px, transparent 1px),
+		linear-gradient(90deg, #002046 1px, transparent 1px);
+	background-size: 42px 42px;
+	pointer-events: none;
+}
+
+.float-shape {
+	position: fixed;
+	border-radius: 9999px;
+	background: rgba(0, 59, 143, 0.08);
+	filter: blur(1px);
+	z-index: 0;
+	animation: float 8s ease-in-out infinite;
+	pointer-events: none;
+}
+
+.fade-in {
+	animation: fadeUp 0.7s ease-out both;
+}
+
+.input-form {
+	width: 100%;
+	margin-top: 0.5rem;
+	border-radius: 1rem;
+	background-color: #f8fafc;
+	border: 1px solid #e2e8f0;
+	padding: 0.95rem 1rem;
+	outline: none;
+	font-size: 0.95rem;
+	font-weight: 500;
+	transition: all 0.25s ease;
+	box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+
+.input-form:focus {
+	border-color: #003B8F;
+	box-shadow: 0 0 0 4px rgba(0, 59, 143, 0.12);
+	background-color: white;
+	transform: translateY(-1px);
+}
+
+.input-form:invalid:not(:placeholder-shown) {
+	border-color: #dc2626;
+	background-color: #fef2f2;
+}
+
+.error-text {
+	display: none;
+	color: #dc2626;
+	font-size: 0.75rem;
+	margin-top: 0.35rem;
+	font-weight: 700;
+}
+
+.input-form:invalid:not(:placeholder-shown)+.error-text {
+	display: block;
+}
+
+@keyframes fadeUp {
+	from {
+		opacity: 0;
+		transform: translateY(24px) scale(0.98);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
+}
+
+@keyframes float {
+	0%, 100% {
+		transform: translateY(0) translateX(0);
+	}
+
+	50% {
+		transform: translateY(-18px) translateX(10px);
+	}
+}
+</style>
+
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+<div class="grid-pattern"></div>
+
+<div class="float-shape w-72 h-72 top-[-80px] left-[250px]"></div>
+<div class="float-shape w-52 h-52 bottom-[-70px] right-[6%]"></div>
+<div class="float-shape w-40 h-40 top-[22%] right-[12%]"></div>
+
+<div th:replace="~{fragments/sidebar :: sidebar('empresas')}"></div>
+
+<main class="ml-64 min-h-screen relative z-10">
+
+	<header th:replace="~{fragments/ui :: topbar(@{/empresas/index}, 'Volver')}"></header>
+
+	<div class="max-w-7xl mx-auto p-8 fade-in">
+
+		
+		<div class="relative overflow-hidden rounded-3xl primary-gradient text-white p-8 shadow-2xl border border-white/10 mb-8">
+
+			<div class="absolute inset-0 opacity-20 pointer-events-none"
+				style="background:
+				radial-gradient(circle at top left, #ffffff 0, transparent 28%),
+				radial-gradient(circle at bottom right, #60a5fa 0, transparent 30%);">
+			</div>
+
+			<div class="absolute -bottom-16 -right-16 w-72 h-72 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
+
+			<div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+
+				<div class="max-w-4xl">
+
+					<p class="text-sm text-blue-100 font-semibold mb-2 flex items-center gap-2">
+						<span>Panel de Control</span>
+						<span class="text-blue-300">›</span>
+						<span class="text-white">Empresas</span>
+					</p>
+
+					<h1 class="text-4xl md:text-5xl font-black tracking-tight mb-4">
+
+						<span th:if="${empresa.id == null}">
+							Registrar Empresa
+						</span>
+
+						<span th:if="${empresa.id != null}">
+							Editar Empresa
+						</span>
+
+					</h1>
+
+					<p class="text-blue-100 text-base max-w-3xl leading-relaxed">
+						Registra o actualiza la información institucional, empresarial
+						y de contacto para el sistema de residencias profesionales.
+					</p>
+
+				</div>
+
+				<div class="relative z-20 bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl px-7 py-6 shadow-2xl min-w-[280px]">
+
+					<p class="text-xs font-bold text-blue-100 uppercase tracking-[0.15em] mb-2">
+						Módulo empresarial
+					</p>
+
+					<h3 class="text-3xl font-black text-white">
+						Gestión activa
+					</h3>
+
+					<p class="text-sm text-blue-100 mt-2 leading-relaxed">
+						Controla convenios, representantes y empresas receptoras.
+					</p>
+
+				</div>
+
+			</div>
+
+		</div>
+
+		
+		<th:block th:replace="~{fragments/ui :: flashMessages(${msgSuccess}, ${msgError})}"></th:block>
+
+		
+		<form
+			th:action="${empresa.id != null} ? @{/empresas/update} : @{/empresas/save}"
+			th:object="${empresa}"
+			method="post"
+			class="bg-white/95 backdrop-blur rounded-3xl shadow-2xl border border-slate-200 overflow-hidden">
+
+			<input type="hidden" th:field="*{id}" />
+
+			<div class="px-10 py-8 border-b border-slate-200">
+
+				<h2 class="text-2xl font-black text-[#002046]">
+					Información de la empresa
+				</h2>
+
+				<p class="text-slate-500 mt-1">
+					Completa correctamente todos los campos obligatorios.
+				</p>
+
+			</div>
+
+			<div class="p-10 grid grid-cols-1 md:grid-cols-2 gap-7">
+
+				<div>
+					<label class="font-bold text-sm text-slate-700">
+						Nombre <span class="text-red-600">*</span>
+					</label>
+
+					<input type="text"
+						th:field="*{nombre}"
+						class="input-form"
+						placeholder="Ej. Instituto Tecnológico de Chilpancingo"
+						required
+						minlength="3"
+						maxlength="100"
+						pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ0-9 .,&\-]{3,100}" />
+
+					<p class="error-text">
+						Ingresa un nombre válido.
+					</p>
+				</div>
+
+				<div>
+					<label class="font-bold text-sm text-slate-700">
+						Giro <span class="text-red-600">*</span>
+					</label>
+
+					<input type="text"
+						th:field="*{giro}"
+						class="input-form"
+						placeholder="Ej. Educación, tecnología"
+						required
+						minlength="3"
+						maxlength="80"
+						pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ ]{3,80}" />
+
+					<p class="error-text">
+						Ingresa un giro válido.
+					</p>
+				</div>
+
+				<div>
+					<label class="font-bold text-sm text-slate-700">
+						Dueño <span class="text-red-600">*</span>
+					</label>
+
+					<input type="text"
+						th:field="*{dueno}"
+						class="input-form"
+						placeholder="Nombre del dueño"
+						required
+						minlength="3"
+						maxlength="100"
+						pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ ]{3,100}" />
+
+					<p class="error-text">
+						Ingresa un nombre válido.
+					</p>
+				</div>
+
+				<div>
+					<label class="font-bold text-sm text-slate-700">
+						Representante <span class="text-red-600">*</span>
+					</label>
+
+					<input type="text"
+						th:field="*{representante}"
+						class="input-form"
+						placeholder="Nombre del representante"
+						required
+						minlength="3"
+						maxlength="100"
+						pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ ]{3,100}" />
+
+					<p class="error-text">
+						Ingresa un representante válido.
+					</p>
+				</div>
+
+				<div>
+					<label class="font-bold text-sm text-slate-700">
+						Puesto representante <span class="text-red-600">*</span>
+					</label>
+
+					<input type="text"
+						th:field="*{puestoRepresentante}"
+						class="input-form"
+						placeholder="Ej. Director general"
+						required
+						minlength="3"
+						maxlength="80"
+						pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ ]{3,80}" />
+
+					<p class="error-text">
+						Ingresa un puesto válido.
+					</p>
+				</div>
+
+				<div>
+					<label class="font-bold text-sm text-slate-700">
+						Teléfono <span class="text-red-600">*</span>
+					</label>
+
+					<input type="text"
+						th:field="*{telefono}"
+						id="telefono"
+						class="input-form"
+						placeholder="Ej. 7471234567"
+						required
+						minlength="10"
+						maxlength="10"
+						inputmode="numeric"
+						pattern="[0-9]{10}" />
+
+					<p class="error-text">
+						El teléfono debe tener 10 dígitos.
+					</p>
+				</div>
+
+				<div>
+					<label class="font-bold text-sm text-slate-700">
+						Correo <span class="text-red-600">*</span>
+					</label>
+
+					<input type="email"
+						th:field="*{correo}"
+						class="input-form"
+						placeholder="empresa@correo.com"
+						required
+						maxlength="100" />
+
+					<p class="error-text">
+						Ingresa un correo válido.
+					</p>
+				</div>
+
+				<div class="md:col-span-2">
+					<label class="font-bold text-sm text-slate-700">
+						Dirección <span class="text-red-600">*</span>
+					</label>
+
+					<input type="text"
+						th:field="*{direccion}"
+						class="input-form"
+						placeholder="Calle, número, colonia, ciudad"
+						required
+						minlength="5"
+						maxlength="150" />
+
+					<p class="error-text">
+						Ingresa una dirección válida.
+					</p>
+				</div>
+
+				<div class="space-y-5">
+
+	
+	<div>
+		<label class="font-bold text-sm text-slate-700">
+			Convenio <span class="text-red-600">*</span>
+		</label>
+
+		<select th:field="*{convenio}"
+			id="convenioSelect"
+			class="input-form"
+			required>
+
+			<option value="">
+				Selecciona una opción
+			</option>
+
+			<option value="INACTIVO">
+				INACTIVO
+			</option>
+
+			<option value="ACTIVO">
+				ACTIVO
+			</option>
+
+		</select>
+
+		<p class="text-xs text-slate-500 mt-2">
+			Si seleccionas ACTIVO, se asignará automáticamente el año actual.
+		</p>
+	</div>
+
+	
+	<div id="vigenciaContainer"
+		class="bg-slate-100 border border-slate-200 rounded-2xl p-5 transition-all duration-300 opacity-60">
+
+		<div class="flex items-center justify-between gap-4 mb-3">
+
+			<div>
+				<h3 class="font-black text-slate-700">
+					Vigencia del convenio
+				</h3>
+
+				<p class="text-xs text-slate-500 mt-1">
+					Disponible únicamente cuando el convenio esté ACTIVO.
+				</p>
+			</div>
+
+			<span id="estadoConvenioBadge"
+				class="inline-flex items-center gap-1 bg-slate-300 text-slate-700 px-3 py-1 rounded-full text-[11px] font-black">
+
+				<span class="material-symbols-outlined text-sm">
+					lock
+				</span>
+
+				BLOQUEADO
+			</span>
+
+		</div>
+
+							<select th:field="*{vigenciaConvenio}" id="vigenciaConvenio"
+								class="input-form bg-slate-200 cursor-not-allowed" disabled>
+
+								<option value="">Selecciona duración</option>
+
+								<option value="2">2 años</option>
+
+								<option value="3">3 años</option>
+
+								<option value="5">5 años</option>
+
+							</select>
+
+						</div>
+
+</div>
+
+			</div>
+
+			<div class="px-10 py-6 border-t border-slate-200 bg-slate-50 flex flex-col sm:flex-row justify-end gap-4">
+
+				<a th:href="@{/empresas/index}"
+					class="inline-flex justify-center items-center px-6 py-3 rounded-2xl border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 font-bold transition">
+
+					Cancelar
+				</a>
+
+				<button type="submit"
+					class="inline-flex justify-center items-center gap-2 px-8 py-3 rounded-2xl bg-[#003B8F] hover:bg-[#002f73] text-white font-black shadow-xl transition-all duration-200 hover:scale-[1.02]">
+
+					<span class="material-symbols-outlined text-[20px]">
+						save
+					</span>
+
+					<span th:if="${empresa.id == null}">
+						Guardar empresa
+					</span>
+
+					<span th:if="${empresa.id != null}">
+						Actualizar empresa
+					</span>
+
+				</button>
+
+			</div>
+
+		</form>
+
+		<div th:if="${success}" th:data-success="${success}" id="successMsg"></div>
+		<div th:if="${error}" th:data-error="${error}" id="errorMsg"></div>
+
+	</div>
+
+</main>
+
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function() {
+
+	const telefono = document.getElementById("telefono");
+
+	if (telefono) {
+
+		telefono.addEventListener("input", function() {
+
+			this.value = this.value.replace(/[^0-9]/g, "").slice(0, 10);
+
+		});
+	}
+
+	const form = document.querySelector("form");
+
+	form.addEventListener("submit", function(e) {
+
+		e.preventDefault();
+
+		if (!form.checkValidity()) {
+
+			Swal.fire({
+				icon : 'warning',
+				title : 'Campos inválidos',
+				text : 'Completa correctamente todos los campos obligatorios.',
+				confirmButtonColor : '#003B8F',
+				confirmButtonText : 'Entendido'
+			});
+
+			form.reportValidity();
+			return;
+		}
+
+		Swal.fire({
+			title : '¿Guardar empresa?',
+			text : 'Se registrará la información de la empresa.',
+			icon : 'question',
+			showCancelButton : true,
+			confirmButtonColor : '#003B8F',
+			cancelButtonColor : '#64748b',
+			confirmButtonText : 'Sí, guardar',
+			cancelButtonText : 'Cancelar'
+		}).then((result) => {
+
+			if (result.isConfirmed) {
+
+				Swal.fire({
+					title : 'Guardando...',
+					text : 'Espera un momento',
+					allowOutsideClick : false,
+					didOpen : () => {
+						Swal.showLoading();
+					}
+				});
+
+				form.submit();
+			}
+		});
+	});
+});
+
+</script>
+
+
+<script>
+
+const success = document.getElementById("successMsg");
+const error = document.getElementById("errorMsg");
+
+if (success) {
+
+	Swal.fire({
+		icon : 'success',
+		title : 'Éxito',
+		text : success.dataset.success,
+		confirmButtonColor : '#003B8F'
+	});
+}
+
+if (error) {
+
+	Swal.fire({
+		icon : 'error',
+		title : 'Error',
+		text : error.dataset.error,
+		confirmButtonColor : '#dc2626'
+	});
+}
+
+</script>
+
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function() {
+
+	const soloLetras = [
+		document.querySelector('[name="nombre"]'),
+		document.querySelector('[name="giro"]'),
+		document.querySelector('[name="dueno"]'),
+		document.querySelector('[name="representante"]'),
+		document.querySelector('[name="puestoRepresentante"]')
+	];
+
+	soloLetras.forEach(campo => {
+
+		if (campo) {
+
+			campo.addEventListener("input", function() {
+
+				this.value = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '');
+
+			});
+		}
+	});
+});
+
+</script>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function() {
+
+	const convenioSelect = document.getElementById("convenioSelect");
+	const vigenciaContainer = document.getElementById("vigenciaContainer");
+	const vigenciaSelect = document.getElementById("vigenciaConvenio");
+	const badge = document.getElementById("estadoConvenioBadge");
+
+	function actualizarEstadoConvenio() {
+
+		if (convenioSelect.value === "ACTIVO") {
+
+			vigenciaSelect.disabled = false;
+
+			vigenciaSelect.classList.remove(
+				"bg-slate-200",
+				"cursor-not-allowed"
+			);
+
+			vigenciaContainer.classList.remove("opacity-60");
+
+			badge.classList.remove(
+				"bg-slate-300",
+				"text-slate-700"
+			);
+
+			badge.classList.add(
+				"bg-green-100",
+				"text-green-700"
+			);
+
+			badge.innerHTML = `
+				<span class="material-symbols-outlined text-sm">
+					check_circle
+				</span>
+				ACTIVO
+			`;
+
+		} else {
+
+			vigenciaSelect.disabled = true;
+
+			vigenciaSelect.value = "";
+
+			vigenciaSelect.classList.add(
+				"bg-slate-200",
+				"cursor-not-allowed"
+			);
+
+			vigenciaContainer.classList.add("opacity-60");
+
+			badge.classList.remove(
+				"bg-green-100",
+				"text-green-700"
+			);
+
+			badge.classList.add(
+				"bg-slate-300",
+				"text-slate-700"
+			);
+
+			badge.innerHTML = `
+				<span class="material-symbols-outlined text-sm">
+					lock
+				</span>
+				BLOQUEADO
+			`;
+		}
+	}
+
+	
+	setTimeout(() => {
+		actualizarEstadoConvenio();
+	}, 50);
+
+	convenioSelect.addEventListener("change", actualizarEstadoConvenio);
+
+});
+
+</script>
+
+</body>
+</html>

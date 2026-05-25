@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Asesores Internos | TecNM Campus Chilpancingo</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<link
+	href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+	rel="stylesheet" />
+
+<style>
+.material-symbols-outlined {
+	font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+body {
+	font-family: 'Inter', sans-serif;
+	background:
+		radial-gradient(circle at top left, rgba(0, 59, 143, 0.10), transparent 28%),
+		linear-gradient(135deg, #f7f9fb 0%, #eef4fb 45%, #f8fafc 100%);
+	min-height: 100vh;
+	overflow-x: hidden;
+}
+
+h1, h2, h3 {
+	font-family: 'Manrope', sans-serif;
+}
+
+.primary-gradient {
+	background: linear-gradient(135deg, #002046 0%, #003B8F 100%);
+}
+
+.grid-pattern {
+	position: fixed;
+	inset: 0;
+	z-index: 0;
+	opacity: 0.035;
+	background-image:
+		linear-gradient(#002046 1px, transparent 1px),
+		linear-gradient(90deg, #002046 1px, transparent 1px);
+	background-size: 42px 42px;
+	pointer-events: none;
+}
+
+.float-shape {
+	position: fixed;
+	border-radius: 9999px;
+	background: rgba(0, 59, 143, 0.08);
+	filter: blur(1px);
+	z-index: 0;
+	animation: float 8s ease-in-out infinite;
+}
+
+.fade-in {
+	animation: fadeUp 0.7s ease-out both;
+}
+
+.tabla-ajustable {
+	transform-origin: top left;
+	transition: all 0.3s ease;
+}
+
+.tabla-ajustable.tabla-reducida {
+	transform: scale(0.88);
+	width: 114%;
+}
+
+@keyframes fadeUp {
+	from {
+		opacity: 0;
+		transform: translateY(24px) scale(0.98);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
+}
+
+@keyframes float {
+	0%, 100% {
+		transform: translateY(0) translateX(0);
+	}
+	50% {
+		transform: translateY(-18px) translateX(10px);
+	}
+}
+</style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+<div class="grid-pattern"></div>
+<div class="float-shape w-72 h-72 top-[-80px] left-[250px]"></div>
+<div class="float-shape w-52 h-52 bottom-[-70px] right-[6%]"></div>
+<div class="float-shape w-40 h-40 top-[22%] right-[12%]"></div>
+
+<div th:replace="~{fragments/sidebar :: sidebar('asesoresInternos')}"></div>
+
+<main class="ml-64 min-h-screen relative z-10">
+
+	<header th:replace="~{fragments/ui :: topbar(@{/dashboard}, 'Dashboard')}"></header>
+
+	<div class="max-w-7xl mx-auto p-8 fade-in">
+
+		
+		
+<div class="relative overflow-hidden rounded-3xl primary-gradient text-white p-8 shadow-2xl border border-white/10 mb-8">
+
+	
+	<div class="absolute inset-0 opacity-20 pointer-events-none"
+		style="background:
+			radial-gradient(circle at top left, #ffffff 0, transparent 28%),
+			radial-gradient(circle at bottom right, #60a5fa 0, transparent 30%);">
+	</div>
+
+	<div class="absolute -bottom-16 -right-16 w-72 h-72 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
+
+	
+	<div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+
+		
+		<div class="max-w-4xl">
+
+			<p class="text-sm text-blue-100 font-semibold mb-2 flex items-center gap-2">
+				<span>Panel de Control</span>
+				<span class="text-blue-300">›</span>
+				<span class="text-white">Asesores Internos</span>
+			</p>
+
+			<h1 class="text-4xl md:text-5xl font-black tracking-tight mb-4">
+				Gestión de Asesores Internos
+			</h1>
+
+			<p class="text-blue-100 text-base leading-relaxed">
+				Administra docentes habilitados como asesores internos,
+				revisa sus carreras compatibles y consulta los proyectos asignados.
+			</p>
+
+		</div>
+
+		
+		<div class="relative z-20 flex flex-col gap-3 min-w-[260px]">
+
+			<a
+				sec:authorize="hasRole('ADMINISTRADOR')"
+				th:href="@{/asesores-internos/inactivos}"
+
+				class="relative z-20 inline-flex items-center justify-center gap-2
+				bg-amber-500 hover:bg-amber-600
+				text-white px-6 py-3 rounded-2xl
+				font-bold text-sm shadow-xl transition-all duration-200 hover:scale-[1.02]">
+
+				<span class="material-symbols-outlined text-base">
+					restore
+				</span>
+
+				Recuperar eliminados
+			</a>
+
+			<a
+				sec:authorize="hasAnyRole('ADMINISTRADOR','DIVISION_ESTUDIOS','JEFE_DEPARTAMENTO')"
+				th:href="@{/asesores-internos/create}"
+
+				class="relative z-20 inline-flex items-center justify-center gap-2
+				bg-emerald-600 hover:bg-emerald-700
+				text-white px-6 py-3 rounded-2xl
+				font-bold text-sm shadow-xl transition-all duration-200 hover:scale-[1.02]">
+
+				<span class="material-symbols-outlined text-base">
+					add
+				</span>
+
+				Agregar Asesor
+			</a>
+
+		</div>
+
+	</div>
+
+</div>
+
+		
+		<th:block th:replace="~{fragments/ui :: flashMessages(${msgSuccess}, ${msgError})}"></th:block>
+
+		
+		<div class="tabla-card bg-white/95 backdrop-blur rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
+
+			<div class="px-8 py-6 border-b border-slate-200 flex flex-col xl:flex-row xl:items-center justify-between gap-5">
+
+				<div>
+					<h2 class="text-2xl font-black text-[#002046]">
+						Listado de asesores internos
+					</h2>
+					<p class="text-slate-500">
+						Consulta y administra la información de los asesores internos registrados.
+					</p>
+				</div>
+
+				<div class="flex flex-wrap items-center gap-3">
+
+					<form method="get"
+						th:action="@{/asesores-internos/search}"
+						class="flex flex-wrap items-center gap-3">
+
+						<div class="relative">
+							<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+								search
+							</span>
+
+							<input
+								type="text"
+								name="texto"
+								th:value="${textoBusqueda}"
+								placeholder="Buscar asesor..."
+								class="w-72 rounded-2xl border border-slate-200 bg-white pl-12 pr-4 py-3 shadow-sm focus:ring-[#003B8F] focus:border-[#003B8F]">
+						</div>
+
+						<select name="periodo"
+							class="rounded-2xl border border-slate-200 bg-white px-4 py-3 min-w-[190px] shadow-sm focus:ring-[#003B8F] focus:border-[#003B8F]">
+							<option value="">Todos los periodos</option>
+							<option th:each="periodo : ${periodosDisponibles}"
+								th:value="${periodo}"
+								th:text="${periodo}"
+								th:selected="${periodoBusqueda == periodo}">
+							</option>
+						</select>
+
+						<button type="submit"
+							class="bg-slate-800 hover:bg-slate-900 text-white px-5 py-3 rounded-xl font-bold text-sm transition shadow-sm">
+							Buscar
+						</button>
+
+						<a th:href="@{/asesores-internos/index}"
+							class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-3 rounded-xl font-bold text-sm transition">
+							Limpiar
+						</a>
+					</form>
+
+					<th:block th:replace="~{fragments/ui :: tableZoomButton()}"></th:block>
+
+					<div class="rounded-2xl border border-slate-200 bg-white px-5 py-3 shadow-sm min-w-[190px]">
+						<p class="text-xs uppercase tracking-widest text-slate-500 font-black">
+							Asesores activos
+						</p>
+
+						<div class="flex items-center gap-3 mt-1">
+							<h2 class="text-3xl font-black text-[#002046]"
+								th:text="${asesoresInternos != null ? #lists.size(asesoresInternos) : 0}">
+								0
+							</h2>
+
+							<span class="inline-flex items-center gap-1 bg-green-100 text-green-700 px-3 py-1 rounded-full text-[11px] font-black">
+								<span class="material-symbols-outlined text-sm">check_circle</span>
+								Activo
+							</span>
+						</div>
+					</div>
+
+				</div>
+			</div>
+
+			<div class="overflow-x-auto">
+				<div class="tabla-ajustable">
+
+					<table class="min-w-[1180px] w-full text-sm text-center border-collapse">
+
+						<thead class="bg-slate-100 text-[#002046]">
+							<tr>
+								<th class="px-4 py-4 border border-slate-300 text-xs font-black uppercase">
+									No. Empleado
+								</th>
+								<th class="px-4 py-4 border border-slate-300 text-xs font-black uppercase">
+									Nombre
+								</th>
+								<th class="px-4 py-4 border border-slate-300 text-xs font-black uppercase">
+									Correo
+								</th>
+								<th class="px-4 py-4 border border-slate-300 text-xs font-black uppercase">
+									Teléfono
+								</th>
+								<th class="px-4 py-4 border border-slate-300 text-xs font-black uppercase">
+									Carreras habilitadas
+								</th>
+								<th class="px-4 py-4 border border-slate-300 text-xs font-black uppercase">
+									Acciones
+								</th>
+							</tr>
+						</thead>
+
+						<tbody id="tablaAsesores">
+
+							<tr th:if="${asesoresInternos == null or #lists.isEmpty(asesoresInternos)}">
+								<td colspan="6" class="py-16 text-slate-500 font-semibold">
+									<div class="flex flex-col items-center justify-center gap-3">
+										<span class="material-symbols-outlined text-6xl text-slate-300">group_off</span>
+										<p>No se encontraron asesores internos.</p>
+									</div>
+								</td>
+							</tr>
+
+							<tr th:each="asesor : ${asesoresInternos}"
+								class="hover:bg-blue-50/40 transition">
+
+								<td class="border border-slate-200 px-4 py-4 font-black text-[#002046]"
+									th:text="${asesor.noEmpleado}">
+									ITCH-DOC-000
+								</td>
+
+								<td class="border border-slate-200 px-4 py-4 text-left">
+									<div class="flex items-center gap-3">
+
+										<img th:if="${asesor.fotoPath != null and !#strings.isEmpty(asesor.fotoPath)}"
+											th:src="@{'/docentes-archivos/' + ${asesor.fotoPath}}"
+											class="w-11 h-11 rounded-xl object-cover border border-slate-200 shadow-sm">
+
+										<div th:if="${asesor.fotoPath == null or #strings.isEmpty(asesor.fotoPath)}"
+											class="w-11 h-11 rounded-xl bg-[#002046] text-white flex items-center justify-center font-black text-sm shadow-sm">
+											<span th:text="${asesor.nombreCompleto != null and !#strings.isEmpty(asesor.nombreCompleto) ? #strings.substring(asesor.nombreCompleto,0,1) : 'A'}"></span>
+										</div>
+
+										<div>
+											<p class="font-black text-[#002046]"
+												th:text="${asesor.nombreCompleto}">
+												Nombre del asesor
+											</p>
+											<p class="text-xs text-slate-500">
+												Asesor interno
+											</p>
+										</div>
+									</div>
+								</td>
+
+								<td class="border border-slate-200 px-4 py-4"
+									th:text="${asesor.correo != null and !#strings.isEmpty(asesor.correo) ? asesor.correo : 'Sin correo'}">
+									correo@tecnm.mx
+								</td>
+
+								<td class="border border-slate-200 px-4 py-4"
+									th:text="${asesor.telefono != null and !#strings.isEmpty(asesor.telefono) ? asesor.telefono : 'Sin teléfono'}">
+									0000000000
+								</td>
+
+								<td class="border border-slate-200 px-4 py-4 text-left">
+									<div class="flex flex-wrap gap-2"
+										th:if="${asesor.docente != null and asesor.docente.carrerasHabilitadas != null and !#lists.isEmpty(asesor.docente.carrerasHabilitadas)}">
+
+										<span th:each="carrera : ${asesor.docente.carrerasHabilitadas}"
+											class="inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-bold"
+											th:text="${carrera.nombre}">
+										</span>
+									</div>
+
+									<span th:if="${asesor.docente == null or asesor.docente.carrerasHabilitadas == null or #lists.isEmpty(asesor.docente.carrerasHabilitadas)}"
+										class="inline-flex px-3 py-1 rounded-full bg-slate-100 text-slate-500 text-xs font-bold">
+										Sin carreras asignadas
+									</span>
+								</td>
+
+								<td class="border border-slate-200 px-4 py-4">
+									<div class="flex justify-center gap-2 flex-wrap">
+
+										<a sec:authorize="hasAnyRole('ADMINISTRADOR','DIVISION_ESTUDIOS','JEFE_DEPARTAMENTO')"
+											th:href="@{/asesores-internos/edit/{id}(id=${asesor.id})}"
+											class="inline-flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl font-bold text-xs transition">
+											<span class="material-symbols-outlined text-sm">edit</span>
+											Editar
+										</a>
+
+										<a sec:authorize="hasAnyRole('ADMINISTRADOR','DIVISION_ESTUDIOS','JEFE_DEPARTAMENTO','ASESOR_INTERNO')"
+											th:href="@{/asesores-internos/proyectos/{id}(id=${asesor.id})}"
+											class="inline-flex items-center gap-1 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl font-bold text-xs transition">
+											<span class="material-symbols-outlined text-sm">folder_managed</span>
+											Proyectos
+										</a>
+
+										<a sec:authorize="hasRole('ADMINISTRADOR')"
+											th:href="@{/asesores-internos/delete/{id}(id=${asesor.id})}"
+											th:attr="onclick=|confirmarEliminacion(event, this, '${asesor.nombreCompleto}')|"
+											class="inline-flex items-center gap-1 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl font-bold text-xs transition">
+											<span class="material-symbols-outlined text-sm">delete</span>
+											Eliminar
+										</a>
+
+									</div>
+								</td>
+
+							</tr>
+						</tbody>
+
+					</table>
+
+				</div>
+			</div>
+
+			<div class="bg-slate-50 px-8 py-5 border-t border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-3">
+				<span class="text-xs text-slate-500">
+					Mostrando
+					<span class="font-black text-[#002046]"
+						th:text="${asesoresInternos != null ? #lists.size(asesoresInternos) : 0}">
+					</span>
+					asesores internos activos
+				</span>
+
+				<span class="text-xs text-slate-400">
+					Filtra asesores por nombre y por periodo de proyectos asignados.
+				</span>
+			</div>
+
+		</div>
+
+	</div>
+</main>
+
+<script th:if="${usuarioGenerado != null}">
+document.addEventListener('DOMContentLoaded', function () {
+	Swal.fire({
+		title: 'Usuario generado correctamente',
+		html: `
+			<div style="text-align:left; font-size:15px; margin-top:10px;">
+				<p style="margin-bottom:10px;">
+					<b>Usuario:</b><br>
+					<span style="color:#003B8F; font-weight:700;">
+						[[${usuarioGenerado}]]
+					</span>
+				</p>
+
+				<p>
+					<b>Contraseña temporal:</b><br>
+					<span style="color:#d97706; font-weight:700;">
+						[[${passwordGenerado}]]
+					</span>
+				</p>
+			</div>
+		`,
+		icon: 'success',
+		confirmButtonColor: '#003B8F',
+		confirmButtonText: 'Aceptar',
+		background: '#ffffff'
+	});
+});
+</script>
+
+<th:block th:replace="~{fragments/ui :: tableZoomScript()}"></th:block>
+
+<script>
+
+function confirmarEliminacion(event, elemento, nombre) {
+	event.preventDefault();
+
+	Swal.fire({
+		title: '¿Eliminar asesor?',
+		text: "Se eliminará a: " + nombre,
+		icon: 'warning',
+		showCancelButton: true,
+		confirmButtonColor: '#dc2626',
+		cancelButtonColor: '#2563eb',
+		confirmButtonText: 'Sí, eliminar',
+		cancelButtonText: 'Cancelar',
+		reverseButtons: true
+	}).then((result) => {
+		if (result.isConfirmed) {
+			Swal.fire({
+				title: 'Eliminado',
+				text: 'El asesor ha sido eliminado correctamente',
+				icon: 'success',
+				timer: 1500,
+				showConfirmButton: false
+			}).then(() => {
+				window.location.href = elemento.href;
+			});
+		}
+	});
+}
+
+</script>
+
+</body>
+</html>
