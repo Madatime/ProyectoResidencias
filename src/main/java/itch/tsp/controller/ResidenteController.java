@@ -1,10 +1,18 @@
 package itch.tsp.controller;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,6 +35,12 @@ public class ResidenteController {
 
 	@Autowired
 	private IEstudianteService serviceEstudiante;
+
+	@Value("${app.ruta.base}")
+	private String rutaBase;
+
+	@Value("${app.carpeta.residentes}")
+	private String carpetaResidentes;
 
 	private void prepararAltaEstudianteSugerida(Model model, String matricula) {
 		model.addAttribute("mostrarCrearEstudiante", true);
@@ -294,6 +308,41 @@ public class ResidenteController {
 		serviceResidente.eliminar(idResidente);
 
 		return "redirect:/residentes/index";
+	}
+
+	@GetMapping("/residentes-archivos/{nombreArchivo:.+}")
+	public ResponseEntity<Resource> mostrarFotoResidente(@PathVariable String nombreArchivo) {
+		try {
+			Path rutaArchivo = Paths.get(rutaBase)
+					.resolve(carpetaResidentes)
+					.resolve(nombreArchivo)
+					.normalize()
+					.toAbsolutePath();
+
+			Resource recurso = new UrlResource(rutaArchivo.toUri());
+
+			if (recurso.exists() && recurso.isReadable()) {
+				String tipoContenido = Files.probeContentType(rutaArchivo);
+				if (tipoContenido == null) {
+					tipoContenido = "application/octet-stream";
+				}
+
+				return ResponseEntity.ok()
+						.header("Content-Type", tipoContenido)
+						.body(recurso);
+			}
+
+			Resource recursoDefault = new ClassPathResource("static/img/logo-tecnm.png");
+			return ResponseEntity.ok()
+					.header("Content-Type", "image/png")
+					.body(recursoDefault);
+
+		} catch (Exception e) {
+			Resource recursoDefault = new ClassPathResource("static/img/logo-tecnm.png");
+			return ResponseEntity.ok()
+					.header("Content-Type", "image/png")
+					.body(recursoDefault);
+		}
 	}
 
 	private void cargarBandejaEstudiantes(

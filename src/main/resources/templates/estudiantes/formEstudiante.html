@@ -106,16 +106,17 @@ h1,h2,h3 { font-family:'Manrope',sans-serif; }
 							</select>
 						</div>
 						<div>
-							<label class="block text-sm font-bold text-slate-700 mb-3">Semestre</label>
-							<input type="number" th:field="*{semestre}" min="8" max="13" step="1" inputmode="numeric" placeholder="Ej. 8" class="input-form">
+							<label class="block text-sm font-bold text-slate-700 mb-3">Semestre <span class="text-red-600">*</span></label>
+							<input type="number" th:field="*{semestre}" min="8" max="13" step="1" inputmode="numeric" required placeholder="Ej. 8" class="input-form">
 						</div>
 						<div>
 							<label class="block text-sm font-bold text-slate-700 mb-3">Teléfono</label>
-							<input type="text" th:field="*{telefono}" maxlength="30" placeholder="Ej. 7471234567" class="input-form">
+							<input type="text" th:field="*{telefono}" maxlength="10" pattern="\d{10}" inputmode="numeric" required placeholder="Ej. 7471234567" title="El telefono debe contener exactamente 10 digitos." class="input-form" oninput="this.value = this.value.replace(/\D/g, '').slice(0, 10);">
+							<p class="mt-2 text-xs text-slate-500">Si capturas telefono, debe tener exactamente 10 digitos.</p>
 						</div>
 						<div>
 							<label class="block text-sm font-bold text-slate-700 mb-3">Correo electrónico</label>
-							<input type="email" th:field="*{correo}" maxlength="120" placeholder="Ej. alumno@itch.edu.mx" class="input-form">
+							<input type="email" th:field="*{correo}" maxlength="120" required placeholder="Ej. alumno@itch.edu.mx" class="input-form">
 						</div>
 					</div>
 				</div>
@@ -131,5 +132,26 @@ h1,h2,h3 { font-family:'Manrope',sans-serif; }
 		</div>
 	</div>
 </main>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+	[
+		{ name: "telefono", base: "Telefono" },
+		{ name: "correo", base: "Correo electronico" }
+	].forEach(function (campoConfig) {
+		const campo = document.querySelector('[name="' + campoConfig.name + '"]');
+		if (!campo) {
+			return;
+		}
+
+		const contenedor = campo.closest("div");
+		const etiqueta = contenedor ? contenedor.querySelector("label") : null;
+		if (!etiqueta) {
+			return;
+		}
+
+		etiqueta.innerHTML = campoConfig.base + ' <span class="text-red-600">*</span>';
+	});
+});
+</script>
 </body>
 </html>

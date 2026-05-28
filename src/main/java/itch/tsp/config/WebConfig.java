@@ -1,5 +1,7 @@
 package itch.tsp.config;
 
+import java.io.File;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -27,15 +29,21 @@ public class WebConfig implements WebMvcConfigurer {
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 
 		registry.addResourceHandler("/residentes-archivos/**")
-				.addResourceLocations("file:/" + rutaBase + carpetaResidentes + "/");
+				.addResourceLocations(resolverUbicacionArchivo(carpetaResidentes));
 
 		registry.addResourceHandler("/asesores-internos-archivos/**")
-				.addResourceLocations("file:/" + rutaBase + carpetaAsesoresInternos + "/");
+				.addResourceLocations(resolverUbicacionArchivo(carpetaAsesoresInternos));
 
 		registry.addResourceHandler("/asesores-externos-archivos/**")
-				.addResourceLocations("file:/" + rutaBase + carpetaAsesoresExternos + "/");
+				.addResourceLocations(resolverUbicacionArchivo(carpetaAsesoresExternos));
 
 		registry.addResourceHandler("/proyectos-archivos/**")
-				.addResourceLocations("file:/" + rutaBase + carpetaProyectos + "/");
+				.addResourceLocations(resolverUbicacionArchivo(carpetaProyectos));
+	}
+
+	private String resolverUbicacionArchivo(String carpeta) {
+		File directorioBase = new File(rutaBase);
+		File directorio = new File(directorioBase, carpeta);
+		return directorio.getAbsoluteFile().toURI().toString();
 	}
 }

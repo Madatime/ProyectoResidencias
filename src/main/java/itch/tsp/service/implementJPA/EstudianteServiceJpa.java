@@ -134,7 +134,12 @@ public class EstudianteServiceJpa implements IEstudianteService {
 			throw new RuntimeException("Debes seleccionar el sexo del estudiante.");
 		}
 
+		if (estudiante.getCorreo() == null || estudiante.getCorreo().trim().isEmpty()) {
+			throw new RuntimeException("El correo electronico es obligatorio.");
+		}
+
 		validarSemestrePermitido(estudiante.getSemestre());
+		validarTelefonoPermitido(estudiante.getTelefono());
 
 		Integer id = estudiante.getId();
 
@@ -176,7 +181,7 @@ public class EstudianteServiceJpa implements IEstudianteService {
 
 	private void validarSemestrePermitido(String semestre) {
 		if (semestre == null || semestre.trim().isEmpty()) {
-			return;
+			throw new RuntimeException("El semestre es obligatorio.");
 		}
 
 		int semestreNumerico;
@@ -193,6 +198,18 @@ public class EstudianteServiceJpa implements IEstudianteService {
 
 		if (semestreNumerico > 13) {
 			throw new RuntimeException("El semestre maximo permitido es 13.");
+		}
+	}
+
+	private void validarTelefonoPermitido(String telefono) {
+		if (telefono == null || telefono.trim().isEmpty()) {
+			throw new RuntimeException("El telefono es obligatorio.");
+		}
+
+		String valor = telefono.trim();
+
+		if (!valor.matches("^\\d{10}$")) {
+			throw new RuntimeException("El telefono debe contener exactamente 10 digitos.");
 		}
 	}
 
